@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ArticleGroupMirror {
+  id           String   @id @default(uuid())
+  externalId   String   @unique
+  name         String
+  description  String?
+  parentId     String?
+  sortOrder    Int      @default(0)
+  active       Boolean  @default(true)
+  updatedAt    DateTime
+
+  // relations
+  articles     ArticleMirror[]
+  mediaLinks   ArticleGroupMediaLink[]
+
+  @@index([externalId])
+}
+
+model ArticleMirror {
+  id             String   @id @default(uuid())
+  externalId     String   @unique
+  articleGroupId String
+  sku            String   @unique
+  ean            String?
+  title          String
+  description    String?
+  attributes     Json?
+  uom            String?
+  active         Boolean  @default(true)
+  updatedAt      DateTime
+
+  group ArticleGroupMirror @relation(fields: [articleGroupId], references: [id])
+
+  @@index([articleGroupId])
+  @@index([externalId])
+}
+
+model MediaAsset {
+  id        String   @id @default(uuid())
+  key       String   @unique // S3 object key
+  mime      String
+  width     Int?
+  height    Int?
+  sizeBytes Int?
+  checksum  String?
+  createdAt DateTime @default(now())
+  variants  Json?
+  groupLinks ArticleGroupMediaLink[]
+}
+
+model ArticleGroupMediaLink {
+  id        String   @id @default(uuid())
+  groupId   String
+  mediaId   String
+  altText   String?
+  sortOrder Int      @default(0)
+
+  group ArticleGroupMirror @relation(fields: [groupId], references: [id])
+  media MediaAsset         @relation(fields: [mediaId], references: [id])
+
+  @@unique([groupId, mediaId])
+}
+
+model SyncRun {
+  id            String   @id @default(uuid())
+  scope         String   // groups | articles
+  startedAt     DateTime @default(now())
+  finishedAt    DateTime?
+  success       Boolean?
+  itemsRead     Int      @default(0)
+  itemsUpserted Int      @default(0)
+  error         String?
+}

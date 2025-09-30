@@ -5,7 +5,10 @@ import { PrismaService } from './prisma/prisma.service';
 
 @Controller('health')
 export class HealthController {
-  constructor(private health: HealthCheckService, private prisma: PrismaService) {}
+  constructor(
+    private health: HealthCheckService,
+    private prisma: PrismaService,
+  ) {}
 
   @Get()
   @HealthCheck()
