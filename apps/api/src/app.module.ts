@@ -14,6 +14,7 @@ import { SyncDebugController } from './sync/sync.debug.controller';
 import { SyncController } from './sync/sync.controller';
 import { SyncService } from './sync/sync.service';
 import { ArticlesModule } from './routes/articles/articles.module';
+import { MediaModule } from './media/media.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { ArticlesModule } from './routes/articles/articles.module';
     }),
     ArticleGroupsModule,
     ArticlesModule,
+    MediaModule,
   ],
   controllers: [HealthController, SyncDebugController, SyncController],
   providers: [PrismaService, SelectLineClient, SyncService],

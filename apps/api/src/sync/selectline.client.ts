@@ -229,7 +229,7 @@ export class SelectLineClient {
     params: { page?: number; pageSize?: number; updatedSince?: string } = {},
   ) {
     const { page = 1, pageSize = 100, updatedSince } = params;
-    const url = `${this.base}/ArticleGroups`;
+    const url = `${this.base}/slmobileApi/ArticleGroups`;
     const query: Record<string, string | number> = { page, pageSize };
     if (updatedSince) query['updated_since'] = updatedSince; // change name if needed
 
@@ -254,7 +254,7 @@ export class SelectLineClient {
     } = {},
   ) {
     const { page = 1, pageSize = 100, updatedSince, groupId } = params;
-    const url = `${this.base}/articles`;
+    const url = `${this.base}/slmobileApi/articles`;
     const query: Record<string, string | number> = { page, pageSize };
     if (updatedSince) query['updated_since'] = updatedSince;
     if (groupId) query['group_id'] = groupId;

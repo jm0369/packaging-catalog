@@ -2,8 +2,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Prisma } from '@prisma/client'; // ✅ import Prisma types
-
-const cdn = process.env.PUBLIC_CDN_BASE ?? '';
+import { cdnUrlForKey } from 'src/utils/cdn';
 
 @Injectable()
 export class ArticleGroupsService {
@@ -46,9 +45,7 @@ export class ArticleGroupsService {
       externalId: g.externalId,
       name: g.name,
       description: g.description,
-      imageUrl: g.mediaLinks[0]?.media?.key
-        ? `${cdn}/${g.mediaLinks[0].media.key}`
-        : null,
+      imageUrl: cdnUrlForKey(g.mediaLinks[0]?.media?.key),
     }));
 
     return { total, limit, offset, data };
@@ -73,9 +70,7 @@ export class ArticleGroupsService {
       externalId: group.externalId,
       name: group.name,
       description: group.description,
-      imageUrl: group.mediaLinks[0]?.media?.key
-        ? `${cdn}/${group.mediaLinks[0].media.key}`
-        : null,
+      imageUrl: cdnUrlForKey(group.mediaLinks[0]?.media?.key),
     };
   }
 
