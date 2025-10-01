@@ -1,0 +1,71 @@
+name: Sync & DB Report
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: catalog
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d catalog"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      # point Prisma to the service DB
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/catalog
+      # we don’t want the job to fail for data warnings in CI
+      EXIT_NONZERO_ON_WARN: "0"
+      # don’t call the external SelectLine API in CI
+      SKIP_SYNC: "1"
+      # write JSON report to a file we can upload
+      SYNC_REPORT_JSON: sync-report.json
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      # Either push schema (no migrations required) or run migrate:dev if you track migrations.
+      - name: Push Prisma schema
+        run: pnpm -F @pkg/db exec prisma db push
+
+      # If you prefer migrations, replace the above with:
+      # - name: Run migrations
+      #   run: pnpm -F @pkg/db migrate:dev --name ci --create-only=false --skip-generate
+
+      - name: Run sync & report
+        run: pnpm -F @app/api sync:report
+
+      - name: Upload JSON report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sync-report
+          path: sync-report.json
+          if-no-files-found: warn

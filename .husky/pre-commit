@@ -1,2 +1,1 @@
-#!/bin/sh
-pnpm -w lint
+pnpm -r lint

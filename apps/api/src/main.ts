@@ -1,18 +1,19 @@
-// apps/api/src/main.ts
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { getEnv } from './config/env';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
-  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
-  const cfg = new DocumentBuilder()
-    .setTitle('Catalog API')
-    .setVersion('1.0')
-    .build();
-  const doc = SwaggerModule.createDocument(app, cfg);
-  SwaggerModule.setup('docs', app, doc);
-  await app.listen(process.env.PORT || 3001);
+  const env = getEnv(); // validate early, exit on error
+
+  // Honor insecure TLS for dev (like curl -k)
+  if (env.SELECTLINE_TLS_INSECURE === '1') {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+  }
+
+  const app = await NestFactory.create(AppModule, {
+    logger: ['log', 'error', 'warn'],
+  });
+  await app.listen(env.PORT);
+  console.log(`API listening on http://localhost:${env.PORT}`);
 }
-void bootstrap();
+bootstrap();
