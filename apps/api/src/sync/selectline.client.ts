@@ -2,7 +2,12 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { AxiosError, AxiosRequestConfig } from 'axios';
 import { firstValueFrom } from 'rxjs';
-import { SlArticleGroup, SlArticleGroupRaw } from './selectline.types';
+import {
+  SlArticleGroup,
+  SlArticleGroupRaw,
+  SlMacroRecord,
+  SlMacroTable,
+} from './selectline.types';
 import { SlArticleRaw, SlArticle } from './selectline.types';
 
 // Response shapes we might see; we normalize them.
@@ -370,6 +375,45 @@ export class SelectLineClient {
       if (!pageSize || batch.length < pageSize) break;
       page++;
     }
+    return out;
+  }
+
+  /**
+   * Get a detailed article record by "Artikelnummer" via macro:
+   * POST /Macros/GetArticleByNumber
+   * Body: [{ Name: "ArtikelNr", Value: "<number>" }]
+   */
+  async getArticleDetailsByNumber(
+    number: string,
+  ): Promise<SlMacroRecord | null> {
+    const url = `${this.base}/slmobileApi/Macros/GetArticleByNumber`;
+
+    const body = [{ Name: 'ArtikelNr', Value: number }];
+
+    const res = await this.request<SlMacroTable>({
+      method: 'POST',
+      url,
+      // axios-style config your `.request<T>()` already accepts
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'Accept-Encoding': 'identity',
+      },
+      data: body,
+    });
+
+    if (
+      !res?.ColumnNames ||
+      !Array.isArray(res.Rows) ||
+      res.Rows.length === 0
+    ) {
+      return null;
+    }
+
+    const cols = res.ColumnNames;
+    const row = res.Rows[0]?.ColumnValues ?? [];
+    const out: SlMacroRecord = {};
+    for (let i = 0; i < cols.length; i++) out[cols[i]] = row[i];
     return out;
   }
 }

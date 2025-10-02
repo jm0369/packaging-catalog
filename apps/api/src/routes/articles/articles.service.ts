@@ -2,10 +2,21 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import type { Prisma } from '@prisma/client';
+import { SelectLineClient } from 'src/sync/selectline.client';
+import { mergeEnriched } from 'src/sync/enrich.util';
+
+interface EnrichedAttributes {
+  enriched?: boolean;
+  enrichedAt?: string;
+  [key: string]: any;
+}
 
 @Injectable()
 export class ArticlesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private sl: SelectLineClient,
+  ) { }
 
   async list(params: {
     limit?: number;
@@ -20,13 +31,13 @@ export class ArticlesService {
         groupId ? { articleGroupId: groupId } : {},
         q
           ? {
-              OR: [
-                { title: { contains: q, mode: 'insensitive' } },
-                { description: { contains: q, mode: 'insensitive' } },
-                { sku: { contains: q, mode: 'insensitive' } },
-                { ean: { contains: q, mode: 'insensitive' } },
-              ],
-            }
+            OR: [
+              { title: { contains: q, mode: 'insensitive' } },
+              { description: { contains: q, mode: 'insensitive' } },
+              { sku: { contains: q, mode: 'insensitive' } },
+              { ean: { contains: q, mode: 'insensitive' } },
+            ],
+          }
           : {},
       ],
     };
@@ -97,13 +108,13 @@ export class ArticlesService {
         { articleGroupId: group.id },
         q
           ? {
-              OR: [
-                { title: { contains: q, mode: 'insensitive' } },
-                { description: { contains: q, mode: 'insensitive' } },
-                { sku: { contains: q, mode: 'insensitive' } },
-                { ean: { contains: q, mode: 'insensitive' } },
-              ],
-            }
+            OR: [
+              { title: { contains: q, mode: 'insensitive' } },
+              { description: { contains: q, mode: 'insensitive' } },
+              { sku: { contains: q, mode: 'insensitive' } },
+              { ean: { contains: q, mode: 'insensitive' } },
+            ],
+          }
           : {},
       ],
     };
@@ -209,6 +220,90 @@ export class ArticlesService {
       active: article.active,
       updatedAt: article.updatedAt.toISOString(),
       group: article.group,
+    };
+  }
+
+  async getOne(externalId: string) {
+    let art = await this.prisma.articleMirror.findUnique({
+      where: { externalId },
+      select: {
+        id: true,
+        externalId: true,
+        sku: true,
+        ean: true,
+        title: true,
+        description: true,
+        uom: true,
+        active: true,
+        updatedAt: true,
+        articleGroupId: true,
+        group: { select: { id: true, externalId: true, name: true } },
+        attributes: true,
+      },
+    });
+
+    if (!art) return null;
+
+    // Decide if we need enrichment:
+    const attributes = art.attributes as EnrichedAttributes | null;
+    const alreadyEnriched = !!(attributes?.enriched);
+    // Optional: refresh after X days
+    const STALE_MS = 7 * 24 * 3600 * 1000;
+    const enrichedAt = attributes?.enrichedAt;
+    const isStale = enrichedAt
+      ? Date.now() - Date.parse(enrichedAt) > STALE_MS
+      : !alreadyEnriched;
+
+    if (isStale && art.sku) {
+      try {
+        console.log(
+          `[ArticlesService] Enriching article ${externalId} via SelectLine macro`,
+        );
+        const details = await this.sl.getArticleDetailsByNumber(art.sku);
+        if (details) {
+          // persist enrichment
+          const updated = await this.prisma.articleMirror.update({
+            where: { externalId },
+            data: {
+              attributes: mergeEnriched(art.attributes ?? {}, details),
+            },
+            select: {
+              id: true,
+              externalId: true,
+              sku: true,
+              ean: true,
+              title: true,
+              description: true,
+              uom: true,
+              active: true,
+              updatedAt: true,
+              articleGroupId: true,
+              group: { select: { id: true, externalId: true, name: true } },
+              attributes: true,
+            },
+          });
+          art = updated;
+        }
+      } catch (e) {
+        // Non-fatal: log; still return the non-enriched result
+
+        console.warn('[ArticlesService] Enrich failed:', (e as Error)?.message);
+      }
+    }
+
+    return {
+      id: art.id,
+      externalId: art.externalId,
+      sku: art.sku,
+      ean: art.ean,
+      title: art.title,
+      description: art.description,
+      uom: art.uom,
+      active: art.active,
+      updatedAt: art.updatedAt.toISOString(),
+      group: art.group,
+      // expose enriched block under attributes.enriched
+      attributes: art.attributes ?? null,
     };
   }
 }

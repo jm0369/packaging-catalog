@@ -108,3 +108,12 @@ export interface SlArticle {
   updatedAt: string | null; // -> MetaData.ModificationDate
   attributes: Record<string, unknown> | null; // raw extras (price/stock/etc.)
 }
+
+// Columnar macro response
+export interface SlMacroTable {
+  ColumnNames: string[];
+  Rows: { ColumnValues: unknown[] }[];
+}
+
+// One row converted to an object { [colName]: value }
+export type SlMacroRecord = Record<string, unknown>;

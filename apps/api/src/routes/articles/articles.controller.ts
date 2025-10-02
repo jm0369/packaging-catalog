@@ -8,12 +8,7 @@ import {
 } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
 import { ListArticlesDto } from './dto/list-articles.dto';
-import {
-  ApiOkResponse,
-  ApiOperation,
-  ApiParam,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('articles')
 @Controller('api/articles')
@@ -31,25 +26,41 @@ export class ArticlesController {
   }
 
   @Get(':externalId')
-  @ApiOperation({ summary: 'Get one article by externalId' })
-  @ApiParam({ name: 'externalId', type: String })
+  @ApiOperation({
+    summary: 'Get one article (enriched via SelectLine macro on-demand)',
+  })
   @ApiOkResponse({
     schema: {
       example: {
         id: 'uuid',
-        externalId: 'art-box-001',
-        sku: 'BOX-300-200-150',
-        ean: null,
-        title: 'Standard Shipping Box 300x200x150',
-        description: 'Single wall, brown',
-        uom: 'pcs',
+        externalId: '100002',
+        sku: '100002',
+        ean: '4255865903638',
+        title: 'PC P B02.01',
+        description: null,
+        uom: 'Stück',
         active: true,
-        updatedAt: '2025-09-30T00:00:00.000Z',
-        group: { id: 'uuid', externalId: 'grp-boxes', name: 'Boxes' },
+        updatedAt: '2025-09-22T11:59:19.800Z',
+        group: { id: 'uuid', externalId: 'PC P B02', name: 'PC P B02 …' },
+        attributes: {
+          enrichedAt: '2025-10-01T15:02:11.123Z',
+          enriched: {
+            ART_ID: 2780,
+            Artikelnummer: '100002',
+            EANNummer: '4255865903638',
+            // ... all macro columns mapped
+            _AUSSENLAENGE: 198.0,
+            _AUSSENBREITE: 135.0,
+            _AUSSENHOEHE: 63.0,
+            // etc.
+          },
+        },
       },
     },
   })
   async getOne(@Param('externalId') externalId: string) {
-    return this.svc.getByExternalId(externalId);
+    const data = await this.svc.getOne(externalId);
+    if (!data) return { message: 'Not found' }; // or throw NotFoundException
+    return data;
   }
 }
