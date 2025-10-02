@@ -1,161 +1,69 @@
-import { fetchGroupsPage } from '@/lib/api';
-import { setPrimaryImage } from './actions';
+// apps/admin/src/app/groups/page.tsx
+import Link from 'next/link';
+import Image from 'next/image';
+import { fetchGroups } from '@/lib/api';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 600;
 
-type Props = {
-  searchParams?: { q?: string; limit?: string; offset?: string };
-};
-
-export default async function GroupsPage({ searchParams }: Props) {
-  const q = searchParams?.q ?? '';
-  const limit = Math.min(100, Math.max(1, Number(searchParams?.limit ?? 25)));
-  const offset = Math.max(0, Number(searchParams?.offset ?? 0));
-
-  const { data, total } = await fetchGroupsPage({ q, limit, offset });
+export default async function AdminGroupsPage() {
+  const { data: groups } = await fetchGroups({ limit: 50, offset: 0 });
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-4">Groups (Admin)</h1>
-
-      <form method="GET" className="mb-4 flex items-center gap-2">
-        <input
-          name="q"
-          defaultValue={q}
-          placeholder="Search groups…"
-          className="border rounded px-3 py-2 w-64"
-        />
-        <button className="px-3 py-2 rounded bg-black text-white">Search</button>
-      </form>
-
-      <div className="overflow-x-auto border rounded">
-        <table className="min-w-[900px] w-full text-sm">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="text-left p-2 w-[120px]">Image</th>
-              <th className="text-left p-2">Name</th>
-              <th className="text-left p-2 w-[280px]">External ID</th>
-              <th className="text-left p-2 w-[360px]">Set Primary (mediaId)</th>
+      <h1 className="text-xl font-semibold mb-4">Groups</h1>
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr className="text-left border-b">
+            <th className="py-2 pr-3">Image</th>
+            <th className="py-2 pr-3">Name</th>
+            <th className="py-2 pr-3">External ID</th>
+            <th className="py-2 pr-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {groups.map((g) => (
+            <tr key={g.id} className="border-b last:border-0">
+              <td className="py-2 pr-3">
+                {g.imageUrl ? (
+                  <Image
+                    src={g.imageUrl}
+                    alt={g.name ?? g.externalId}
+                    width={64}
+                    height={40}
+                    className="h-10 w-16 object-cover rounded"
+                  />
+                ) : (
+                  <div className="h-10 w-16 bg-gray-100 rounded" />
+                )}
+              </td>
+              <td className="py-2 pr-3">
+                <Link
+                  href={`/groups/${encodeURIComponent(g.externalId)}`}
+                  className="text-blue-600 hover:underline"
+                >
+                  {g.name ?? g.externalId}
+                </Link>
+              </td>
+              <td className="py-2 pr-3 font-mono text-xs">{g.externalId}</td>
+              <td className="py-2 pr-3">
+                <Link
+                  href={`/groups/${encodeURIComponent(g.externalId)}`}
+                  className="px-2 py-1 rounded border hover:bg-gray-50"
+                >
+                  Open
+                </Link>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {data.map((g) => (
-              <tr key={g.id} className="border-t">
-                <td className="p-2 align-top">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  {g.imageUrl ? (
-                    <img
-                      src={g.imageUrl}
-                      alt={g.name}
-                      className="h-20 w-28 object-cover rounded border"
-                    />
-                  ) : (
-                    <div className="h-20 w-28 bg-gray-100 rounded border" />
-                  )}
-                </td>
-                <td className="p-2 align-top">
-                  <div className="font-medium">{g.name}</div>
-                  {g.description ? (
-                    <div className="text-gray-600 text-xs line-clamp-2">
-                      {g.description}
-                    </div>
-                  ) : null}
-                </td>
-                <td className="p-2 align-top">
-                  <code className="text-xs">{g.externalId}</code>
-                </td>
-                <td className="p-2 align-top">
-                  <InlineSetPrimaryForm externalId={g.externalId} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <Pager total={total} limit={limit} offset={offset} q={q} />
-    </div>
-  );
-}
-
-function InlineSetPrimaryForm({ externalId }: { externalId: string }) {
-  return (
-    <form
-      action={async (formData: FormData) => {
-        'use server';
-        const mediaId = String(formData.get('mediaId') ?? '');
-        const res = await setPrimaryImage(externalId, mediaId);
-        if (!res.ok) {
-          throw new Error(res.message ?? 'Failed to set primary image');
-        }
-      }}
-      className="flex items-center gap-2"
-    >
-      <input
-        name="mediaId"
-        placeholder="paste mediaId (UUID)"
-        className="border rounded px-3 py-1 w-[240px]"
-        required
-      />
-      <button className="px-3 py-1 rounded bg-blue-600 text-white">
-        Set primary
-      </button>
-    </form>
-  );
-}
-
-function Pager({
-  total,
-  limit,
-  offset,
-  q,
-}: {
-  total: number;
-  limit: number;
-  offset: number;
-  q: string;
-}) {
-  const page = Math.floor(offset / limit) + 1;
-  const pages = Math.max(1, Math.ceil(total / limit));
-  const mk = (p: number) => {
-    const sp = new URLSearchParams();
-    if (q) sp.set('q', q);
-    sp.set('limit', String(limit));
-    sp.set('offset', String((p - 1) * limit));
-    return `?${sp.toString()}`;
-  };
-
-  return (
-    <div className="flex items-center gap-2 mt-4">
-      <span className="text-sm text-gray-600">
-        {total} total • page {page} / {pages}
-      </span>
-      <div className="flex items-center gap-2">
-        <a
-          href={mk(1)}
-          className="px-2 py-1 border rounded text-sm hover:bg-gray-50"
-        >
-          « First
-        </a>
-        <a
-          href={mk(Math.max(1, page - 1))}
-          className="px-2 py-1 border rounded text-sm hover:bg-gray-50"
-        >
-          ‹ Prev
-        </a>
-        <a
-          href={mk(Math.min(pages, page + 1))}
-          className="px-2 py-1 border rounded text-sm hover:bg-gray-50"
-        >
-          Next ›
-        </a>
-        <a
-          href={mk(pages)}
-          className="px-2 py-1 border rounded text-sm hover:bg-gray-50"
-        >
-          Last »
-        </a>
-      </div>
+          ))}
+          {groups.length === 0 && (
+            <tr>
+              <td colSpan={4} className="py-6 text-center text-gray-500">
+                No groups found.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 }

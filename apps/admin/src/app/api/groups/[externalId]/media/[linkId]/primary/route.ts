@@ -1,0 +1,13 @@
+// apps/admin/src/app/api/groups/[externalId]/media/[linkId]/primary/route.ts
+import { NextResponse } from 'next/server';
+import { adminFetch } from '@/lib/admin-client';
+export async function POST(req: Request, { params }: { params: { externalId: string; linkId: string } }) {
+  const { externalId, linkId } = params;
+  const res = await adminFetch(`/admin/article-groups/${encodeURIComponent(externalId)}/media/${linkId}/primary`, { method: 'PATCH' });
+  if (!res.ok) return NextResponse.json({ ok: false }, { status: res.status });
+  // refresh by redirecting back
+  const url = new URL(req.url);
+  const redirectTo = new URL(`/groups/${encodeURIComponent(externalId)}`, url.origin);
+
+  return NextResponse.redirect(redirectTo, 303);
+}

@@ -4,8 +4,6 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
-  Param,
-  Body,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer'; // <-- add this
@@ -15,11 +13,9 @@ import {
   ApiConsumes,
   ApiBody,
   ApiOperation,
-  ApiParam,
   ApiTags,
   ApiSecurity,
 } from '@nestjs/swagger';
-import { LinkMediaDto } from './dto/link-media.dto';
 
 @ApiTags('admin-media')
 @ApiSecurity('admin')
@@ -47,18 +43,5 @@ export class MediaController {
   async upload(@UploadedFile() file: Express.Multer.File) {
     const asset = await this.media.uploadToS3AndCreateAsset(file, 'groups');
     return asset;
-  }
-
-  @Post('/admin/article-groups/:externalId/media')
-  @ApiOperation({
-    summary: 'Link a media asset as group primary (sortOrder=0)',
-  })
-  @ApiParam({ name: 'externalId', type: String })
-  async linkGroup(
-    @Param('externalId') externalId: string,
-    @Body() dto: LinkMediaDto,
-  ) {
-    const link = await this.media.linkGroupPrimary(externalId, dto.mediaId);
-    return link;
   }
 }

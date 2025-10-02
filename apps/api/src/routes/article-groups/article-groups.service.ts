@@ -4,73 +4,79 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { Prisma } from '@prisma/client'; // ✅ import Prisma types
 import { cdnUrlForKey } from 'src/utils/cdn';
 
+function mapImages(links: { sortOrder: number; media: { key: string } }[]) {
+  // Sort by sortOrder ASC, then map to URLs
+  const sorted = [...links].sort((a, b) => a.sortOrder - b.sortOrder);
+  const urls = sorted.map((l) => cdnUrlForKey(l.media.key));
+  const primary = urls[0] ?? null;
+  return { primary, urls };
+}
+
 @Injectable()
 export class ArticleGroupsService {
   constructor(private prisma: PrismaService) {}
 
   async list(params: { limit?: number; offset?: number; q?: string }) {
-    const { limit = 20, offset = 0, q } = params;
+    const { limit = 24, offset = 0, q } = params;
 
-    // ✅ Strongly type the where input and use Prisma.QueryMode.insensitive
     const where: Prisma.ArticleGroupMirrorWhereInput = q
       ? {
           OR: [
-            { name: { contains: q, mode: Prisma.QueryMode.insensitive } },
-            {
-              description: { contains: q, mode: Prisma.QueryMode.insensitive },
-            },
+            { name: { contains: q, mode: 'insensitive' } },
+            { description: { contains: q, mode: 'insensitive' } },
           ],
         }
       : {};
 
-    const [items, total] = await Promise.all([
+    const [rows, total] = await Promise.all([
       this.prisma.articleGroupMirror.findMany({
         where,
-        orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
         skip: offset,
         take: limit,
+        orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
         include: {
           mediaLinks: {
-            take: 1,
-            orderBy: { sortOrder: 'asc' },
-            include: { media: true },
+            select: { sortOrder: true, media: { select: { key: true } } },
           },
         },
       }),
       this.prisma.articleGroupMirror.count({ where }),
     ]);
 
-    const data = items.map((g) => ({
-      id: g.id,
-      externalId: g.externalId,
-      name: g.name,
-      description: g.description,
-      imageUrl: cdnUrlForKey(g.mediaLinks[0]?.media?.key),
-    }));
+    const data = rows.map((g) => {
+      const { primary, urls } = mapImages(g.mediaLinks);
+      return {
+        id: g.id,
+        externalId: g.externalId,
+        name: g.name,
+        description: g.description,
+        imageUrl: primary, // backward compatible
+        images: urls, // NEW: all images
+      };
+    });
 
     return { total, limit, offset, data };
   }
 
   async byExternalId(externalId: string) {
-    const group = await this.prisma.articleGroupMirror.findUnique({
+    const g = await this.prisma.articleGroupMirror.findUnique({
       where: { externalId },
       include: {
         mediaLinks: {
-          take: 1,
-          orderBy: { sortOrder: 'asc' },
-          include: { media: true },
+          select: { sortOrder: true, media: { select: { key: true } } },
         },
       },
     });
+    if (!g) return null;
 
-    if (!group) throw new NotFoundException('Article group not found');
-
+    const { primary, urls } = mapImages(g.mediaLinks);
     return {
-      id: group.id,
-      externalId: group.externalId,
-      name: group.name,
-      description: group.description,
-      imageUrl: cdnUrlForKey(group.mediaLinks[0]?.media?.key),
+      id: g.id,
+      externalId: g.externalId,
+      name: g.name,
+      description: g.description,
+      imageUrl: primary, // primary
+      images: urls, // all
     };
   }
 

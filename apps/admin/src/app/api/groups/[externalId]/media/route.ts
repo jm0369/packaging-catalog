@@ -31,7 +31,7 @@ export async function POST(req: Request) {
   // 2) If group provided and we have an id, auto-link as sortOrder=0
   const mediaId = (json as { id?: string })?.id;
   if (group && mediaId) {
-    const linkRes = await adminFetch(`/admin/article-groups/${group}/media`, {
+    const linkRes = await adminFetch(`/admin/article-groups/${encodeURIComponent(group)}/media`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ mediaId, sortOrder: 0 }),
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     }
 
     // 3) Redirect back to group page (or wherever you like)
-    const redirectTo = new URL(`/groups/${group}?uploaded=1`, url.origin);
+    const redirectTo = new URL(`/groups/${encodeURIComponent(group)}?uploaded=1`, url.origin);
     return NextResponse.redirect(redirectTo, 303);
   }
 

@@ -1,9 +1,13 @@
-import 'server-only';
+// apps/admin/src/lib/api.ts
+import ky from 'ky';
 import { z } from 'zod';
 
-const API = process.env.NEXT_PUBLIC_API_BASE!;
+const API =
+  process.env.NEXT_PUBLIC_API_BASE?.replace(/\/$/, '') || 'http://localhost:3001';
 
-const group = z.object({
+// --- Schemas & Types ---------------------------------------------------------
+
+export const groupSchema = z.object({
   id: z.string(),
   externalId: z.string(),
   name: z.string(),
@@ -11,30 +15,59 @@ const group = z.object({
   imageUrl: z.string().url().nullable().optional(),
 });
 
-const pagedGroups = z.object({
+export type Group = z.infer<typeof groupSchema>;
+
+const pagedGroupsSchema = z.object({
   total: z.number().int().nonnegative(),
   limit: z.number().int().positive(),
   offset: z.number().int().nonnegative(),
-  data: z.array(group),
+  data: z.array(groupSchema),
 });
 
-export type Group = z.infer<typeof group>;
-export type PagedGroups = z.infer<typeof pagedGroups>;
+export type PagedGroups = z.infer<typeof pagedGroupsSchema>;
 
-export async function fetchGroupsPage(opts?: {
-  q?: string;
+// --- API calls ---------------------------------------------------------------
+
+/**
+ * List groups (server component friendly).
+ * Mirrors your public read API: GET /api/article-groups
+ */
+export async function fetchGroups(params?: {
   limit?: number;
   offset?: number;
+  q?: string;
 }): Promise<PagedGroups> {
   const sp = new URLSearchParams();
-  if (opts?.q) sp.set('q', opts.q);
-  if (opts?.limit != null) sp.set('limit', String(opts.limit));
-  if (opts?.offset != null) sp.set('offset', String(opts.offset));
+  if (params?.limit != null) sp.set('limit', String(params.limit));
+  if (params?.offset != null) sp.set('offset', String(params.offset));
+  if (params?.q) sp.set('q', params.q);
 
-  const res = await fetch(`${API}/api/article-groups?${sp.toString()}`, {
-    next: { revalidate: 60 }, // short cache for admin
-  });
-  if (!res.ok) throw new Error(`Groups fetch failed: ${res.status}`);
-  const json = await res.json();
-  return pagedGroups.parse(json);
+  const res = await ky
+    .get(`${API}/api/article-groups?${sp.toString()}`, {
+      // hint Next fetch cache (safe for server components)
+      next: { revalidate: 600 } as RequestInit['next'],
+    })
+    .json();
+
+  return pagedGroupsSchema.parse(res);
+}
+
+/**
+ * Get a single group by externalId.
+ * Mirrors: GET /api/article-groups/:externalId
+ */
+export async function fetchGroup(
+  externalId: string,
+): Promise<Group | null> {
+  try {
+    const json = await ky
+      .get(`${API}/api/article-groups/${externalId}`, {
+        next: { revalidate: 600 } as RequestInit['next'],
+      })
+      .json();
+    // Your backend returns the object directly (not wrapped), adjust if needed:
+    return groupSchema.parse(json);
+  } catch {
+    return null;
+  }
 }
