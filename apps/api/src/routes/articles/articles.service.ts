@@ -195,34 +195,44 @@ export class ArticlesService {
     };
   }
 
-  async getByExternalId(externalId: string) {
-    const article = await this.prisma.articleMirror.findUnique({
+ async getByExternalId(externalId: string) {
+    const cdn = process.env.PUBLIC_CDN_BASE ?? null;
+
+    const a = await this.prisma.articleMirror.findUnique({
       where: { externalId },
       include: {
-        group: {
-          select: { id: true, externalId: true, name: true },
+        group: { select: { id: true, externalId: true, name: true } },
+        mediaLinks: {
+          orderBy: { sortOrder: 'asc' },
+          take: 1,
+          include: { media: true },
         },
       },
     });
+    if (!a) return null;
 
-    if (!article) {
-      throw new NotFoundException(`Article ${externalId} not found`);
-    }
+    const primaryMediaLink = a.mediaLinks?.[0];
+    const imageUrl = primaryMediaLink?.media?.key 
+      ? `${cdn?.replace(/\/$/, '')}/${primaryMediaLink.media.key}` 
+      : null;
 
     return {
-      id: article.id,
-      externalId: article.externalId,
-      sku: article.sku,
-      ean: article.ean,
-      title: article.title,
-      description: article.description,
-      uom: article.uom,
-      active: article.active,
-      updatedAt: article.updatedAt.toISOString(),
-      group: article.group,
+      id: a.id,
+      externalId: a.externalId,
+      sku: a.sku,
+      ean: a.ean,
+      title: a.title,
+      description: a.description,
+      uom: a.uom,
+      active: a.active,
+      updatedAt: a.updatedAt.toISOString(),
+      imageUrl,
+      group: a.group
+        ? { id: a.group.id, externalId: a.group.externalId, name: a.group.name }
+        : null,
     };
   }
-
+  
   async getOne(externalId: string) {
     let art = await this.prisma.articleMirror.findUnique({
       where: { externalId },

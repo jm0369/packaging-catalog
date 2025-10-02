@@ -20,6 +20,7 @@ import { ReorderMediaDto } from './dto/reorder-media.dto';
 import { AdminService } from './admin.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { getEnv } from 'src/config/env';
+import { LinkMediaDto } from './dto/link-media.dto';
 
 @ApiTags('admin')
 @ApiSecurity('admin')
@@ -212,5 +213,54 @@ export class AdminController {
 
     await this.prisma.articleGroupMediaLink.delete({ where: { id: linkId } });
     return { ok: true };
+  }
+
+  // -------- Article media --------
+  @Get('articles/:externalId/media')
+  @ApiOperation({ summary: 'List article media (with primary flag)' })
+  listArticleMedia(@Param('externalId') externalId: string) {
+    return this.admin.listArticleMedia(externalId);
+  }
+
+  @Post('articles/:externalId/media')
+  @ApiOperation({
+    summary: 'Link an uploaded media asset to an article (sortOrder auto)',
+  })
+  linkArticleMedia(
+    @Param('externalId') externalId: string,
+    @Body() dto: LinkMediaDto,
+  ) {
+    return this.admin.linkArticleMedia(externalId, dto.mediaId, dto.altText);
+  }
+
+  @Patch('articles/:externalId/media/:linkId/primary')
+  @ApiOperation({
+    summary: 'Make this link primary (sortOrder=0, renumber others)',
+  })
+  setArticlePrimary(
+    @Param('externalId') externalId: string,
+    @Param('linkId') linkId: string,
+  ) {
+    return this.admin.setArticlePrimary(externalId, linkId);
+  }
+
+  @Patch('articles/:externalId/media/reorder')
+  @ApiOperation({
+    summary: 'Drag & drop reorder (by link IDs — first becomes primary)',
+  })
+  reorderArticleMedia(
+    @Param('externalId') externalId: string,
+    @Body() dto: ReorderMediaDto,
+  ) {
+    return this.admin.reorderArticleMedia(externalId, dto.order);
+  }
+
+  @Delete('articles/:externalId/media/:linkId')
+  @ApiOperation({ summary: 'Unlink media from article' })
+  unlinkArticleMedia(
+    @Param('externalId') externalId: string,
+    @Param('linkId') linkId: string,
+  ) {
+    return this.admin.unlinkArticleMedia(externalId, linkId);
   }
 }
