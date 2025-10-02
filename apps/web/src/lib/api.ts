@@ -110,6 +110,7 @@ const groupSchema = z.object({
   name: z.string(),
   description: z.string().nullable().optional(),
   imageUrl: imageUrlSchema.optional(),
+  images: z.array(imageItem).default([]),            // ✅ new
 });
 
 const pagedArticles = z.object({

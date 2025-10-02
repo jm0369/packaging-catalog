@@ -2,6 +2,7 @@ import { fetchGroup, fetchGroupArticles } from '@/lib/api';
 import { notFound } from 'next/navigation';
 import { SearchBar } from '@/components/search-bar';
 import { Pagination } from '@/components/pagination';
+import ArticleCarousel from '@/components/article-carousel';
 
 export const revalidate = 600;
 
@@ -27,6 +28,7 @@ export default async function GroupPage({ params, searchParams }: Props) {
   const q = sp.q;
 
   const group = await fetchGroup(externalId);
+  console.log('GroupPage', { externalId, group });
   if (!group) return notFound();
 
   const { data, total } = await fetchGroupArticles(externalId, { q, limit, offset });
@@ -34,9 +36,13 @@ export default async function GroupPage({ params, searchParams }: Props) {
   return (
     <div>
       <h1 className="text-2xl font-semibold mb-2">{group.name}</h1>
-      {group.imageUrl && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={group.imageUrl} alt={group.name} className="w-full max-h-72 object-cover rounded mb-4" />
+      {/* ✅ Image gallery (falls back to nothing if empty) */}
+      {group.images.length > 0 && (
+        <ArticleCarousel
+          title={group.name}
+          images={group.images}
+          className="mt-2"
+        />
       )}
       <SearchBar placeholder="Search articles…" />
       {data.length === 0 ? (
