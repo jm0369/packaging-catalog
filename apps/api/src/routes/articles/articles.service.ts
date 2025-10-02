@@ -248,8 +248,8 @@ export class ArticlesService {
       uom: a.uom,
       active: a.active,
       updatedAt: a.updatedAt.toISOString(),
-      imageUrl: primaryUrl,   // for backwards compat
-      images,                 // ✅ new field
+      imageUrl: primaryUrl, // for backwards compat
+      images, // ✅ new field
       group: a.group
         ? { id: a.group.id, externalId: a.group.externalId, name: a.group.name }
         : null,
@@ -257,7 +257,7 @@ export class ArticlesService {
   }
 
   async getOne(externalId: string) {
-        const cdn = process.env.PUBLIC_CDN_BASE ?? null;
+    const cdn = process.env.PUBLIC_CDN_BASE ?? null;
 
     let art = await this.prisma.articleMirror.findUnique({
       where: { externalId },
@@ -279,7 +279,7 @@ export class ArticlesService {
 
     if (!art) return null;
 
-     // fetch all article images (sorted)
+    // fetch all article images (sorted)
     const links = await this.prisma.articleMediaLink.findMany({
       where: { articleId: art.id },
       include: { media: true },
@@ -356,8 +356,8 @@ export class ArticlesService {
       uom: art.uom,
       active: art.active,
       updatedAt: art.updatedAt.toISOString(),
-      imageUrl: primaryUrl,   // for backwards compat
-      images,                 // ✅ new field
+      imageUrl: primaryUrl, // for backwards compat
+      images, // ✅ new field
       group: art.group,
       // expose enriched block under attributes.enriched
       attributes: art.attributes ?? null,
