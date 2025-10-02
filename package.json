@@ -13,7 +13,10 @@
     "format": "prettier . --write",
     "typecheck": "pnpm -r typecheck",
     "postinstall": "pnpm -r postinstall",
-    "prepare": "husky && husky install"
+    "prepare": "husky && husky install",
+    "dev:admin": "pnpm --filter @app/admin dev",
+    "build:admin": "pnpm --filter @app/admin build",
+    "start:admin": "pnpm --filter @app/admin start"
   },
   "engines": {
     "node": ">=20.0.0"

@@ -28,7 +28,7 @@ export class SelectLineClient {
   private token: string | null = null;
   private tokenExpiresAt = 0;
 
-  constructor(private readonly http: HttpService) {}
+  constructor(private readonly http: HttpService) { }
 
   private get base(): string {
     const url = process.env.SELECTLINE_BASE_URL;

@@ -17,10 +17,11 @@ async function bootstrap() {
     logger: ['log', 'error', 'warn'],
   });
 
-  // CORS for your Next.js frontend (adjust origin as needed)
   app.enableCors({
-    origin: env.CORS_ORIGIN ?? true, // e.g. http://localhost:3000
-    credentials: false,
+    origin: [
+      process.env.CORS_ORIGIN ?? 'http://localhost:3000',   // public
+      process.env.CORS_ORIGIN_ADMIN ?? 'http://localhost:3002', // admin
+    ],
   });
 
   // Global DTO validation
