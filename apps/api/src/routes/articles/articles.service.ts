@@ -16,7 +16,7 @@ export class ArticlesService {
   constructor(
     private prisma: PrismaService,
     private sl: SelectLineClient,
-  ) { }
+  ) {}
 
   async list(params: {
     limit?: number;
@@ -31,13 +31,13 @@ export class ArticlesService {
         groupId ? { articleGroupId: groupId } : {},
         q
           ? {
-            OR: [
-              { title: { contains: q, mode: 'insensitive' } },
-              { description: { contains: q, mode: 'insensitive' } },
-              { sku: { contains: q, mode: 'insensitive' } },
-              { ean: { contains: q, mode: 'insensitive' } },
-            ],
-          }
+              OR: [
+                { title: { contains: q, mode: 'insensitive' } },
+                { description: { contains: q, mode: 'insensitive' } },
+                { sku: { contains: q, mode: 'insensitive' } },
+                { ean: { contains: q, mode: 'insensitive' } },
+              ],
+            }
           : {},
       ],
     };
@@ -108,13 +108,13 @@ export class ArticlesService {
         { articleGroupId: group.id },
         q
           ? {
-            OR: [
-              { title: { contains: q, mode: 'insensitive' } },
-              { description: { contains: q, mode: 'insensitive' } },
-              { sku: { contains: q, mode: 'insensitive' } },
-              { ean: { contains: q, mode: 'insensitive' } },
-            ],
-          }
+              OR: [
+                { title: { contains: q, mode: 'insensitive' } },
+                { description: { contains: q, mode: 'insensitive' } },
+                { sku: { contains: q, mode: 'insensitive' } },
+                { ean: { contains: q, mode: 'insensitive' } },
+              ],
+            }
           : {},
       ],
     };
@@ -246,7 +246,7 @@ export class ArticlesService {
 
     // Decide if we need enrichment:
     const attributes = art.attributes as EnrichedAttributes | null;
-    const alreadyEnriched = !!(attributes?.enriched);
+    const alreadyEnriched = !!attributes?.enriched;
     // Optional: refresh after X days
     const STALE_MS = 7 * 24 * 3600 * 1000;
     const enrichedAt = attributes?.enrichedAt;
