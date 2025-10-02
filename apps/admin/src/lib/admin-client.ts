@@ -10,10 +10,5 @@ export async function adminFetch(
   const url = input.startsWith('http') ? input : `${API}${input}`;
   const headers = new Headers(init.headers);
   headers.set('x-admin-secret', ADMIN);
-
-  return fetch(url, {
-    ...init,
-    headers,
-    // Keep credentials false; you’re authing via header
-  });
+  return fetch(url, { ...init, headers });
 }
