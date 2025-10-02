@@ -11,6 +11,9 @@ interface EnrichedAttributes {
   [key: string]: any;
 }
 
+const withCdn = (key?: string | null, cdn?: string | null) =>
+  key ? `${(cdn ?? '').replace(/\/$/, '')}/${key}` : null;
+
 @Injectable()
 export class ArticlesService {
   constructor(
@@ -195,26 +198,45 @@ export class ArticlesService {
     };
   }
 
- async getByExternalId(externalId: string) {
+  async getByExternalId(externalId: string) {
     const cdn = process.env.PUBLIC_CDN_BASE ?? null;
 
     const a = await this.prisma.articleMirror.findUnique({
       where: { externalId },
-      include: {
+      select: {
+        id: true,
+        externalId: true,
+        sku: true,
+        ean: true,
+        title: true,
+        description: true,
+        uom: true,
+        active: true,
+        updatedAt: true,
         group: { select: { id: true, externalId: true, name: true } },
-        mediaLinks: {
-          orderBy: { sortOrder: 'asc' },
-          take: 1,
-          include: { media: true },
-        },
       },
     });
     if (!a) return null;
 
-    const primaryMediaLink = a.mediaLinks?.[0];
-    const imageUrl = primaryMediaLink?.media?.key 
-      ? `${cdn?.replace(/\/$/, '')}/${primaryMediaLink.media.key}` 
-      : null;
+    // fetch all article images (sorted)
+    const links = await this.prisma.articleMediaLink.findMany({
+      where: { articleId: a.id },
+      include: { media: true },
+      orderBy: { sortOrder: 'asc' },
+    });
+
+    const images = links.map((l) => ({
+      id: l.id,
+      mediaId: l.mediaId,
+      altText: l.altText,
+      sortOrder: l.sortOrder,
+      url: withCdn(l.media?.key, cdn),
+      width: l.media?.width ?? null,
+      height: l.media?.height ?? null,
+      mime: l.media?.mime ?? null,
+    }));
+
+    const primaryUrl = images[0]?.url ?? null;
 
     return {
       id: a.id,
@@ -226,14 +248,17 @@ export class ArticlesService {
       uom: a.uom,
       active: a.active,
       updatedAt: a.updatedAt.toISOString(),
-      imageUrl,
+      imageUrl: primaryUrl,   // for backwards compat
+      images,                 // ✅ new field
       group: a.group
         ? { id: a.group.id, externalId: a.group.externalId, name: a.group.name }
         : null,
     };
   }
-  
+
   async getOne(externalId: string) {
+        const cdn = process.env.PUBLIC_CDN_BASE ?? null;
+
     let art = await this.prisma.articleMirror.findUnique({
       where: { externalId },
       select: {
@@ -253,6 +278,26 @@ export class ArticlesService {
     });
 
     if (!art) return null;
+
+     // fetch all article images (sorted)
+    const links = await this.prisma.articleMediaLink.findMany({
+      where: { articleId: art.id },
+      include: { media: true },
+      orderBy: { sortOrder: 'asc' },
+    });
+
+    const images = links.map((l) => ({
+      id: l.id,
+      mediaId: l.mediaId,
+      altText: l.altText,
+      sortOrder: l.sortOrder,
+      url: withCdn(l.media?.key, cdn),
+      width: l.media?.width ?? null,
+      height: l.media?.height ?? null,
+      mime: l.media?.mime ?? null,
+    }));
+
+    const primaryUrl = images[0]?.url ?? null;
 
     // Decide if we need enrichment:
     const attributes = art.attributes as EnrichedAttributes | null;
@@ -311,6 +356,8 @@ export class ArticlesService {
       uom: art.uom,
       active: art.active,
       updatedAt: art.updatedAt.toISOString(),
+      imageUrl: primaryUrl,   // for backwards compat
+      images,                 // ✅ new field
       group: art.group,
       // expose enriched block under attributes.enriched
       attributes: art.attributes ?? null,

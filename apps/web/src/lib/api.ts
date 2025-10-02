@@ -2,6 +2,53 @@ import ky from 'ky';
 import { z } from 'zod';
 import { Paged } from './types';
 
+const imageItem = z.object({
+  id: z.string(),
+  mediaId: z.string(),
+  altText: z.string().nullable(),
+  sortOrder: z.number().int(),
+  url: z.string().url().nullable(), // CDN URL or null
+  width: z.number().int().nullable().optional(),
+  height: z.number().int().nullable().optional(),
+  mime: z.string().nullable().optional(),
+});
+
+export const articleDetail = z.object({
+  id: z.string(),
+  externalId: z.string(),
+  sku: z.string().nullable().optional(),
+  ean: z.string().nullable().optional(),
+  title: z.string(),
+  description: z.string().nullable().optional(),
+  uom: z.string().nullable().optional(),
+  active: z.boolean().optional().default(true),
+  updatedAt: z.string().optional(),
+  imageUrl: z.string().url().nullable().optional(),  // primary
+  images: z.array(imageItem).default([]),            // ✅ new
+  group: z
+    .object({ id: z.string(), externalId: z.string(), name: z.string() })
+    .nullable()
+    .optional(),
+}).passthrough();
+
+export type Article = z.infer<typeof articleDetail>;
+
+export async function fetchArticle(externalId: string): Promise<Article | null> {
+  const res = await ky.get(`${API}/api/articles/${externalId}`, {
+    throwHttpErrors: false,
+    next: { revalidate: 600 },
+  });
+  if (!res.ok) return null;
+
+  const json = await res.json();
+  try {
+    return articleDetail.parse(json);
+  } catch (e) {
+    console.error('Article detail parse failed:', e);
+    return null;
+  }
+}
+
 const API = process.env.NEXT_PUBLIC_API_BASE!;
 
 const group = z.object({
@@ -76,25 +123,6 @@ const pagedArticles = z.object({
   })),
 });
 
-export const articleDetail = z.object({
-  id: z.string(),
-  externalId: z.string(),
-  sku: z.string().nullable().optional(),
-  ean: z.string().nullable().optional(),
-  title: z.string(),
-  description: z.string().nullable().optional(),
-  uom: z.string().nullable().optional(),
-  active: z.boolean().optional().default(true),
-  updatedAt: isoString.optional().default(new Date(0).toISOString()),
-  // Your API shape:
-  group: groupMini.optional(),
-  // (Optionally allow future flat fields so this parser keeps working)
-  articleGroupId: z.string().optional(),
-  articleGroupExternalId: z.string().optional(),
-  articleGroupName: z.string().optional(),
-}).passthrough();
-
-export type Article = z.infer<typeof articleDetail>;
 
 export async function fetchGroup(externalId: string) {
     const json = await ky.get(`${API}/api/article-groups/${externalId}`, { next: { revalidate: 600 } }).json();
@@ -108,30 +136,4 @@ export async function fetchGroupArticles(externalId: string, params?: { q?: stri
   if (params?.offset) sp.set('offset', String(params.offset));
   const json = await ky.get(`${API}/api/article-groups/${externalId}/articles?${sp.toString()}`, { next: { revalidate: 600 } }).json();
   return pagedArticles.parse(json);
-}
-
-export async function fetchArticle(externalId: string): Promise<Article | null> {
-  const url = `${API}/api/articles/${encodeURIComponent(externalId)}`;
-
-  // Don't throw on non-2xx; return null for 404, etc.
-  const res = await ky.get(url, { throwHttpErrors: false, next: { revalidate: 600 } });
-  if (!res.ok) return null;
-
-  let json: unknown;
-  try {
-    json = await res.json();
-  } catch {
-    return null;
-  }
-
-  // Accept either raw object or { data: {...} }
-  const payload = json;
-
-  try {
-    return articleDetail.parse(payload);
-  } catch (e) {
-    // Helpful during dev
-    console.error('Article detail parse failed:', e);
-    return null;
-  }
 }
