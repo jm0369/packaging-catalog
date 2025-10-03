@@ -69,3 +69,18 @@ export async function fetchGroups(params?: {
   const json = await res.json();
   return pagedGroupsSchema.parse(json);
 }
+
+export async function updateArticleActive(
+  externalId: string,
+  active: boolean
+): Promise<boolean> {
+  const res = await adminFetch(
+    `/admin/articles/${encodeURIComponent(externalId)}/active`,
+    {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ active }),
+    }
+  );
+  return res.ok;
+}
