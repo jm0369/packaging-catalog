@@ -10,6 +10,8 @@ export async function POST(req: Request) {
 
   // 1) pass-through multipart upload to Nest
   const form = await req.formData(); // must include field: file
+  const article = (form.get('article') as string | null) ?? null;
+
   const upstream = await adminFetch('/admin/media/upload', {
     method: 'POST',
     body: form, // keep as multipart, don't set content-type
@@ -49,6 +51,18 @@ export async function POST(req: Request) {
     // 3) Redirect back to group page (or wherever you like)
     const redirectTo = new URL(`/groups/${group}?uploaded=1`, url.origin);
     return NextResponse.redirect(redirectTo, 303);
+  }
+
+   if (article && mediaId) {
+    // link to article as next sort
+    await adminFetch(`/admin/articles/${(article)}/media`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ mediaId }),
+    });
+    // absolute URL required in NextResponse.redirect
+    const url = new URL(`/articles/${(article)}?uploaded=1`, process.env.NEXT_PUBLIC_ADMIN_BASE ?? 'http://localhost:3002');
+    return NextResponse.redirect(url, { status: 302 });
   }
 
   // No group given: just return the original upload JSON (with id, key, etc.)

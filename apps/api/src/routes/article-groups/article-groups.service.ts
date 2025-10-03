@@ -62,9 +62,7 @@ export class ArticleGroupsService {
   }
 
   async byExternalId(externalId: string) {
-
-        const cdn = process.env.PUBLIC_CDN_BASE ?? null;
-
+    const cdn = process.env.PUBLIC_CDN_BASE ?? null;
 
     const g = await this.prisma.articleGroupMirror.findUnique({
       where: { externalId },
