@@ -15,7 +15,10 @@ import { getEnv } from 'src/config/env';
 @ApiTags('articles')
 @Controller('api/articles')
 export class ArticlesController {
-  constructor(private readonly svc: ArticlesService, private prisma: PrismaService) {}
+  constructor(
+    private readonly svc: ArticlesService,
+    private prisma: PrismaService,
+  ) {}
 
   @Get()
   @ApiOperation({ summary: 'List articles (public, no prices/stocks)' })

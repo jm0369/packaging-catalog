@@ -56,7 +56,7 @@ import { ArticleMediaModule } from './media/article-media.module';
     ArticlesModule,
     MediaModule,
     AdminModule,
-    ArticleMediaModule
+    ArticleMediaModule,
   ],
   controllers: [HealthController, SyncDebugController, SyncController],
   providers: [PrismaService, SelectLineClient, SyncService],

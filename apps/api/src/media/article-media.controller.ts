@@ -1,6 +1,14 @@
 // apps/api/src/media/article-media.controller.ts
 import {
-  Body, Controller, Delete, Get, Param, Post, Put, UseGuards, BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AdminGuard } from '../admin/admin.guard';
@@ -51,7 +59,8 @@ export class ArticleMediaController {
   @Post(':externalId/media')
   async link(
     @Param('externalId') externalId: string,
-    @Body() dto: { mediaId: string; altText?: string | null; sortOrder?: number },
+    @Body()
+    dto: { mediaId: string; altText?: string | null; sortOrder?: number },
   ) {
     if (!dto?.mediaId) throw new BadRequestException('mediaId required');
 
@@ -82,7 +91,10 @@ export class ArticleMediaController {
 
   // Set as primary (force sortOrder=0, shift the others)
   @Post(':externalId/media/:linkId/primary')
-  async setPrimary(@Param('externalId') externalId: string, @Param('linkId') linkId: string) {
+  async setPrimary(
+    @Param('externalId') externalId: string,
+    @Param('linkId') linkId: string,
+  ) {
     const article = await this.prisma.articleMirror.findUnique({
       where: { externalId },
       select: { id: true },
@@ -94,14 +106,18 @@ export class ArticleMediaController {
       orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
     });
 
-    const target = links.find(l => l.id === linkId);
+    const target = links.find((l) => l.id === linkId);
     if (!target) throw new BadRequestException('link not found');
 
     // set target to 0, renumber others 1..n
-    const reordered = [target, ...links.filter(l => l.id !== linkId)];
+    const reordered = [target, ...links.filter((l) => l.id !== linkId)];
     await this.prisma.$transaction(
       reordered.map((l, idx) =>
-        this.prisma.articleMediaLink.update({ where: { id: l.id }, data: { sortOrder: idx } })),
+        this.prisma.articleMediaLink.update({
+          where: { id: l.id },
+          data: { sortOrder: idx },
+        }),
+      ),
     );
     return { ok: true };
   }
@@ -120,7 +136,7 @@ export class ArticleMediaController {
     if (!article) throw new BadRequestException('unknown article');
 
     await this.prisma.$transaction(
-      dto.order.map(item =>
+      dto.order.map((item) =>
         this.prisma.articleMediaLink.update({
           where: { id: item.id },
           data: { sortOrder: item.sortOrder },
@@ -132,7 +148,10 @@ export class ArticleMediaController {
 
   // Unlink one media
   @Delete(':externalId/media/:linkId')
-  async unlink(@Param('externalId') externalId: string, @Param('linkId') linkId: string) {
+  async unlink(
+    @Param('externalId') externalId: string,
+    @Param('linkId') linkId: string,
+  ) {
     const article = await this.prisma.articleMirror.findUnique({
       where: { externalId },
       select: { id: true },
