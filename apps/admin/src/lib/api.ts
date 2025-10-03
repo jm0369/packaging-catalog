@@ -1,5 +1,6 @@
 // apps/admin/src/lib/api.ts
 import ky from 'ky';
+import { act } from 'react';
 import { z } from 'zod';
 
 const API =
@@ -13,6 +14,7 @@ export const groupSchema = z.object({
   name: z.string(),
   description: z.string().nullable().optional(),
   imageUrl: z.string().url().nullable().optional(),
+  active: z.boolean(),
 });
 
 export type Group = z.infer<typeof groupSchema>;
@@ -32,26 +34,28 @@ export type PagedGroups = z.infer<typeof pagedGroupsSchema>;
  * List groups (server component friendly).
  * Mirrors your public read API: GET /api/article-groups
  */
-export async function fetchGroups(params?: {
+export async function fetchGroups(params: {
   limit?: number;
   offset?: number;
   q?: string;
-}): Promise<PagedGroups> {
+  includeInactive?: boolean; // when true, hit /api/groups/all (admin proxy)
+} = {}): Promise<PagedGroups> {
+  const { limit, offset, q, includeInactive } = params;
+
   const sp = new URLSearchParams();
-  if (params?.limit != null) sp.set('limit', String(params.limit));
-  if (params?.offset != null) sp.set('offset', String(params.offset));
-  if (params?.q) sp.set('q', params.q);
+  if (limit != null) sp.set('limit', String(limit));
+  if (offset != null) sp.set('offset', String(offset));
+  if (q) sp.set('q', q);
+
+  const path = includeInactive ? '/api/groups/all' : '/api/article-groups';
+  const url = `${API}${path}${sp.toString() ? `?${sp.toString()}` : ''}`;
 
   const res = await ky
-    .get(`${API}/api/article-groups?${sp.toString()}`, {
-      // hint Next fetch cache (safe for server components)
-      next: { revalidate: 600 } as RequestInit['next'],
-    })
-    .json();
+    .get("/api/groups/all", { next: { revalidate: 600 } as RequestInit['next'] })
+    .json<unknown>();
 
   return pagedGroupsSchema.parse(res);
 }
-
 /**
  * Get a single group by externalId.
  * Mirrors: GET /api/article-groups/:externalId

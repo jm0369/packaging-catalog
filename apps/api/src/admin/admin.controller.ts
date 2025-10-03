@@ -8,6 +8,7 @@ import {
   Post,
   UseGuards,
   Patch,
+  Query,
 } from '@nestjs/common';
 import {
   ApiOkResponse,
@@ -21,6 +22,9 @@ import { AdminService } from './admin.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { getEnv } from 'src/config/env';
 import { LinkMediaDto } from './dto/link-media.dto';
+import { SetActiveDto } from './dto/set-active.dto';
+import { ArticleGroupsService } from 'src/routes/article-groups/article-groups.service';
+import { ListAdminGroupsDto } from './dto/list-admin-groups.dto';
 
 @ApiTags('admin')
 @ApiSecurity('admin')
@@ -30,7 +34,14 @@ export class AdminController {
   constructor(
     private readonly admin: AdminService,
     private prisma: PrismaService,
+    private readonly groups: ArticleGroupsService,
   ) {}
+
+  @Get('article-groups/all')
+  @ApiOperation({ summary: 'List ALL groups (active + inactive, admin only)' })
+  async listAllGroups(@Query() q: ListAdminGroupsDto) {
+    return this.groups.adminListAll(q);
+  }
 
   @Get('article-groups/:externalId/media')
   @ApiOperation({ summary: 'List media linked to a group (admin)' })
@@ -213,6 +224,19 @@ export class AdminController {
 
     await this.prisma.articleGroupMediaLink.delete({ where: { id: linkId } });
     return { ok: true };
+  }
+
+  @Patch('article-groups/:externalId/active')
+  @ApiOperation({ summary: 'Set active flag on a group (admin)' })
+  async setGroupActive(
+    @Param('externalId') externalId: string,
+    @Body() dto: SetActiveDto,
+  ) {
+    // externalId may be URL-encoded (spaces etc.)
+    return this.groups.setActiveByExternalId(
+      decodeURIComponent(externalId),
+      dto.active,
+    );
   }
 
   // -------- Article media --------

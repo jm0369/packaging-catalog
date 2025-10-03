@@ -19,17 +19,27 @@ const withCdn = (key?: string | null, cdn?: string | null) =>
 export class ArticleGroupsService {
   constructor(private prisma: PrismaService) {}
 
-  async list(params: { limit?: number; offset?: number; q?: string }) {
+  async list(params: {
+    limit?: number;
+    offset?: number;
+    q?: string;
+    includeInactive?: boolean;
+  }) {
     const { limit = 24, offset = 0, q } = params;
 
-    const where: Prisma.ArticleGroupMirrorWhereInput = q
-      ? {
-          OR: [
-            { name: { contains: q, mode: 'insensitive' } },
-            { description: { contains: q, mode: 'insensitive' } },
-          ],
-        }
-      : {};
+    const where: Prisma.ArticleGroupMirrorWhereInput = {
+      AND: [
+        params.includeInactive ? {} : { active: true },
+        q
+          ? {
+              OR: [
+                { name: { contains: q, mode: 'insensitive' } },
+                { description: { contains: q, mode: 'insensitive' } },
+              ],
+            }
+          : {},
+      ],
+    };
 
     const [rows, total] = await Promise.all([
       this.prisma.articleGroupMirror.findMany({
@@ -171,5 +181,80 @@ export class ArticleGroupsService {
       offset,
       data,
     };
+  }
+
+  async setActiveByExternalId(externalId: string, active: boolean) {
+    try {
+      const updated = await this.prisma.articleGroupMirror.update({
+        where: { externalId },
+        data: { active, updatedAt: new Date() },
+        select: { id: true, externalId: true, name: true, active: true },
+      });
+      return updated;
+    } catch {
+      throw new NotFoundException('Group not found');
+    }
+  }
+
+  /** Admin list: includes inactive groups by design. */
+  async adminListAll(params: { limit?: number; offset?: number; q?: string }) {
+    const { limit = 20, offset = 0, q } = params;
+
+    const where: Prisma.ArticleGroupMirrorWhereInput = {
+      AND: [
+        q
+          ? {
+              OR: [
+                { name: { contains: q, mode: 'insensitive' } },
+                { description: { contains: q, mode: 'insensitive' } },
+                { externalId: { contains: q, mode: 'insensitive' } },
+              ],
+            }
+          : {},
+        // NOTE: no { active: true } filter here
+      ],
+    };
+
+    const [items, total] = await Promise.all([
+      this.prisma.articleGroupMirror.findMany({
+        where,
+        orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
+        skip: offset,
+        take: limit,
+        select: {
+          id: true,
+          externalId: true,
+          name: true,
+          description: true,
+          sortOrder: true,
+          active: true,
+          updatedAt: true,
+          mediaLinks: {
+            where: { sortOrder: 0 },
+            select: { media: { select: { key: true } } },
+          },
+        },
+      }),
+      this.prisma.articleGroupMirror.count({ where }),
+    ]);
+
+    // If you use PUBLIC_CDN_BASE for image URLs:
+    const cdn = process.env.PUBLIC_CDN_BASE ?? null;
+
+    const data = items.map((g) => ({
+      id: g.id,
+      externalId: g.externalId,
+      name: g.name,
+      description: g.description,
+      sortOrder: g.sortOrder,
+      active: g.active,
+      updatedAt: g.updatedAt.toISOString(),
+      imageUrl:
+        cdn && g.mediaLinks[0]?.media?.key
+          ? `${cdn}/${g.mediaLinks[0].media.key}`
+          : null,
+    }));
+
+    return { total, limit, offset, data };
   }
 }
