@@ -6,6 +6,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
     <div>
       <header className="border-b">
         <nav className="container mx-auto flex gap-4 p-3 text-sm">
+          <Link href="/" className="underline">Dashboard</Link>
           <Link href="/groups" className="underline">Groups</Link>
           <Link href="/articles" className="underline">Articles</Link>
         </nav>

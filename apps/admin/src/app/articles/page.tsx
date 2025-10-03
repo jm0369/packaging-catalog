@@ -49,9 +49,7 @@ export default async function AdminArticlesIndex({
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-xl font-semibold">Articles</h1>
-        <Link className="px-3 py-2 rounded border" href="/groups">
-          Browse Groups
-        </Link>
+        
       </div>
 
       {/* Search */}
