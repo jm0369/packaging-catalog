@@ -175,31 +175,9 @@ export default async function AdminGroupsPage({
                                                 className="underline"
                                                 href={`/groups/${encodeURIComponent(g.externalId)}`}
                                             >
-                                                Manage media
+                                                Manage
                                             </Link>
-                                            {/* Toggle switch */}
-                                            <form action={setGroupActiveAction}>
-                                                <input type="hidden" name="externalId" value={g.externalId} />
-                                                <input type="hidden" name="active" value={String(!g.active)} />
-                                                <button
-                                                    type="submit"
-                                                    aria-pressed={g.active}
-                                                    aria-label={g.active ? 'Deactivate group' : 'Activate group'}
-                                                    className={[
-                                                        'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
-                                                        g.active ? 'bg-green-600' : 'bg-gray-300',
-                                                        'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black',
-                                                    ].join(' ')}
-                                                >
-                                                    <span
-                                                        className={[
-                                                            'inline-block h-5 w-5 transform rounded-full bg-white transition-transform',
-                                                            g.active ? 'translate-x-5' : 'translate-x-1',
-                                                            'shadow',
-                                                        ].join(' ')}
-                                                    />
-                                                </button>
-                                            </form>
+                                            
                                         </div>
                                     </td>
                                 </tr>
