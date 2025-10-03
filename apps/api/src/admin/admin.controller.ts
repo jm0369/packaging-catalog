@@ -43,6 +43,12 @@ export class AdminController {
     return this.groups.adminListAll(q);
   }
 
+  @Get('article-groups/:externalId')
+  @ApiOperation({ summary: 'List ALL groups (active + inactive, admin only)' })
+  async byExternalIdAdmin(@Param('externalId') externalId: string) {
+    return this.groups.byExternalIdAdmin(externalId);
+  }
+
   @Get('article-groups/:externalId/media')
   @ApiOperation({ summary: 'List media linked to a group (admin)' })
   @ApiOkResponse({

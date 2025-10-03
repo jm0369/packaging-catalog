@@ -51,7 +51,7 @@ export async function fetchGroups(params: {
   const url = `${API}${path}${sp.toString() ? `?${sp.toString()}` : ''}`;
 
   const res = await ky
-    .get("/api/groups/all", { next: { revalidate: 600 } as RequestInit['next'] })
+    .get("", { next: { revalidate: 600 } as RequestInit['next'] })
     .json<unknown>();
 
   return pagedGroupsSchema.parse(res);

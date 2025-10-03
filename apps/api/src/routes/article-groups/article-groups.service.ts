@@ -114,6 +114,50 @@ export class ArticleGroupsService {
     };
   }
 
+  async byExternalIdAdmin(externalId: string) {
+    const cdn = process.env.PUBLIC_CDN_BASE ?? null;
+
+    const g = await this.prisma.articleGroupMirror.findUnique({
+      where: { externalId },
+      include: {
+        mediaLinks: {
+          select: { sortOrder: true, media: { select: { key: true } } },
+        },
+      },
+    });
+    if (!g) return null;
+
+    // fetch all article images (sorted)
+    const links = await this.prisma.articleGroupMediaLink.findMany({
+      where: { groupId: g.id },
+      include: { media: true },
+      orderBy: { sortOrder: 'asc' },
+    });
+
+    const images = links.map((l) => ({
+      id: l.id,
+      mediaId: l.mediaId,
+      altText: l.altText,
+      sortOrder: l.sortOrder,
+      url: withCdn(l.media?.key, cdn),
+      width: l.media?.width ?? null,
+      height: l.media?.height ?? null,
+      mime: l.media?.mime ?? null,
+    }));
+
+    const primaryUrl = images[0]?.url ?? null;
+
+    return {
+      id: g.id,
+      externalId: g.externalId,
+      name: g.name,
+      description: g.description,
+      imageUrl: primaryUrl, // primary
+      images, // all
+      active: g.active,
+    };
+  }
+
   async articlesForGroup(
     externalId: string,
     params: { limit?: number; offset?: number; q?: string },
