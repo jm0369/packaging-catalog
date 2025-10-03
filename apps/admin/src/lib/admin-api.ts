@@ -28,7 +28,7 @@ export type AdminGroup = z.infer<typeof groupSchema>;
 export async function fetchGroup(externalId: string): Promise<AdminGroup | null> {
     console.log('fetchGroup', externalId);
   try {
-    const res = await adminFetch(`/api/article-groups/${encodeURIComponent(externalId)}`);
+    const res = await adminFetch(`/admin/article-groups/${(externalId)}`);
     
     console.log('fetchGroup response', res.status);
     if (!res.ok) return null;
