@@ -32,7 +32,6 @@ export class ArticleGroupsPublicController {
           // primary image (lowest sortOrder)
           media: {
             orderBy: { sortOrder: 'asc' },
-            take: 1,
             select: { media: { select: { key: true } } },
           },
         },
@@ -46,7 +45,7 @@ export class ArticleGroupsPublicController {
       externalId: g.externalId,
       name: g.name,
       description: g.description,
-      imageUrl: g.media[0]?.media?.key ? `${base}/${g.media[0].media.key}` : null,
+      media: g.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
     }));
     return { total, limit, offset, data };
   }

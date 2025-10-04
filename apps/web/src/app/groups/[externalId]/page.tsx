@@ -39,7 +39,7 @@ async function fetchGroupArticles(externalId: string, q?: string, limit = 24, of
       description: string | null; 
       uom: string | null; 
       ean: string | null; 
-      imageUrl: string;
+      media: string[];
       sku?: string | null;
       attributes?: {
         _INNENLAENGE?: string;

@@ -37,10 +37,9 @@ export class ArticlesPublicController {
         select: {
           id: true, externalId: true, title: true, description: true, uom: true, ean: true, sku: true,
           articleGroup: { select: { externalId: true, name: true } },
-          // primary image (lowest sortOrder)
+          // all media (ordered by sortOrder)
           media: {
             orderBy: { sortOrder: 'asc' },
-            take: 1,
             select: { media: { select: { key: true } } },
           },
           attributes: true,
@@ -63,7 +62,7 @@ export class ArticlesPublicController {
         externalId: a.articleGroup.externalId,
         name: a.articleGroup.name,
       } : null,
-      imageUrl: a.media[0]?.media?.key ? `${base}/${a.media[0].media.key}` : null,
+      media: a.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
     }));
 
     return { total, limit, offset, data };

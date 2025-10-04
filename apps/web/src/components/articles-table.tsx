@@ -1,11 +1,14 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Lightbox } from './lightbox';
 
 type Article = {
   externalId: string;
   title: string;
   sku?: string | null;
-  imageUrl?: string | null;
   media?: string[];
   attributes?: {
     _INNENLAENGE?: string;
@@ -31,12 +34,26 @@ type ArticlesTableProps = {
 };
 
 export function ArticlesTable({ articles }: ArticlesTableProps) {
+  const [lightboxImages, setLightboxImages] = useState<string[] | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+
   if (articles.length === 0) {
     return <p className="text-gray-500">No articles found.</p>;
   }
 
+  const openLightbox = (images: string[], index: number = 0) => {
+    setLightboxImages(images);
+    setLightboxIndex(index);
+  };
+
+  const closeLightbox = () => {
+    setLightboxImages(null);
+    setLightboxIndex(0);
+  };
+
   return (
-    <div className="mt-8 overflow-x-auto">
+    <>
+      <div className="mt-8 overflow-x-auto">
       <table className="min-w-full border-collapse border border-gray-300">
         <thead>
           <tr className="bg-gray-100">
@@ -61,18 +78,25 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
         </thead>
         <tbody>
           {articles.map((article) => {
-            const imageUrl = article.imageUrl || (article.media && article.media[0]) || null;
+            const allImages = article.media || [];
+            const imageUrl = allImages[0] || null;
             
             return (
               <tr key={article.externalId} className="hover:bg-gray-50">
                 <td className="border border-gray-300 px-4 py-2">
                   {imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img 
-                      src={imageUrl} 
-                      alt={article.title} 
-                      className="w-16 h-16 object-cover rounded"
-                    />
+                    <button
+                      onClick={() => openLightbox(allImages, 0)}
+                      className="cursor-pointer hover:opacity-80 transition-opacity"
+                      aria-label="View image"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img 
+                        src={imageUrl} 
+                        alt={article.title} 
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                    </button>
                   ) : (
                     <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">
                       No image
@@ -109,5 +133,14 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
         </tbody>
       </table>
     </div>
+
+    {lightboxImages && (
+      <Lightbox
+        images={lightboxImages}
+        initialIndex={lightboxIndex}
+        onClose={closeLightbox}
+      />
+    )}
+    </>
   );
 }
