@@ -40,27 +40,26 @@ export class GroupsMediaController {
     return { group: { id: group.id, externalId: group.externalId, name: group.name }, media };
   }
 
-  @Post(':externalId/media')
-  @ApiOperation({ summary: 'Link asset as primary (sortOrder=0). Body: { mediaId, altText? }' })
+   @Post(':externalId/media')
+  @ApiOperation({ summary: 'Link asset (append). Body: { mediaId, altText? }' })
   async link(@Param('externalId') externalId: string, @Body() body: { mediaId: string; altText?: string | null }) {
-    const g = await this.prisma.articleGroupMirror.findUnique({ where: { externalId } });
+     const g = await this.prisma.articleGroupMirror.findUnique({ where: { externalId } });
     if (!g) throw new Error('Group not found');
 
     const max = await this.prisma.groupMediaLink.aggregate({
       where: { groupId: g.id }, _max: { sortOrder: true },
     });
-    const nextSort = typeof max._max.sortOrder === 'number' ? max._max.sortOrder + 1 : 0;
+    const next = typeof max._max.sortOrder === 'number' ? max._max.sortOrder + 1 : 0;
 
-    const link = await this.prisma.groupMediaLink.create({
-      data: {
-        groupId: g.id,
-        mediaId: body.mediaId,
-        altText: body.altText ?? null,
-        sortOrder: nextSort,
+    return this.prisma.groupMediaLink.create({
+      data: { 
+        groupId: g.id, 
+        mediaId: body.mediaId, 
+        altText: body.altText ?? null, 
+        sortOrder: next 
       },
-      include: { media: true },
+      //include: { media: true },
     });
-    return link;
   }
 
   @Patch(':externalId/media/reorder')
