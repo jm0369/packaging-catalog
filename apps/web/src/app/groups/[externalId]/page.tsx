@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { ImageGallery } from '@/components/image-gallery';
+import { ArticlesTable } from '@/components/articles-table';
 
 export const revalidate = 600;
 
@@ -27,7 +28,38 @@ async function fetchGroupArticles(externalId: string, q?: string, limit = 24, of
   sp.set('group', decodeURIComponent(externalId));
   const r = await fetch(`${API}/api/articles?${sp.toString()}`, { next: { revalidate } });
   if (!r.ok) notFound();
-  return r.json() as Promise<{ total: number; limit: number; offset: number; data: Array<{ id: string; externalId: string; title: string; description: string | null; uom: string | null; ean: string | null; imageUrl: string; }> }>;
+  return r.json() as Promise<{ 
+    total: number; 
+    limit: number; 
+    offset: number; 
+    data: Array<{ 
+      id: string; 
+      externalId: string; 
+      title: string; 
+      description: string | null; 
+      uom: string | null; 
+      ean: string | null; 
+      imageUrl: string;
+      sku?: string | null;
+      attributes?: {
+        _INNENLAENGE?: string;
+        _INNENBREITE?: string;
+        _INNENHOEHE?: string;
+        _AUSSENLAENGE?: string;
+        _AUSSENBREITE?: string;
+        _AUSSENHOEHE?: string;
+        _VE2UEBERVERMENGE?: string;
+        _VE2UEBERVERPART?: string;
+        _VE2UEBERVERPLAENGE?: string;
+        _VE2UEBERVERPBREITE?: string;
+        _VE2UEBERVERPHOEHE?: string;
+        _VE3VERPACKUNGMENGE?: string;
+        _VE3PALETTENLAENGE?: string;
+        _VE3PALETTENBREITE?: string;
+        _VE3PALETTENHOEHE?: string;
+      } | null;
+    }> 
+  }>;
 }
 
 export async function generateMetadata({ params }: { params: Props['params'] }) {
@@ -69,29 +101,7 @@ export default async function GroupPage({ params, searchParams }: Props) {
         <button className="px-3 py-2 rounded bg-black text-white">Search</button>
       </form>
 
-      {data.length === 0 ? (
-        <p className="text-gray-500">No articles found.</p>
-      ) : (
-        <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {data.map((a) => (
-            <li key={a.id} className="border rounded p-3 hover:shadow-sm">
-              <a href={`/articles/${encodeURIComponent(a.externalId)}`}>
-                {a.imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={a.imageUrl} alt={a.title} className="w-full aspect-[3/2] object-cover rounded mb-3" />
-                ) : (
-                  <div className="w-full aspect-[3/2] bg-gray-100 rounded mb-3 flex items-center justify-center text-gray-400">
-                    No image
-                  </div>
-                )}
-                <div className="font-medium">{a.title}</div>
-                {a.description ? <div className="text-sm text-gray-600 line-clamp-2">{a.description}</div> : null}
-                <div className="text-xs text-gray-500 mt-2">{a.uom ?? ''} {a.ean ? `• EAN ${a.ean}` : ''}</div>
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
+      <ArticlesTable articles={data} />
 
       <div className="flex items-center justify-between">
         <div className="text-sm text-gray-600">

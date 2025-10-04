@@ -35,7 +35,7 @@ export class ArticlesPublicController {
         skip: offset,
         take: limit,
         select: {
-          id: true, externalId: true, title: true, description: true, uom: true, ean: true,
+          id: true, externalId: true, title: true, description: true, uom: true, ean: true, sku: true,
           articleGroup: { select: { externalId: true, name: true } },
           // primary image (lowest sortOrder)
           media: {
@@ -57,6 +57,8 @@ export class ArticlesPublicController {
       description: a.description,
       uom: a.uom,
       ean: a.ean,
+      sku: a.sku,
+      attributes: a.attributes,
       articleGroup: a.articleGroup ? {
         externalId: a.articleGroup.externalId,
         name: a.articleGroup.name,
