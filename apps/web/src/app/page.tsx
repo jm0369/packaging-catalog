@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
-import { SimpleCarousel } from '@/components/simple-carousel';
+import { GroupList } from '@/components/group-list';
 
 export const revalidate = 600;
 
@@ -46,26 +45,7 @@ export default async function HomePage({ searchParams }: { searchParams: Search 
         <button className="px-3 py-2 rounded bg-black text-white">Search</button>
       </form>
 
-      {/* Grid */}
-      {data.length === 0 ? (
-        <p className="text-gray-500">No groups found.</p>
-      ) : (
-        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {data.map((g) => (
-            <li key={g.id} className="border rounded p-6 hover:shadow-md transition-shadow">
-              <a href={`/groups/${encodeURIComponent(g.externalId)}`}>
-                <SimpleCarousel 
-                  images={g.media} 
-                  alt={g.name} 
-                  className="w-full h-64 rounded mb-4"
-                />
-                <div className="text-lg font-medium line-clamp-3">{g.name}</div>
-                {g.description ? <div className="text-sm text-gray-500 line-clamp-2">{g.description}</div> : null}
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
+      <GroupList groups={data} apiBase={API} />
 
       {/* Pagination */}
       <div className="flex items-center justify-between">

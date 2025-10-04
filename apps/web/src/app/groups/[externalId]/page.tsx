@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
 import { ImageGallery } from '@/components/image-gallery';
 import { ArticlesTable } from '@/components/articles-table';
 
