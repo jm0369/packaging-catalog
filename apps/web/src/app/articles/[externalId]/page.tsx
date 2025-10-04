@@ -29,6 +29,23 @@ export default async function ArticlePage({ params }: Params) {
     <article className="prose">
       <h1>{a.title}</h1>
       {a.description ? <p>{a.description}</p> : <p className="text-gray-500">No description.</p>}
+      
+      {a.media && a.media.length > 0 && (
+        <div className="not-prose my-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {a.media.map((url: string, idx: number) => (
+              <div key={idx} className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                <img 
+                  src={url} 
+                  alt={`${a.title} - Image ${idx + 1}`}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      
       <ul>
         {a.sku && <li><strong>SKU:</strong> {a.sku}</li>}
         {a.ean && <li><strong>EAN:</strong> {a.ean}</li>}
