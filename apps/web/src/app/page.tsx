@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
+import { SimpleCarousel } from '@/components/simple-carousel';
 
 export const revalidate = 600;
 
@@ -15,7 +16,7 @@ async function fetchGroups(params: { q?: string; limit?: number; offset?: number
   sp.set('offset', String(params.offset ?? 0));
   const r = await fetch(`${API}/api/article-groups?${sp.toString()}`, { next: { revalidate } });
   if (!r.ok) notFound();
-  return r.json() as Promise<{ total: number; limit: number; offset: number; data: Array<{ id: string; externalId: string; name: string; description?: string | null; imageUrl?: string | null }> }>;
+  return r.json() as Promise<{ total: number; limit: number; offset: number; data: Array<{ id: string; externalId: string; name: string; description?: string | null; media: string[] }> }>;
 }
 
 export default async function HomePage({ searchParams }: { searchParams: Search }) {
@@ -53,12 +54,11 @@ export default async function HomePage({ searchParams }: { searchParams: Search 
           {data.map((g) => (
             <li key={g.id} className="border rounded p-4 hover:shadow-md transition-shadow">
               <a href={`/groups/${encodeURIComponent(g.externalId)}`}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                {g.imageUrl ? (
-                  <Image src={g.imageUrl} alt={g.name} width={500} height={300} className="w-full h-48 object-cover rounded mb-3" />
-                ) : (
-                  <div className="w-full h-48 bg-gray-100 rounded mb-3" />
-                )}
+                <SimpleCarousel 
+                  images={g.media} 
+                  alt={g.name} 
+                  className="w-full h-48 rounded mb-3"
+                />
                 <div className="text-base font-medium line-clamp-3">{g.name}</div>
                 {g.description ? <div className="text-sm text-gray-500 line-clamp-2">{g.description}</div> : null}
               </a>
