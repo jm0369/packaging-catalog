@@ -27,8 +27,12 @@ export default async function ArticlePage({ params }: Params) {
 
   return (
     <article className="prose">
-      <h1>{a.title}</h1>
-      {a.description ? <p>{a.description}</p> : <p className="text-gray-500">No description.</p>}
+      <h1 className="text-4xl font-bold text-gray-900 mb-4">{a.title}</h1>
+      {a.description ? (
+        <p className="text-lg text-gray-700 leading-relaxed mb-6">{a.description}</p>
+      ) : (
+        <p className="text-lg text-gray-400 italic mb-6">No description.</p>
+      )}
       
       {a.media && a.media.length > 0 && (
         <div className="not-prose my-6">
