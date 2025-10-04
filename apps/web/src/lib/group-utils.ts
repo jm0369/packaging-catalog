@@ -5,14 +5,17 @@ export function cleanGroupName(name: string, externalId: string) {
   const externalIdRegex = new RegExp(externalId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
   cleaned = cleaned.replace(externalIdRegex, '');
   
-  // Remove CO2-MASTER (case-insensitive, with or without separator)
-  cleaned = cleaned.replace(/co2[-\s]?master/gi, '');
+  // Remove CO2-MASTER (case-insensitive, with or without separator, also matches CO21MASTER)
+  cleaned = cleaned.replace(/co2[-\s1]?master/gi, '');
   
   // Remove packCHAMPION (case-insensitive, with or without separator)
   cleaned = cleaned.replace(/pack[-\s]?champion/gi, '');
   
   // Remove BRIEFBOX (case-insensitive, with or without separator)
   cleaned = cleaned.replace(/brief[-\s]?box/gi, '');
+  
+  // Remove FIXBOX (case-insensitive, with or without separator)
+  cleaned = cleaned.replace(/fix[-\s]?box/gi, '');
   
   // Remove UNIVERSALVERPACKUNG (case-insensitive, with or without separator)
   cleaned = cleaned.replace(/universal[-\s]?verpackung/gi, '');
@@ -54,8 +57,8 @@ export function cleanGroupName(name: string, externalId: string) {
 export function getGroupBadges(name: string): Array<{ label: string; color: string }> {
   const badges: Array<{ label: string; color: string }> = [];
   
-  // Check for CO2-MASTER
-  if (/co2[-\s]?master/gi.test(name)) {
+  // Check for CO2-MASTER (also matches CO21MASTER)
+  if (/co2[-\s1]?master/gi.test(name)) {
     badges.push({ label: 'CO2-MASTER', color: 'bg-green-100 text-green-800' });
   }
   
@@ -69,14 +72,14 @@ export function getGroupBadges(name: string): Array<{ label: string; color: stri
     badges.push({ label: 'BRIEFBOX', color: 'bg-purple-100 text-purple-800' });
   }
   
-  // Check for UNIVERSALVERPACKUNG
-  if (/universal[-\s]?verpackung/gi.test(name)) {
-    badges.push({ label: 'UNIVERSALVERPACKUNG', color: 'bg-orange-100 text-orange-800' });
+  // Check for FIXBOX
+  if (/fix[-\s]?box/gi.test(name)) {
+    badges.push({ label: 'FIXBOX', color: 'bg-lime-100 text-lime-800' });
   }
   
-  // Check for UNIVERSALVERSANDBOX
-  if (/universal[-\s]?versand[-\s]?box/gi.test(name)) {
-    badges.push({ label: 'UNIVERSALVERSANDBOX', color: 'bg-cyan-100 text-cyan-800' });
+  // Check for UNIVERSALVERPACKUNG or UNIVERSALVERSANDBOX
+  if (/universal[-\s]?verpackung/gi.test(name) || /universal[-\s]?versand[-\s]?box/gi.test(name)) {
+    badges.push({ label: 'UNIVERSALVERPACKUNG', color: 'bg-orange-100 text-orange-800' });
   }
   
   // Check for ORDNERVERPACKUNG
