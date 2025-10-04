@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ImageGallery } from '@/components/image-gallery';
 import { ArticlesTable } from '@/components/articles-table';
+import { cleanGroupName, getGroupBadges } from '@/lib/group-utils';
 
 export const revalidate = 600;
 
@@ -84,11 +85,24 @@ export default async function GroupPage({ params, searchParams }: Props) {
   const prevOffset = Math.max(0, offset - limit);
   const nextOffset = offset + limit;
 
+  const badges = getGroupBadges(group.name);
+  const cleanedName = cleanGroupName(group.name, group.externalId);
+
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">{decodeURIComponent(externalId)}</h1>
+      <div className="flex items-center gap-2">
+        <h1 className="text-2xl font-semibold">{decodeURIComponent(externalId)}</h1>
+        {badges.map((badge) => (
+          <span
+            key={badge.label}
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badge.color}`}
+          >
+            {badge.label}
+          </span>
+        ))}
+      </div>
       <p className="text-sm text-gray-500 mt-1">
-        {group.name}
+        {cleanedName}
       </p>
       <ImageGallery images={group.media || []} alt={group.name} />
       {/* Search */}
