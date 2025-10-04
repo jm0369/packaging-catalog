@@ -1,7 +1,7 @@
 export const revalidate = 0;
 
 type Search = Promise<{ q?: string; limit?: string; offset?: string }> | { q?: string; limit?: string; offset?: string };
-type ArticleRow = { id: string; externalId: string; title: string; ean: string | null; uom: string | null; active: boolean; imageUrl: string | null; articleGroup?: { externalId: string; name?: string } };
+type ArticleRow = { id: string; externalId: string; title: string; ean: string | null; uom: string | null; media: string[]; articleGroup?: { externalId: string; name?: string } };
 
 async function getArticles(q?: string, limit = 25, offset = 0) {
   const sp = new URLSearchParams();
@@ -53,9 +53,9 @@ export default async function AdminArticles({ searchParams }: { searchParams: Se
               {data.map((a) => (
                 <tr key={a.id} className="border-b">
                   <td className="px-3 py-2">
-                  {a.imageUrl ? (
+                  {a.media.length > 0 ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={a.imageUrl} alt={a.title} className="w-12 h-12 object-cover rounded" />
+                    <img src={a.media[0]} alt={a.title} className="w-12 h-12 object-cover rounded" />
                   ) : (
                     <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400">—</div>
                   )}

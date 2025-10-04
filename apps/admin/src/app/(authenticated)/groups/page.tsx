@@ -9,7 +9,7 @@ async function fetchGroups(q?: string, limit = 50, offset = 0) {
   sp.set('offset', String(offset));
   const r = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/article-groups?${sp.toString()}`, { cache: 'no-store' });
   if (!r.ok) throw new Error('Failed to load');
-  return r.json() as Promise<{ total: number; limit: number; offset: number; data: Array<{ id: string; externalId: string; name: string; description?: string | null; imageUrl?: string | null }> }>;
+  return r.json() as Promise<{ total: number; limit: number; offset: number; data: Array<{ id: string; externalId: string; name: string; description?: string | null; media: string[] }> }>;
 }
 
 export default async function AdminGroupsPage({ searchParams }: { searchParams: Search }) {
@@ -51,9 +51,9 @@ export default async function AdminGroupsPage({ searchParams }: { searchParams: 
             ) : data.map((g) => (
               <tr key={g.id} className="border-b">
                 <td className="px-3 py-2">
-                  {g.imageUrl ? (
+                  {g.media.length > 0 ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={g.imageUrl} alt={g.name} className="w-12 h-12 object-cover rounded" />
+                    <img src={g.media[0]} alt={g.name} className="w-12 h-12 object-cover rounded" />
                   ) : (
                     <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400">—</div>
                   )}
