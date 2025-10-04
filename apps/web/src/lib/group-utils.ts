@@ -11,6 +11,15 @@ export function cleanGroupName(name: string, externalId: string) {
   // Remove packCHAMPION (case-insensitive, with or without separator)
   cleaned = cleaned.replace(/pack[-\s]?champion/gi, '');
   
+  // Remove BRIEFBOX (case-insensitive, with or without separator)
+  cleaned = cleaned.replace(/brief[-\s]?box/gi, '');
+  
+  // Remove UNIVERSALVERPACKUNG (case-insensitive, with or without separator)
+  cleaned = cleaned.replace(/universal[-\s]?verpackung/gi, '');
+  
+  // Remove ORDNERVERPACKUNG (case-insensitive, with or without separator)
+  cleaned = cleaned.replace(/ordner[-\s]?verpackung/gi, '');
+  
   // Remove PC (case-insensitive, as whole word or with separator)
   cleaned = cleaned.replace(/\bpc\b[-\s]?/gi, '');
   cleaned = cleaned.replace(/[-\s]?\bpc\b/gi, '');
@@ -35,6 +44,21 @@ export function getGroupBadges(name: string): Array<{ label: string; color: stri
   // Check for packCHAMPION
   if (/pack[-\s]?champion/gi.test(name)) {
     badges.push({ label: 'packCHAMPION', color: 'bg-blue-100 text-blue-800' });
+  }
+  
+  // Check for BRIEFBOX
+  if (/brief[-\s]?box/gi.test(name)) {
+    badges.push({ label: 'BRIEFBOX', color: 'bg-purple-100 text-purple-800' });
+  }
+  
+  // Check for UNIVERSALVERPACKUNG
+  if (/universal[-\s]?verpackung/gi.test(name)) {
+    badges.push({ label: 'UNIVERSALVERPACKUNG', color: 'bg-orange-100 text-orange-800' });
+  }
+  
+  // Check for ORDNERVERPACKUNG
+  if (/ordner[-\s]?verpackung/gi.test(name)) {
+    badges.push({ label: 'ORDNERVERPACKUNG', color: 'bg-yellow-100 text-yellow-800' });
   }
   
   return badges;
