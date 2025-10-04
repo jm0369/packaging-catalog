@@ -13,6 +13,7 @@ type Group = {
   name: string;
   description?: string | null;
   media: string[];
+  articles?: Article[];
 };
 
 type Article = {
@@ -31,8 +32,6 @@ type GroupListProps = {
 
 export function GroupList({ groups, apiBase }: GroupListProps) {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
-  const [articlesCache, setArticlesCache] = useState<Record<string, Article[]>>({});
-  const [loadingGroups, setLoadingGroups] = useState<Set<string>>(new Set());
   const [lightboxImages, setLightboxImages] = useState<string[] | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
@@ -46,40 +45,17 @@ export function GroupList({ groups, apiBase }: GroupListProps) {
     setLightboxIndex(0);
   };
 
-  const toggleGroup = async (groupId: string, externalId: string) => {
+  const toggleGroup = async (groupId: string) => {
     const newExpandedGroups = new Set(expandedGroups);
     
     if (newExpandedGroups.has(groupId)) {
       // Collapse
       newExpandedGroups.delete(groupId);
-      setExpandedGroups(newExpandedGroups);
     } else {
       // Expand
       newExpandedGroups.add(groupId);
-      setExpandedGroups(newExpandedGroups);
-      
-      // Fetch articles if not cached
-      if (!articlesCache[groupId]) {
-        setLoadingGroups(new Set(loadingGroups).add(groupId));
-        
-        try {
-          const sp = new URLSearchParams();
-          sp.set('group', externalId);
-          sp.set('limit', '100');
-          const response = await fetch(`${apiBase}/api/articles?${sp.toString()}`);
-          const data = await response.json();
-          
-          setArticlesCache({ ...articlesCache, [groupId]: data.data });
-        } catch (error) {
-          console.error('Failed to fetch articles:', error);
-          setArticlesCache({ ...articlesCache, [groupId]: [] });
-        } finally {
-          const newLoadingGroups = new Set(loadingGroups);
-          newLoadingGroups.delete(groupId);
-          setLoadingGroups(newLoadingGroups);
-        }
-      }
     }
+    setExpandedGroups(newExpandedGroups);
   };
 
   return (
@@ -90,8 +66,7 @@ export function GroupList({ groups, apiBase }: GroupListProps) {
         <ul className="space-y-4">
           {groups.map((group) => {
             const isExpanded = expandedGroups.has(group.id);
-            const isLoading = loadingGroups.has(group.id);
-            const articles = articlesCache[group.id] || [];
+            const articles = group.articles || [];
             
             const badges = getGroupBadges(group.name, articles.length > 0 ? articles : undefined);
             const cleanedName = cleanGroupName(group.name, group.externalId);
@@ -141,7 +116,7 @@ export function GroupList({ groups, apiBase }: GroupListProps) {
                   </div>
 
                   <button
-                    onClick={() => toggleGroup(group.id, group.externalId)}
+                    onClick={() => toggleGroup(group.id)}
                     className="flex-shrink-0 px-4 py-2 border rounded hover:bg-gray-100 transition-colors"
                     aria-label={isExpanded ? 'Collapse articles' : 'Expand articles'}
                   >
@@ -159,13 +134,7 @@ export function GroupList({ groups, apiBase }: GroupListProps) {
 
                 {isExpanded && (
                   <div className="border-t bg-gray-50 p-4">
-                    {isLoading ? (
-                      <div className="text-center py-8 text-gray-500">
-                        Loading articles...
-                      </div>
-                    ) : (
-                      <ArticlesTable articles={articles} />
-                    )}
+                    <ArticlesTable articles={articles} />
                   </div>
                 )}
               </li>
