@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { ImageGallery } from '@/components/image-gallery';
 
 export const revalidate = 600;
 
@@ -34,21 +35,7 @@ export default async function ArticlePage({ params }: Params) {
         <p className="text-lg text-gray-400 italic mb-6">No description.</p>
       )}
       
-      {a.media && a.media.length > 0 && (
-        <div className="not-prose my-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {a.media.map((url: string, idx: number) => (
-              <div key={idx} className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                <img 
-                  src={url} 
-                  alt={`${a.title} - Image ${idx + 1}`}
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <ImageGallery images={a.media || []} alt={a.title} />
       
       <ul>
         {a.sku && <li><strong>SKU:</strong> {a.sku}</li>}

@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import Image from 'next/image';
+import { ImageGallery } from '@/components/image-gallery';
 
 export const revalidate = 600;
 
@@ -54,21 +56,7 @@ export default async function GroupPage({ params, searchParams }: Props) {
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold">{group.name}</h1>
-      {group.media && group.media.length > 0 && (
-        <div className="not-prose my-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {group.media.map((url: string, idx: number) => (
-              <div key={idx} className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                <img 
-                  src={url} 
-                  alt={`${group.name} - Image ${idx + 1}`}
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <ImageGallery images={group.media || []} alt={group.name} />
       {/* Search */}
       <form className="flex gap-2" action={`/groups/${(externalId)}`} method="get">
         <input
@@ -90,9 +78,9 @@ export default async function GroupPage({ params, searchParams }: Props) {
               <a href={`/articles/${encodeURIComponent(a.externalId)}`}>
                 {a.imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={a.imageUrl} alt={a.title} className="w-full h-48 object-cover rounded mb-3" />
+                  <img src={a.imageUrl} alt={a.title} className="w-full aspect-[3/2] object-cover rounded mb-3" />
                 ) : (
-                  <div className="w-full h-48 bg-gray-100 rounded mb-3 flex items-center justify-center text-gray-400">
+                  <div className="w-full aspect-[3/2] bg-gray-100 rounded mb-3 flex items-center justify-center text-gray-400">
                     No image
                   </div>
                 )}
