@@ -43,6 +43,7 @@ export class ArticlesPublicController {
             take: 1,
             select: { media: { select: { key: true } } },
           },
+          attributes: true,
         },
       }),
       this.prisma.articleMirror.count({ where }),
@@ -75,6 +76,7 @@ export class ArticlesPublicController {
         id: true, externalId: true, sku: true, ean: true, title: true, description: true, uom: true, updatedAt: true,
         articleGroup: { select: { id: true, externalId: true, name: true } },
         media: { orderBy: { sortOrder: 'asc' }, select: { media: { select: { key: true } } } },
+        attributes: true
       },
     });
     if (!a) return { statusCode: 404, message: 'Not found' };
