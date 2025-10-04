@@ -89,7 +89,7 @@ export default async function GroupPage({ params, searchParams }: Props) {
       <h1 className="text-2xl font-semibold">{group.name}</h1>
       <ImageGallery images={group.media || []} alt={group.name} />
       {/* Search */}
-      <form className="flex gap-2" action={`/groups/${(externalId)}`} method="get">
+      <form className="flex gap-2 mb-8" action={`/groups/${(externalId)}`} method="get">
         <input
           name="q"
           defaultValue={q ?? ''}

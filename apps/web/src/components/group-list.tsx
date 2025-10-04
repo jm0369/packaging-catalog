@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { ArticlesTable } from './articles-table';
+import { Lightbox } from './lightbox';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -31,6 +32,18 @@ export function GroupList({ groups, apiBase }: GroupListProps) {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [articlesCache, setArticlesCache] = useState<Record<string, Article[]>>({});
   const [loadingGroups, setLoadingGroups] = useState<Set<string>>(new Set());
+  const [lightboxImages, setLightboxImages] = useState<string[] | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+
+  const openLightbox = (images: string[], index: number = 0) => {
+    setLightboxImages(images);
+    setLightboxIndex(index);
+  };
+
+  const closeLightbox = () => {
+    setLightboxImages(null);
+    setLightboxIndex(0);
+  };
 
   const toggleGroup = async (groupId: string, externalId: string) => {
     const newExpandedGroups = new Set(expandedGroups);
@@ -83,7 +96,11 @@ export function GroupList({ groups, apiBase }: GroupListProps) {
               <li key={group.id} className="border rounded overflow-hidden">
                 <div className="flex items-center gap-4 p-4 hover:bg-gray-50">
                   {group.media && group.media.length > 0 ? (
-                    <div className="relative w-44 h-33 flex-shrink-0 rounded overflow-hidden">
+                    <button
+                      onClick={() => openLightbox(group.media, 0)}
+                      className="relative w-44 h-33 flex-shrink-0 rounded overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                      aria-label="View images"
+                    >
                       <Image 
                         src={group.media[0]} 
                         alt={group.name}
@@ -91,7 +108,7 @@ export function GroupList({ groups, apiBase }: GroupListProps) {
                         sizes="176px"
                         className="object-cover"
                       />
-                    </div>
+                    </button>
                   ) : (
                     <div className="w-44 h-33 flex-shrink-0 rounded bg-gray-100" />
                   )}
@@ -142,6 +159,14 @@ export function GroupList({ groups, apiBase }: GroupListProps) {
             );
           })}
         </ul>
+      )}
+
+      {lightboxImages && (
+        <Lightbox
+          images={lightboxImages}
+          initialIndex={lightboxIndex}
+          onClose={closeLightbox}
+        />
       )}
     </div>
   );

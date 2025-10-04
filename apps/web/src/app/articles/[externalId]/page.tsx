@@ -40,9 +40,11 @@ export default async function ArticlePage({ params }: Params) {
         {a.group.name ?? a.group.externalId}
       </a>
 
-      <ImageGallery images={a.media || []} alt={a.title} />
+      <ImageGallery images={a.media || []} alt={a.title}/>
 
-      <ArticlesTable articles={[a]} />
+      <div className='mb-8'></div>
+
+      <ArticlesTable articles={[a]}/>
 
       <p className="text-sm text-gray-500 mt-8">Updated: {a.updatedAt ? new Date(a.updatedAt).toLocaleString() : '—'}</p>
     </article>
