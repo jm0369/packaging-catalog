@@ -54,11 +54,21 @@ export default async function GroupPage({ params, searchParams }: Props) {
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold">{group.name}</h1>
-      {group.imageUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={group.imageUrl} alt={group.name} className="w-full max-h-72 object-cover rounded" />
-      ) : null}
-
+      {group.media && group.media.length > 0 && (
+        <div className="not-prose my-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {group.media.map((url: string, idx: number) => (
+              <div key={idx} className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                <img 
+                  src={url} 
+                  alt={`${group.name} - Image ${idx + 1}`}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       {/* Search */}
       <form className="flex gap-2" action={`/groups/${encodeURIComponent(externalId)}`} method="get">
         <input
