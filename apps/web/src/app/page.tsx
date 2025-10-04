@@ -49,18 +49,18 @@ export default async function HomePage({ searchParams }: { searchParams: Search 
       {data.length === 0 ? (
         <p className="text-gray-500">No groups found.</p>
       ) : (
-        <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {data.map((g) => (
-            <li key={g.id} className="border rounded p-3 hover:shadow-sm">
+            <li key={g.id} className="border rounded p-4 hover:shadow-md transition-shadow">
               <a href={`/groups/${encodeURIComponent(g.externalId)}`}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 {g.imageUrl ? (
-                  <Image src={g.imageUrl} alt={g.name} width={500} height={300} className="w-full h-28 object-cover rounded mb-2" />
+                  <Image src={g.imageUrl} alt={g.name} width={500} height={300} className="w-full h-48 object-cover rounded mb-3" />
                 ) : (
-                  <div className="w-full h-28 bg-gray-100 rounded mb-2" />
+                  <div className="w-full h-48 bg-gray-100 rounded mb-3" />
                 )}
-                <div className="text-sm font-medium line-clamp-2">{g.name}</div>
-                {g.description ? <div className="text-xs text-gray-500 line-clamp-2">{g.description}</div> : null}
+                <div className="text-base font-medium line-clamp-3">{g.name}</div>
+                {g.description ? <div className="text-sm text-gray-500 line-clamp-2">{g.description}</div> : null}
               </a>
             </li>
           ))}
