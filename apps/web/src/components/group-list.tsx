@@ -91,6 +91,11 @@ export function GroupList({ groups, apiBase }: GroupListProps) {
             const isExpanded = expandedGroups.has(group.id);
             const isLoading = loadingGroups.has(group.id);
             const articles = articlesCache[group.id] || [];
+            
+            // Check if name contains CO2-MASTER (case-insensitive) and clean it
+            const co2MasterRegex = /co2[-\s]?master/gi;
+            const isCO2Master = co2MasterRegex.test(group.name);
+            const cleanedName = group.name.replace(co2MasterRegex, '').trim();
 
             return (
               <li key={group.id} className="border rounded overflow-hidden">
@@ -114,17 +119,23 @@ export function GroupList({ groups, apiBase }: GroupListProps) {
                   )}
                   
                   <div className="flex-grow min-w-0">
-                    <Link 
-                      href={`/groups/${encodeURIComponent(group.externalId)}`}
-                      className="text-xl font-semibold hover:underline"
-                    >
-                      {group.name}
-                    </Link>
-                    {group.description && (
-                      <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                        {group.description}
-                      </p>
-                    )}
+                    <div className="flex items-center gap-2">
+                      <Link 
+                        href={`/groups/${encodeURIComponent(group.externalId)}`}
+                        className="text-xl font-semibold hover:underline"
+                      >
+                        {group.externalId}
+                      </Link>
+                      {isCO2Master && (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          CO2-MASTER
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {cleanedName}
+                    </p>
+                    
                   </div>
 
                   <button

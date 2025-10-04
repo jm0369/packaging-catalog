@@ -27,17 +27,17 @@ async function fetchGroupArticles(externalId: string, q?: string, limit = 24, of
   sp.set('group', decodeURIComponent(externalId));
   const r = await fetch(`${API}/api/articles?${sp.toString()}`, { next: { revalidate } });
   if (!r.ok) notFound();
-  return r.json() as Promise<{ 
-    total: number; 
-    limit: number; 
-    offset: number; 
-    data: Array<{ 
-      id: string; 
-      externalId: string; 
-      title: string; 
-      description: string | null; 
-      uom: string | null; 
-      ean: string | null; 
+  return r.json() as Promise<{
+    total: number;
+    limit: number;
+    offset: number;
+    data: Array<{
+      id: string;
+      externalId: string;
+      title: string;
+      description: string | null;
+      uom: string | null;
+      ean: string | null;
       media: string[];
       sku?: string | null;
       attributes?: {
@@ -57,7 +57,7 @@ async function fetchGroupArticles(externalId: string, q?: string, limit = 24, of
         _VE3PALETTENBREITE?: string;
         _VE3PALETTENHOEHE?: string;
       } | null;
-    }> 
+    }>
   }>;
 }
 
@@ -86,7 +86,10 @@ export default async function GroupPage({ params, searchParams }: Props) {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">{group.name}</h1>
+      <h1 className="text-2xl font-semibold">{decodeURIComponent(externalId)}</h1>
+      <p className="text-sm text-gray-500 mt-1">
+        {group.name}
+      </p>
       <ImageGallery images={group.media || []} alt={group.name} />
       {/* Search */}
       <form className="flex gap-2 mb-8" action={`/groups/${(externalId)}`} method="get">
