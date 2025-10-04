@@ -1,52 +1,77 @@
-import { fetchGroup, fetchGroupArticles } from '@/lib/api';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { SearchBar } from '@/components/search-bar';
-import { Pagination } from '@/components/pagination';
-import ArticleCarousel from '@/components/article-carousel';
 
 export const revalidate = 600;
 
-// ✅ Make props typed as Promises and await them
 type Props = {
   params: Promise<{ externalId: string }>;
   searchParams: Promise<{ q?: string; limit?: string; offset?: string }>;
 };
 
-export async function generateMetadata({ params }: { params: Promise<{ externalId: string }> }) {
-  const { externalId } = await params;         // <-- await
+const API = process.env.NEXT_PUBLIC_API_BASE!;
+
+async function fetchGroup(externalId: string) {
+  const r = await fetch(`${API}/api/article-groups/${(externalId)}`, { next: { revalidate } });
+  if (r.status === 404) return null;
+  if (!r.ok) notFound();
+  return r.json();
+}
+
+async function fetchGroupArticles(externalId: string, q?: string, limit = 24, offset = 0) {
+  const sp = new URLSearchParams();
+  if (q) sp.set('q', q);
+  sp.set('limit', String(limit));
+  sp.set('offset', String(offset));
+  const r = await fetch(`${API}/api/article-groups/${(externalId)}/articles?${sp.toString()}`, { next: { revalidate } });
+  if (!r.ok) notFound();
+  return r.json() as Promise<{ total: number; limit: number; offset: number; data: Array<{ id: string; externalId: string; title: string; description: string | null; uom: string | null; ean: string | null }> }>;
+}
+
+export async function generateMetadata({ params }: { params: Props['params'] }) {
+  const { externalId } = await params;
   const group = await fetchGroup(externalId);
   if (!group) return { title: 'Group not found' };
   return { title: group.name, description: group.description ?? undefined };
 }
 
 export default async function GroupPage({ params, searchParams }: Props) {
-  const { externalId } = await params;         // <-- await
-  const sp = await searchParams;               // <-- await
+  const { externalId } = await params;
+  const sp = await searchParams;
 
-  const limit = Number(sp.limit ?? 24);
-  const offset = Number(sp.offset ?? 0);
-  const q = sp.q;
+  const limit = Math.min(100, Math.max(1, Number(sp.limit ?? 24)));
+  const offset = Math.max(0, Number(sp.offset ?? 0));
+  const q = sp.q?.trim() || undefined;
 
   const group = await fetchGroup(externalId);
-  console.log('GroupPage', { externalId, group });
   if (!group) return notFound();
 
-  const { data, total } = await fetchGroupArticles(externalId, { q, limit, offset });
+  const { data, total } = await fetchGroupArticles(externalId, q, limit, offset);
+
+  const prevOffset = Math.max(0, offset - limit);
+  const nextOffset = offset + limit;
 
   return (
-    <div>
-      <h1 className="text-2xl font-semibold mb-2">{group.name}</h1>
-      {/* ✅ Image gallery (falls back to nothing if empty) */}
-      {group.images.length > 0 && (
-        <ArticleCarousel
-          title={group.name}
-          images={group.images}
-          className="mt-2"
+    <div className="space-y-4">
+      <h1 className="text-2xl font-semibold">{group.name}</h1>
+      {group.imageUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={group.imageUrl} alt={group.name} className="w-full max-h-72 object-cover rounded" />
+      ) : null}
+
+      {/* Search */}
+      <form className="flex gap-2" action={`/groups/${encodeURIComponent(externalId)}`} method="get">
+        <input
+          name="q"
+          defaultValue={q ?? ''}
+          placeholder="Search articles…"
+          className="border rounded px-3 py-2 w-full max-w-lg"
         />
-      )}
-      <SearchBar placeholder="Search articles…" />
+        <input type="hidden" name="limit" value={String(limit)} />
+        <button className="px-3 py-2 rounded bg-black text-white">Search</button>
+      </form>
+
       {data.length === 0 ? (
-        <div className="text-gray-500">No articles found.</div>
+        <p className="text-gray-500">No articles found.</p>
       ) : (
         <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {data.map((a) => (
@@ -60,7 +85,26 @@ export default async function GroupPage({ params, searchParams }: Props) {
           ))}
         </ul>
       )}
-      <Pagination total={total} limit={limit} offset={offset} />
+
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-gray-600">
+          Showing {data.length === 0 ? 0 : offset + 1}–{Math.min(offset + limit, total)} of {total}
+        </div>
+        <div className="flex gap-2">
+          <Link
+            className={`px-3 py-2 rounded border ${offset === 0 ? 'pointer-events-none opacity-50' : ''}`}
+            href={{ pathname: `/groups/${externalId}`, query: { q, limit, offset: prevOffset } }}
+          >
+            ← Prev
+          </Link>
+          <Link
+            className={`px-3 py-2 rounded border ${nextOffset >= total ? 'pointer-events-none opacity-50' : ''}`}
+            href={{ pathname: `/groups/${externalId}`, query: { q, limit, offset: nextOffset } }}
+          >
+            Next →
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,16 +1,28 @@
+import Link from 'next/link';
 import './globals.css';
-import Shell from '@/components/shell';
 
 export const metadata = {
-  title: { default: 'Packaging Catalog', template: '%s | Packaging Catalog' },
-  description: 'Boxes & packaging — public catalog',
-  metadataBase: new URL(process.env.SITE_URL || 'http://localhost:3000'),
+  title: 'Catalog',
+  description: 'Public catalog',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body><Shell>{children}</Shell></body>
+      <body className="min-h-screen antialiased">
+        <header className="border-b">
+          <div className="container mx-auto p-4">
+            <Link href="/" className="font-semibold">Catalog</Link>
+          </div>
+        </header>
+        <main className="container mx-auto p-4">{children}</main>
+        <footer className="border-t mt-12">
+          <div className="container mx-auto p-4 text-sm flex gap-4">
+            <a href="/impressum" className="underline">Impressum</a>
+            <a href="/privacy" className="underline">Privacy</a>
+          </div>
+        </footer>
+      </body>
     </html>
   );
 }

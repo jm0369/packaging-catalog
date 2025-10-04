@@ -1,27 +1,23 @@
-export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
-export default function UploadPage({ searchParams }: { searchParams?: { group?: string } }) {
-  const group = searchParams?.group ?? '';
+export default async function UploadPage({ searchParams }: { searchParams?: Promise<{ group?: string; article?: string }> }) {
+  const sp = (await searchParams) ?? {};
+  const group = sp.group ?? '';
+  const article = sp.article ?? '';
 
   return (
-    <div className="max-w-lg">
-      <h1 className="text-xl font-semibold mb-3">Upload group image</h1>
-
-      {/* If a group is present, route will auto-link and then redirect back to that group */}
-      <form action={`/api/upload${group ? `?group=${encodeURIComponent(group)}` : ''}`} method="POST" encType="multipart/form-data" className="space-y-3">
+    <div className="max-w-lg space-y-4">
+      <h1 className="text-xl font-semibold">Upload image</h1>
+      <form action="/api/upload" method="POST" encType="multipart/form-data" className="space-y-3">
         <input type="file" name="file" accept="image/*" required className="block" />
+        {/* Optional: auto-link context */}
+        <input type="hidden" name="group" value={group} />
+        <input type="hidden" name="article" value={article} />
         <button className="px-3 py-2 rounded bg-black text-white">Upload</button>
       </form>
-
-      {!group ? (
-        <p className="text-sm text-gray-500 mt-3">
-          After uploading, you’ll get JSON with <code>id</code>. Use it to link the image on the “Link” page.
-        </p>
-      ) : (
-        <p className="text-sm text-gray-500 mt-3">
-          This will upload and immediately set the image as <strong>primary</strong> for group <code>{group}</code>, then return to that page.
-        </p>
-      )}
+      <p className="text-sm text-gray-500">
+        If you passed <code>?group=…</code> or <code>?article=…</code> in the URL, you’ll be redirected back after upload.
+      </p>
     </div>
   );
 }

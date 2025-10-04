@@ -1,14 +1,14 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { getEnv } from './config/env';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import compression from 'compression';
+import { validateEnv } from './config/env.js';
+import { AppModule } from './app.module.js';
 
 async function bootstrap() {
-  const env = getEnv(); // validate early, exit on error
+  const env = validateEnv(process.env as any);
 
-  // Honor insecure TLS for dev (curl -k behavior)
+  // curl -k behavior for dev
   if (env.SELECTLINE_TLS_INSECURE === '1') {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
   }
@@ -18,13 +18,10 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    origin: [
-      process.env.CORS_ORIGIN ?? 'http://localhost:3000', // public
-      process.env.CORS_ORIGIN_ADMIN ?? 'http://localhost:3002', // admin
-    ],
+    origin: env.CORS_ORIGIN ?? true,
+    credentials: false,
   });
 
-  // Global DTO validation
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -33,36 +30,27 @@ async function bootstrap() {
     }),
   );
 
-  // Lightweight response compression (helps p95)
   app.use(compression());
 
-  // Swagger (/docs)
   const cfg = new DocumentBuilder()
     .setTitle('Packaging Catalog API')
-    .setDescription('Public read endpoints for article groups & articles')
+    .setDescription('Public read API + admin media endpoints')
     .setVersion('1.0.0')
     .addApiKey(
-      {
-        type: 'apiKey',
-        name: 'x-admin-secret', // header name
-        in: 'header',
-        description: 'Admin shared secret (from ADMIN_SHARED_SECRET env)',
-      },
-      'admin', // security name used by @ApiSecurity()
+      { type: 'apiKey', name: 'x-admin-secret', in: 'header' },
+      'admin',
     )
     .build();
   const doc = SwaggerModule.createDocument(app, cfg);
   SwaggerModule.setup('/docs', app, doc);
 
   await app.listen(env.PORT);
-
-  console.log(`API listening on http://localhost:${env.PORT} — docs at /docs`);
+  // eslint-disable-next-line no-console
+  console.log(`API http://localhost:${env.PORT} • /docs`);
 }
-bootstrap().catch((e: unknown) => {
-  if (e instanceof Error) {
-    console.error(e.message, e.stack);
-  } else {
-    console.error(String(e));
-  }
+
+bootstrap().catch((e) => {
+  // eslint-disable-next-line no-console
+  console.error('Fatal bootstrap error:', e instanceof Error ? e.stack ?? e.message : e);
   process.exit(1);
 });

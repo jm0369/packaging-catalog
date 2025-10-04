@@ -6,11 +6,11 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: Request) {
   // Optional: /api/upload?group=<externalId>
   const url = new URL(req.url);
-  const group = url.searchParams.get('group') ?? null;
 
   // 1) pass-through multipart upload to Nest
   const form = await req.formData(); // must include field: file
   const article = (form.get('article') as string | null) ?? null;
+  const group = (form.get('group') as string | null) ?? null;
 
   const upstream = await adminFetch('/admin/media/upload', {
     method: 'POST',

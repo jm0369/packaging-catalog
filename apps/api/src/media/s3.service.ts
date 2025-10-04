@@ -1,39 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { S3Client } from '@aws-sdk/client-s3';
-import { Upload } from '@aws-sdk/lib-storage';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getEnv } from '../config/env';
+import crypto from 'node:crypto';
 
 @Injectable()
 export class S3Service {
-  private client: S3Client;
-  private bucket: string;
+  private readonly env = getEnv();
+  private readonly s3 = new S3Client({
+    region: this.env.S3_REGION,
+    endpoint: this.env.S3_ENDPOINT,
+    credentials: {
+      accessKeyId: this.env.S3_ACCESS_KEY_ID,
+      secretAccessKey: this.env.S3_SECRET_ACCESS_KEY,
+    },
+  });
 
-  constructor() {
-    const env = getEnv();
-    this.bucket = env.S3_BUCKET;
-    this.client = new S3Client({
-      region: env.S3_REGION,
-      endpoint: env.S3_ENDPOINT || undefined,
-      forcePathStyle: !!env.S3_ENDPOINT, // needed for many S3-compatible providers
-      credentials: {
-        accessKeyId: env.S3_ACCESS_KEY_ID,
-        secretAccessKey: env.S3_SECRET_ACCESS_KEY,
-      },
-    });
-  }
+  async uploadImage(buffer: Buffer, mime: string): Promise<{ key: string; url: string }> {
+    const hash = crypto.randomBytes(4).toString('hex');
+    const ts = new Date().toISOString().replace(/[:.]/g, '-');
+    const ext = mime === 'image/png' ? 'png' : mime === 'image/webp' ? 'webp' : 'jpg';
+    const key = `uploads/${ts}-${hash}.${ext}`;
 
-  async putObject(key: string, body: Buffer, contentType?: string) {
-    const uploader = new Upload({
-      client: this.client,
-      params: {
-        Bucket: this.bucket,
-        Key: key,
-        Body: body,
-        ContentType: contentType,
-        ACL: 'public-read', // if your bucket policy isn’t public, remove this
-      },
-    });
-    await uploader.done();
-    return { key };
+    await this.s3.send(new PutObjectCommand({
+      Bucket: this.env.S3_BUCKET,
+      Key: key,
+      Body: buffer,
+      ContentType: mime,
+      CacheControl: 'public, max-age=31536000, immutable',
+    }));
+
+    const url = `${this.env.PUBLIC_CDN_BASE}/${key}`;
+    return { key, url };
   }
 }

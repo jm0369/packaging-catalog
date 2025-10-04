@@ -2,12 +2,6 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { auth } from "@/auth";
 
-// Paths that do NOT require auth
-const PUBLIC_PATHS = new Set<string>([
-  "/login",
-  "/api/auth", // NextAuth callbacks
-]);
-
 export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
