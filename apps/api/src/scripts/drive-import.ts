@@ -127,7 +127,7 @@ async function main() {
 
         // Upload to your admin API (multipart)
         const form = new FormData();
-        form.append('file', new Blob([buf], { type: file.mimeType ?? 'application/octet-stream' }), file.name);
+       // form.append('file', new Blob([buf], { type: file.mimeType ?? 'application/octet-stream' }), file.name);
 
         let uploadResp: Response | null = null;
         attempt = 0;

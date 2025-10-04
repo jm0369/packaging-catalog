@@ -70,7 +70,7 @@ export default async function GroupPage({ params, searchParams }: Props) {
         </div>
       )}
       {/* Search */}
-      <form className="flex gap-2" action={`/groups/${encodeURIComponent(externalId)}`} method="get">
+      <form className="flex gap-2" action={`/groups/${(externalId)}`} method="get">
         <input
           name="q"
           defaultValue={q ?? ''}
