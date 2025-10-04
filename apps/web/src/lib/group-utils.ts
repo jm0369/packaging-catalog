@@ -54,7 +54,7 @@ export function cleanGroupName(name: string, externalId: string) {
   return cleaned;
 }
 
-export function getGroupBadges(name: string): Array<{ label: string; color: string }> {
+export function getGroupBadges(name: string, articles?: Array<{ title: string }>): Array<{ label: string; color: string }> {
   const badges: Array<{ label: string; color: string }> = [];
   
   // Check for CO2-MASTER (also matches CO21MASTER)
@@ -105,6 +105,11 @@ export function getGroupBadges(name: string): Array<{ label: string; color: stri
   // Check for PACK
   if (/\bpack\b/gi.test(name)) {
     badges.push({ label: 'PACK', color: 'bg-teal-100 text-teal-800' });
+  }
+  
+  // Check for DHL in articles
+  if (articles && articles.some(article => /\bdhl\b/gi.test(article.title))) {
+    badges.push({ label: 'DHL', color: 'bg-yellow-200 text-yellow-900' });
   }
   
   return badges;

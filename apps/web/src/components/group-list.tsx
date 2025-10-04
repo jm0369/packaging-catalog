@@ -93,7 +93,7 @@ export function GroupList({ groups, apiBase }: GroupListProps) {
             const isLoading = loadingGroups.has(group.id);
             const articles = articlesCache[group.id] || [];
             
-            const badges = getGroupBadges(group.name);
+            const badges = getGroupBadges(group.name, articles.length > 0 ? articles : undefined);
             const cleanedName = cleanGroupName(group.name, group.externalId);
 
             return (

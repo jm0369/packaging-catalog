@@ -85,7 +85,7 @@ export default async function GroupPage({ params, searchParams }: Props) {
   const prevOffset = Math.max(0, offset - limit);
   const nextOffset = offset + limit;
 
-  const badges = getGroupBadges(group.name);
+  const badges = getGroupBadges(group.name, data);
   const cleanedName = cleanGroupName(group.name, group.externalId);
 
   return (
