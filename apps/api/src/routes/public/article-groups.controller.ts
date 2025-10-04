@@ -58,7 +58,7 @@ export class ArticleGroupsPublicController {
       where: { externalId },
       select: {
         id: true, externalId: true, name: true, description: true,
-        media: { orderBy: { sortOrder: 'asc' }, take: 1, select: { media: { select: { key: true } } } },
+        media: { orderBy: { sortOrder: 'asc' }, select: { media: { select: { key: true } } } },
       },
     });
     if (!g) return { statusCode: 404, message: 'Not found' };
@@ -69,7 +69,7 @@ export class ArticleGroupsPublicController {
       externalId: g.externalId,
       name: g.name,
       description: g.description,
-      imageUrl: g.media[0]?.media?.key ? `${base}/${g.media[0].media.key}` : null,
+      media: g.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
     };
   }
 

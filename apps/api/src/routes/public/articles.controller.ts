@@ -74,10 +74,12 @@ export class ArticlesPublicController {
       select: {
         id: true, externalId: true, sku: true, ean: true, title: true, description: true, uom: true, updatedAt: true,
         articleGroup: { select: { id: true, externalId: true, name: true } },
+        media: { orderBy: { sortOrder: 'asc' }, select: { media: { select: { key: true } } } },
       },
     });
     if (!a) return { statusCode: 404, message: 'Not found' };
 
+    const base = process.env.PUBLIC_CDN_BASE!;
     return {
       ...a,
       group: a.articleGroup ? {
@@ -85,6 +87,7 @@ export class ArticlesPublicController {
         externalId: a.articleGroup.externalId,
         name: a.articleGroup.name,
       } : null,
+      media: a.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
     };
   }
 }
