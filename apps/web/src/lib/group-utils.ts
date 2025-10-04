@@ -17,8 +17,26 @@ export function cleanGroupName(name: string, externalId: string) {
   // Remove UNIVERSALVERPACKUNG (case-insensitive, with or without separator)
   cleaned = cleaned.replace(/universal[-\s]?verpackung/gi, '');
   
+  // Remove UNIVERSALVERSANDBOX (case-insensitive, with or without separator)
+  cleaned = cleaned.replace(/universal[-\s]?versand[-\s]?box/gi, '');
+  
   // Remove ORDNERVERPACKUNG (case-insensitive, with or without separator)
   cleaned = cleaned.replace(/ordner[-\s]?verpackung/gi, '');
+  
+  // Remove MAILBOX (case-insensitive, with or without separator)
+  cleaned = cleaned.replace(/mail[-\s]?box/gi, '');
+  
+  // Remove CARGO (case-insensitive, with or without separator)
+  cleaned = cleaned.replace(/\bcargo\b[-\s]?/gi, '');
+  cleaned = cleaned.replace(/[-\s]?\bcargo\b/gi, '');
+  
+  // Remove EXTRA (case-insensitive, with or without separator)
+  cleaned = cleaned.replace(/\bextra\b[-\s]?/gi, '');
+  cleaned = cleaned.replace(/[-\s]?\bextra\b/gi, '');
+  
+  // Remove PACK (case-insensitive, with or without separator)
+  cleaned = cleaned.replace(/\bpack\b[-\s]?/gi, '');
+  cleaned = cleaned.replace(/[-\s]?\bpack\b/gi, '');
   
   // Remove PC (case-insensitive, as whole word or with separator)
   cleaned = cleaned.replace(/\bpc\b[-\s]?/gi, '');
@@ -56,9 +74,34 @@ export function getGroupBadges(name: string): Array<{ label: string; color: stri
     badges.push({ label: 'UNIVERSALVERPACKUNG', color: 'bg-orange-100 text-orange-800' });
   }
   
+  // Check for UNIVERSALVERSANDBOX
+  if (/universal[-\s]?versand[-\s]?box/gi.test(name)) {
+    badges.push({ label: 'UNIVERSALVERSANDBOX', color: 'bg-cyan-100 text-cyan-800' });
+  }
+  
   // Check for ORDNERVERPACKUNG
   if (/ordner[-\s]?verpackung/gi.test(name)) {
     badges.push({ label: 'ORDNERVERPACKUNG', color: 'bg-yellow-100 text-yellow-800' });
+  }
+  
+  // Check for MAILBOX
+  if (/mail[-\s]?box/gi.test(name)) {
+    badges.push({ label: 'MAILBOX', color: 'bg-pink-100 text-pink-800' });
+  }
+  
+  // Check for CARGO
+  if (/\bcargo\b/gi.test(name)) {
+    badges.push({ label: 'CARGO', color: 'bg-indigo-100 text-indigo-800' });
+  }
+  
+  // Check for EXTRA
+  if (/\bextra\b/gi.test(name)) {
+    badges.push({ label: 'EXTRA', color: 'bg-red-100 text-red-800' });
+  }
+  
+  // Check for PACK
+  if (/\bpack\b/gi.test(name)) {
+    badges.push({ label: 'PACK', color: 'bg-teal-100 text-teal-800' });
   }
   
   return badges;
