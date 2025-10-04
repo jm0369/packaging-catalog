@@ -106,14 +106,40 @@ export class ArticleGroupsPublicController {
 
     const [items, total] = await Promise.all([
       this.prisma.articleMirror.findMany({
-        where, skip: offset, take: limit, orderBy: [{ title: 'asc' }],
+        where,
+        orderBy: [{ title: 'asc' }],
+        skip: offset,
+        take: limit,
         select: {
           id: true, externalId: true, title: true, description: true, uom: true, ean: true,
+          articleGroup: { select: { externalId: true, name: true } },
+          // primary image (lowest sortOrder)
+          media: {
+            orderBy: { sortOrder: 'asc' },
+            take: 1,
+            select: { media: { select: { key: true } } },
+          },
+          attributes: true,
         },
       }),
       this.prisma.articleMirror.count({ where }),
     ]);
 
-    return { total, limit, offset, data: items };
+    const base = process.env.PUBLIC_CDN_BASE!;
+    const data = items.map((a) => ({
+      id: a.id,
+      externalId: a.externalId,
+      title: a.title,
+      description: a.description,
+      uom: a.uom,
+      ean: a.ean,
+      articleGroup: a.articleGroup ? {
+        externalId: a.articleGroup.externalId,
+        name: a.articleGroup.name,
+      } : null,
+      imageUrl: a.media[0]?.media?.key ? `${base}/${a.media[0].media.key}` : null,
+    }));
+
+    return { total, limit, offset, data };
   }
 }
