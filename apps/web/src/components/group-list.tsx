@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { SimpleCarousel } from './simple-carousel';
 import { ArticlesTable } from './articles-table';
 import Link from 'next/link';
+import Image from 'next/image';
 
 type Group = {
   id: string;
@@ -82,11 +82,19 @@ export function GroupList({ groups, apiBase }: GroupListProps) {
             return (
               <li key={group.id} className="border rounded overflow-hidden">
                 <div className="flex items-center gap-4 p-4 hover:bg-gray-50">
-                  <SimpleCarousel 
-                    images={group.media} 
-                    alt={group.name} 
-                    className="w-32 h-32 flex-shrink-0 rounded"
-                  />
+                  {group.media && group.media.length > 0 ? (
+                    <div className="relative w-44 h-33 flex-shrink-0 rounded overflow-hidden">
+                      <Image 
+                        src={group.media[0]} 
+                        alt={group.name}
+                        fill
+                        sizes="176px"
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-44 h-33 flex-shrink-0 rounded bg-gray-100" />
+                  )}
                   
                   <div className="flex-grow min-w-0">
                     <Link 

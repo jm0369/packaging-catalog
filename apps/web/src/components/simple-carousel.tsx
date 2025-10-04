@@ -76,8 +76,8 @@ export function SimpleCarousel({ images, alt, className = '' }: SimpleCarouselPr
               }}
               className={`w-1.5 h-1.5 rounded-full transition-all ${
                 idx === selectedIndex 
-                  ? 'bg-white w-4' 
-                  : 'bg-white/50 hover:bg-white/75'
+                  ? 'bg-black w-4' 
+                  : 'bg-black/50 hover:bg-black/75'
               }`}
               aria-label={`Go to image ${idx + 1}`}
             />
