@@ -59,7 +59,74 @@ export default async function ArticlePage({ params }: Params) {
           </li>
         )}
       </ul>
-      <p className="text-sm text-gray-500">Updated: {a.updatedAt ? new Date(a.updatedAt).toLocaleString() : '—'}</p>
+
+      {/* Specifications Section */}
+      {a.attributes && (
+        <div className="mt-8 space-y-6">
+          <h2>Spezifikationen</h2>
+          
+          {/* Maße mm */}
+          {(a.attributes._INNENLAENGE || a.attributes._INNENBREITE || a.attributes._INNENHOEHE ||
+            a.attributes._AUSSENLAENGE || a.attributes._AUSSENBREITE || a.attributes._AUSSENHOEHE) && (
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Maße mm:</h3>
+              <ul className="list-none pl-0">
+                {(a.attributes._INNENLAENGE || a.attributes._INNENBREITE || a.attributes._INNENHOEHE) && (
+                  <li>
+                    <strong>Innen:</strong> {a.attributes._INNENLAENGE || '—'} × {a.attributes._INNENBREITE || '—'} × {a.attributes._INNENHOEHE || '—'}
+                  </li>
+                )}
+                {(a.attributes._AUSSENLAENGE || a.attributes._AUSSENBREITE || a.attributes._AUSSENHOEHE) && (
+                  <li>
+                    <strong>Außen:</strong> {a.attributes._AUSSENLAENGE || '—'} × {a.attributes._AUSSENBREITE || '—'} × {a.attributes._AUSSENHOEHE || '—'}
+                  </li>
+                )}
+              </ul>
+            </div>
+          )}
+
+          {/* Verpackungseinheit (VPE) */}
+          {(a.attributes._VE2UEBERVERMENGE || a.attributes._VE2UEBERVERPART ||
+            a.attributes._VE2UEBERVERPLAENGE || a.attributes._VE2UEBERVERPBREITE || a.attributes._VE2UEBERVERPHOEHE) && (
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Verpackungseinheit (VPE):</h3>
+              <ul className="list-none pl-0">
+                {a.attributes._VE2UEBERVERMENGE && (
+                  <li><strong>Menge:</strong> {a.attributes._VE2UEBERVERMENGE}</li>
+                )}
+                {a.attributes._VE2UEBERVERPART && (
+                  <li><strong>Art:</strong> {a.attributes._VE2UEBERVERPART}</li>
+                )}
+                {(a.attributes._VE2UEBERVERPLAENGE || a.attributes._VE2UEBERVERPBREITE || a.attributes._VE2UEBERVERPHOEHE) && (
+                  <li>
+                    <strong>VPE mm:</strong> {a.attributes._VE2UEBERVERPLAENGE || '—'} × {a.attributes._VE2UEBERVERPBREITE || '—'} × {a.attributes._VE2UEBERVERPHOEHE || '—'}
+                  </li>
+                )}
+              </ul>
+            </div>
+          )}
+
+          {/* Palettierung */}
+          {(a.attributes._VE3VERPACKUNGMENGE ||
+            a.attributes._VE3PALETTENLAENGE || a.attributes._VE3PALETTENBREITE || a.attributes._VE3PALETTENHOEHE) && (
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Palettierung:</h3>
+              <ul className="list-none pl-0">
+                {a.attributes._VE3VERPACKUNGMENGE && (
+                  <li><strong>Menge:</strong> {a.attributes._VE3VERPACKUNGMENGE}</li>
+                )}
+                {(a.attributes._VE3PALETTENLAENGE || a.attributes._VE3PALETTENBREITE || a.attributes._VE3PALETTENHOEHE) && (
+                  <li>
+                    <strong>Außenmaß mm:</strong> {a.attributes._VE3PALETTENLAENGE || '—'} × {a.attributes._VE3PALETTENBREITE || '—'} × {a.attributes._VE3PALETTENHOEHE || '—'}
+                  </li>
+                )}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+
+      <p className="text-sm text-gray-500 mt-8">Updated: {a.updatedAt ? new Date(a.updatedAt).toLocaleString() : '—'}</p>
     </article>
   );
 }
