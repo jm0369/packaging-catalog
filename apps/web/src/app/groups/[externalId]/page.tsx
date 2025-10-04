@@ -22,9 +22,10 @@ async function fetchGroupArticles(externalId: string, q?: string, limit = 24, of
   if (q) sp.set('q', q);
   sp.set('limit', String(limit));
   sp.set('offset', String(offset));
-  const r = await fetch(`${API}/api/article-groups/${(externalId)}/articles?${sp.toString()}`, { next: { revalidate } });
+  sp.set('group', decodeURIComponent(externalId));
+  const r = await fetch(`${API}/api/articles?${sp.toString()}`, { next: { revalidate } });
   if (!r.ok) notFound();
-  return r.json() as Promise<{ total: number; limit: number; offset: number; data: Array<{ id: string; externalId: string; title: string; description: string | null; uom: string | null; ean: string | null }> }>;
+  return r.json() as Promise<{ total: number; limit: number; offset: number; data: Array<{ id: string; externalId: string; title: string; description: string | null; uom: string | null; ean: string | null; imageUrl: string; }> }>;
 }
 
 export async function generateMetadata({ params }: { params: Props['params'] }) {
@@ -77,6 +78,14 @@ export default async function GroupPage({ params, searchParams }: Props) {
           {data.map((a) => (
             <li key={a.id} className="border rounded p-3 hover:shadow-sm">
               <a href={`/articles/${encodeURIComponent(a.externalId)}`}>
+                {a.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={a.imageUrl} alt={a.title} className="w-full h-48 object-cover rounded mb-3" />
+                ) : (
+                  <div className="w-full h-48 bg-gray-100 rounded mb-3 flex items-center justify-center text-gray-400">
+                    No image
+                  </div>
+                )}
                 <div className="font-medium">{a.title}</div>
                 {a.description ? <div className="text-sm text-gray-600 line-clamp-2">{a.description}</div> : null}
                 <div className="text-xs text-gray-500 mt-2">{a.uom ?? ''} {a.ean ? `• EAN ${a.ean}` : ''}</div>
