@@ -17,7 +17,21 @@ async function fetchGroup(externalId: string) {
   const r = await fetch(`${API}/api/article-groups/${(externalId)}`, { next: { revalidate } });
   if (r.status === 404) return null;
   if (!r.ok) notFound();
-  return r.json();
+  return r.json() as Promise<{
+    id: string;
+    externalId: string;
+    name: string;
+    description: string | null;
+    media: string[];
+    articles: Array<{
+      id: string;
+      externalId: string;
+      title: string;
+      sku: string | null;
+      attributes: Record<string, string> | null;
+      media: string[];
+    }>;
+  }>;
 }
 
 async function fetchGroupArticles(externalId: string, q?: string, limit = 24, offset = 0) {
@@ -80,12 +94,25 @@ export default async function GroupPage({ params, searchParams }: Props) {
   const group = await fetchGroup(externalId);
   if (!group) return notFound();
 
-  const { data, total } = await fetchGroupArticles(externalId, q, limit, offset);
+  // Filter articles by search query if provided
+  let filteredArticles = group.articles;
+  if (q) {
+    const lowerQ = q.toLowerCase();
+    filteredArticles = group.articles.filter(article => 
+      article.title.toLowerCase().includes(lowerQ) ||
+      article.externalId.toLowerCase().includes(lowerQ) ||
+      (article.sku && article.sku.toLowerCase().includes(lowerQ))
+    );
+  }
+
+  // Paginate the filtered results
+  const total = filteredArticles.length;
+  const data = filteredArticles.slice(offset, offset + limit);
 
   const prevOffset = Math.max(0, offset - limit);
   const nextOffset = offset + limit;
 
-  const badges = getGroupBadges(group.name, data);
+  const badges = getGroupBadges(group.name, group.articles);
   const cleanedName = cleanGroupName(group.name, group.externalId);
 
   return (

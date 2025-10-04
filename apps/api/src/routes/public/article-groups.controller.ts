@@ -81,6 +81,21 @@ export class ArticleGroupsPublicController {
       select: {
         id: true, externalId: true, name: true, description: true,
         media: { orderBy: { sortOrder: 'asc' }, select: { media: { select: { key: true } } } },
+        // include articles for the group
+        articles: {
+          orderBy: { title: 'asc' },
+          select: {
+            id: true,
+            externalId: true,
+            title: true,
+            sku: true,
+            attributes: true,
+            media: {
+              orderBy: { sortOrder: 'asc' },
+              select: { media: { select: { key: true } } },
+            },
+          },
+        },
       },
     });
     if (!g) return { statusCode: 404, message: 'Not found' };
@@ -92,6 +107,14 @@ export class ArticleGroupsPublicController {
       name: g.name,
       description: g.description,
       media: g.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
+      articles: g.articles.map(a => ({
+        id: a.id,
+        externalId: a.externalId,
+        title: a.title,
+        sku: a.sku,
+        attributes: a.attributes as Record<string, string> | null,
+        media: a.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
+      })),
     };
   }
 }
