@@ -225,7 +225,7 @@ export default async function CategoryDetailPage({ params }: { params: Promise<{
           <p className="text-gray-500">This category is not assigned to any groups yet.</p>
         ) : (
           <ul className="space-y-2">
-            {category.groups.map((group) => {
+            {category.groups.map((group: { id: string; externalId: string; name: string }) => {
               const boundRemove = async () => {
                 'use server';
                 await removeCategoryFromGroup(id, group.id);

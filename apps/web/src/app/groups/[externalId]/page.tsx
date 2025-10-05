@@ -91,7 +91,7 @@ export default async function GroupPage({ params, searchParams }: Props) {
           {group.categories.map((category) => (
             <Link
               key={category.id}
-              href={`/?category=${category.id}`}
+              href={`/categories/${category.id}`}
               className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm border transition-colors hover:opacity-80"
               style={{ 
                 backgroundColor: category.color + '20',
