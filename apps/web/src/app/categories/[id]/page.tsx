@@ -75,7 +75,6 @@ export default async function CategoryPage({ params }: Props) {
       {/* Media Gallery */}
       {category.media && category.media.length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-2xl font-semibold text-gray-900">Gallery</h2>
           <ImageGallery images={category.media} alt={category.name} />
         </div>
       )}
@@ -164,7 +163,7 @@ export default async function CategoryPage({ params }: Props) {
       {/* Back to Home */}
       <div className="pt-8 border-t">
         <Link 
-          href={`/?category=${id}`}
+          href={`/groups?category=${id}`}
           className="inline-flex items-center gap-2 text-gray-700 hover:text-gray-900"
         >
           ← View all {category.name} products
