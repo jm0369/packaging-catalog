@@ -5,6 +5,9 @@ import { ArticlesTable } from './articles-table';
 import { Lightbox } from './lightbox';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Card, CardContent } from './ui/card';
+import { ChevronDown, ChevronUp, Package, ExternalLink } from 'lucide-react';
+import { Button } from './ui/button';
 
 type Category = {
   id: string;
@@ -89,104 +92,154 @@ export function GroupList({ groups, apiBase }: GroupListProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {groups.length === 0 ? (
-        <p className="text-gray-500">No groups found.</p>
+        <Card className="border-0 shadow-lg">
+          <CardContent className="py-16 text-center">
+            <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500 text-lg">Keine Produktgruppen gefunden.</p>
+          </CardContent>
+        </Card>
       ) : (
-        <ul className="space-y-4">
+        <div className="grid gap-6">
           {groups.map((group) => {
             const isExpanded = expandedGroups.has(group.id);
             const isLoading = loadingGroups.has(group.id);
             const articles = articlesCache[group.id] || [];
 
             return (
-              <li key={group.id} className="border rounded overflow-hidden">
-                <div className="flex items-center gap-4 p-4 hover:bg-gray-50">
-                  {group.media && group.media.length > 0 ? (
-                    <button
-                      onClick={() => openLightbox(group.media, 0)}
-                      className="relative w-44 h-32 flex-shrink-0 rounded overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
-                      aria-label="View images"
-                    >
-                      <Image 
-                        src={group.media[0]} 
-                        alt={group.name}
-                        fill
-                        sizes="176px"
-                        className="object-cover"
-                      />
-                    </button>
-                  ) : (
-                    <div className="w-44 h-33 flex-shrink-0 rounded bg-gray-100" />
+              <Card key={group.id} className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                <CardContent className="p-0">
+                  <div className="flex flex-col md:flex-row gap-6 p-6">
+                    {/* Image Section */}
+                    {group.media && group.media.length > 0 ? (
+                      <button
+                        onClick={() => openLightbox(group.media, 0)}
+                        className="relative w-full md:w-56 h-48 md:h-40 flex-shrink-0 rounded-xl overflow-hidden cursor-pointer group/image bg-gray-100"
+                        aria-label="Bilder anzeigen"
+                      >
+                        <Image 
+                          src={group.media[0]} 
+                          alt={group.name}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 224px"
+                          className="object-cover group-hover/image:scale-110 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover/image:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                          <div className="opacity-0 group-hover/image:opacity-100 transition-opacity bg-white/90 rounded-full p-2">
+                            <ExternalLink className="w-5 h-5 text-gray-900" />
+                          </div>
+                        </div>
+                        {group.media.length > 1 && (
+                          <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+                            +{group.media.length - 1}
+                          </div>
+                        )}
+                      </button>
+                    ) : (
+                      <div className="w-full md:w-56 h-48 md:h-40 flex-shrink-0 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                        <Package className="w-12 h-12 text-gray-400" />
+                      </div>
+                    )}
+                    
+                    {/* Content Section */}
+                    <div className="flex-grow min-w-0 space-y-3">
+                      <div>
+                        <Link 
+                          href={`/groups/${encodeURIComponent(group.externalId)}`}
+                          className="text-2xl font-bold text-gray-900 hover:text-emerald-600 transition-colors inline-flex items-center gap-2 group/link"
+                        >
+                          {group.name}
+                          <ExternalLink className="w-5 h-5 opacity-0 group-hover/link:opacity-100 transition-opacity" />
+                        </Link>
+                        <p className="text-sm text-gray-500 mt-1 font-mono">
+                          Art.-Nr.: {group.externalId}
+                        </p>
+                      </div>
+
+                      {group.categories && group.categories.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {group.categories.map((category) => (
+                            <span
+                              key={category.id}
+                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium shadow-sm"
+                              style={{ 
+                                backgroundColor: category.color + '20',
+                                borderColor: category.color,
+                                borderWidth: '1px',
+                                color: category.color 
+                              }}
+                            >
+                              <span 
+                                className="w-2 h-2 rounded-full"
+                                style={{ backgroundColor: category.color }}
+                              />
+                              {category.name}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {group.description && (
+                        <p className="text-sm text-gray-600 leading-relaxed line-clamp-2">
+                          {group.description}
+                        </p>
+                      )}
+
+                      {/* Action Button */}
+                      <div className="pt-2">
+                        <Button
+                          onClick={() => toggleGroup(group.id, group.externalId)}
+                          variant="outline"
+                          className="border-emerald-600 text-emerald-600 hover:bg-emerald-50"
+                        >
+                          {isExpanded ? (
+                            <>
+                              <ChevronUp className="w-4 h-4 mr-2" />
+                              Artikel ausblenden
+                            </>
+                          ) : (
+                            <>
+                              <ChevronDown className="w-4 h-4 mr-2" />
+                              Artikel anzeigen
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Expanded Articles Section */}
+                  {isExpanded && (
+                    <div className="border-t bg-gradient-to-b from-gray-50 to-white">
+                      {isLoading ? (
+                        <div className="text-center py-12">
+                          <div className="inline-block w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mb-3" />
+                          <p className="text-gray-500">Artikel werden geladen...</p>
+                        </div>
+                      ) : articles.length === 0 ? (
+                        <div className="text-center py-12">
+                          <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                          <p className="text-gray-500">Keine Artikel verfügbar.</p>
+                        </div>
+                      ) : (
+                        <div className="p-6">
+                          <div className="flex items-center gap-2 mb-4">
+                            <Package className="w-5 h-5 text-emerald-600" />
+                            <h3 className="text-lg font-semibold text-gray-900">
+                              Verfügbare Artikel ({articles.length})
+                            </h3>
+                          </div>
+                          <ArticlesTable articles={articles} />
+                        </div>
+                      )}
+                    </div>
                   )}
-                  
-                  <div className="flex-grow min-w-0">
-                    <Link 
-                      href={`/groups/${encodeURIComponent(group.externalId)}`}
-                      className="text-xl font-semibold hover:underline"
-                    >
-                      {group.name}
-                    </Link>
-                    <p className="text-sm text-gray-500 mt-1">
-                      {group.externalId}
-                    </p>
-                    {group.categories && group.categories.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {group.categories.map((category) => (
-                          <span
-                            key={category.id}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs"
-                            style={{ 
-                              backgroundColor: category.color + '20',
-                              borderColor: category.color,
-                              borderWidth: '1px',
-                              color: category.color 
-                            }}
-                          >
-                            {category.name}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    {group.description && (
-                      <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                        {group.description}
-                      </p>
-                    )}
-                  </div>
-
-                  <button
-                    onClick={() => toggleGroup(group.id, group.externalId)}
-                    className="flex-shrink-0 px-4 py-2 border rounded hover:bg-gray-100 transition-colors"
-                    aria-label={isExpanded ? 'Collapse articles' : 'Expand articles'}
-                  >
-                    {isExpanded ? (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                      </svg>
-                    ) : (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    )}
-                  </button>
-                </div>
-
-                {isExpanded && (
-                  <div className="border-t bg-gray-50 p-4">
-                    {isLoading ? (
-                      <div className="text-center py-8 text-gray-500">
-                        Loading articles...
-                      </div>
-                    ) : (
-                      <ArticlesTable articles={articles} />
-                    )}
-                  </div>
-                )}
-              </li>
+                </CardContent>
+              </Card>
             );
           })}
-        </ul>
+        </div>
       )}
 
       {lightboxImages && (
