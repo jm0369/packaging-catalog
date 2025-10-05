@@ -105,7 +105,7 @@ export function GroupList({ groups, apiBase }: GroupListProps) {
                   {group.media && group.media.length > 0 ? (
                     <button
                       onClick={() => openLightbox(group.media, 0)}
-                      className="relative w-44 h-33 flex-shrink-0 rounded overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                      className="relative w-44 h-32 flex-shrink-0 rounded overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
                       aria-label="View images"
                     >
                       <Image 
