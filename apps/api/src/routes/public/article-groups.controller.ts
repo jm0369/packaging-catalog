@@ -34,6 +34,14 @@ export class ArticleGroupsPublicController {
             orderBy: { sortOrder: 'asc' },
             select: { media: { select: { key: true } } },
           },
+          // include categories
+          categories: {
+            select: {
+              category: {
+                select: { id: true, name: true, color: true },
+              },
+            },
+          },
           // include articles for each group
           articles: {
             orderBy: { title: 'asc' },
@@ -61,6 +69,7 @@ export class ArticleGroupsPublicController {
       name: g.name,
       description: g.description,
       media: g.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
+      categories: g.categories.map(c => c.category),
       articles: g.articles.map(a => ({
         id: a.id,
         externalId: a.externalId,
@@ -81,6 +90,14 @@ export class ArticleGroupsPublicController {
       select: {
         id: true, externalId: true, name: true, description: true,
         media: { orderBy: { sortOrder: 'asc' }, select: { media: { select: { key: true } } } },
+        // include categories
+        categories: {
+          select: {
+            category: {
+              select: { id: true, name: true, color: true },
+            },
+          },
+        },
         // include articles for the group
         articles: {
           orderBy: { title: 'asc' },
@@ -107,6 +124,7 @@ export class ArticleGroupsPublicController {
       name: g.name,
       description: g.description,
       media: g.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
+      categories: g.categories.map(c => c.category),
       articles: g.articles.map(a => ({
         id: a.id,
         externalId: a.externalId,
