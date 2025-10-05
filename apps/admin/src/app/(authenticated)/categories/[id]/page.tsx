@@ -1,48 +1,27 @@
 export const revalidate = 0;
 
-import { adminFetch } from '@/lib/admin-client';
 import { updateCategory, deleteCategory, removeCategoryFromGroup } from '../actions';
 import Link from 'next/link';
-import Image from 'next/image';
 import { DeleteCategoryButton, RemoveGroupButton } from './delete-buttons';
 
-type Category = {
-  id: string;
-  name: string;
-  color: string;
-  description?: string;
-  properties?: Array<{ name: string; description: string }>;
-  applications?: string[];
-  formatsSpecifications?: string[];
-  keyFigures?: Array<{ name: string; description: string }>;
-  ordering?: Array<{ name: string; description: string }>;
-  orderingNotes?: string[];
-  groups: Array<{
-    id: string;
-    externalId: string;
-    name: string;
-  }>;
-  media: Array<{
-    id: string;
-    key: string;
-    mime: string;
-    width?: number;
-    height?: number;
-    variants?: Record<string, unknown>;
-    altText?: string;
-    sortOrder: number;
-  }>;
-};
-
-async function fetchCategory(id: string): Promise<Category | null> {
-  const r = await adminFetch(`/admin/categories/${id}`, { cache: 'no-store' });
+async function getCategory(id: string) {
+  const r = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/categories/${(id)}`, { cache: 'no-store' });
   if (!r.ok) return null;
   return r.json();
 }
 
+async function getMedia(id: string) {
+  const r = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_BASE}/api/categories/${id}/media`, { cache: 'no-store' });
+  if (!r.ok) return [];
+  const payload = await r.json();
+  return Array.isArray(payload?.media) ? payload.media : payload;
+}
+
 export default async function CategoryDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const category = await fetchCategory(id);
+  const [category, media] = await Promise.all([getCategory(id), getMedia(id)]);
+  console.log(category);
+  console.log(media);
 
   if (!category) {
     return <div className="py-12 text-center">Category not found.</div>;
@@ -203,27 +182,41 @@ export default async function CategoryDetailPage({ params }: { params: Promise<{
       </form>
 
       <div className="space-y-3 p-6 border rounded bg-white">
-        <h2 className="text-lg font-semibold">Media Gallery ({category.media.length})</h2>
-        {category.media.length === 0 ? (
-          <p className="text-gray-500">No media attached yet.</p>
-        ) : (
-          <div className="grid grid-cols-4 gap-4">
-            {category.media.map((img) => (
-              <div key={img.id} className="border rounded overflow-hidden">
-                <Image
-                  src={`${process.env.NEXT_PUBLIC_API_BASE}/admin/media/${img.key}`}
-                  alt={img.altText || ''}
-                  width={img.width || 400}
-                  height={img.height || 300}
-                  className="w-full h-32 object-cover"
-                />
-                <div className="p-2 text-xs text-gray-600">
-                  {img.altText || 'No alt text'}
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Media Gallery ({category.media.length})</h2>
+          <Link 
+            href={`/upload?category=${id}`}
+            className="px-3 py-2 rounded bg-black text-white text-sm"
+          >
+            + Upload Image
+          </Link>
+        </div>
+        {media.length === 0 ? (
+        <p className="text-gray-500">No images yet.</p>
+      ) : (
+        <ul className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {media.map((m: { id: string; url?: string; media?: { key: string }; altText?: string; sortOrder: number; isPrimary: boolean }) => {
+            const url = m.url ?? (m.media?.key && process.env.NEXT_PUBLIC_CDN_BASE ? `${process.env.NEXT_PUBLIC_CDN_BASE}/${m.media.key}` : null);
+            return (
+              <li key={m.id} className="border rounded p-3 space-y-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {url ? <img src={url} alt={m.altText ?? ''} className="w-full h-32 object-cover rounded" /> : <div className="w-full h-32 bg-gray-100 rounded" />}
+                <div className="text-xs text-gray-600 flex justify-between">
+                  <span>sort: {m.sortOrder}</span>
+                  {m.isPrimary ? <span className="text-green-600">Primary</span> : null}
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+                <form action={`/api/categories/${(id)}/media/${m.id}/primary`} method="post">
+                  <button className="text-sm underline">Set as primary</button>
+                </form>
+                <form action={`/api/categories/${(id)}/media/${m.id}`} method="post">
+                  <input type="hidden" name="_method" value="DELETE" />
+                  <button className="text-sm text-red-600 underline">Unlink</button>
+                </form>
+              </li>
+            );
+          })}
+        </ul>
+      )}
       </div>
 
       <div className="space-y-3 p-6 border rounded bg-white">

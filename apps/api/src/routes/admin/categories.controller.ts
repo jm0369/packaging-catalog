@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AdminGuard } from './admin.guard';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
@@ -9,67 +9,6 @@ import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 @Controller('admin/categories')
 export class CategoriesController {
   constructor(private prisma: PrismaService) {}
-
-  @Get(':id')
-  @ApiOperation({ summary: 'Get a single category' })
-  async getById(@Param('id') id: string) {
-    const category = await this.prisma.category.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        name: true,
-        color: true,
-        description: true,
-        properties: true,
-        applications: true,
-        formatsSpecifications: true,
-        keyFigures: true,
-        ordering: true,
-        orderingNotes: true,
-        groups: {
-          select: {
-            group: {
-              select: {
-                id: true,
-                externalId: true,
-                name: true,
-              },
-            },
-          },
-        },
-        media: {
-          select: {
-            id: true,
-            mediaId: true,
-            altText: true,
-            sortOrder: true,
-            media: {
-              select: {
-                id: true,
-                key: true,
-                mime: true,
-                width: true,
-                height: true,
-                variants: true,
-              },
-            },
-          },
-          orderBy: { sortOrder: 'asc' },
-        },
-      },
-    });
-    if (!category) return { statusCode: 404, message: 'Category not found' };
-    
-    return {
-      ...category,
-      groups: category.groups.map(g => g.group),
-      media: category.media.map(m => ({
-        ...m.media,
-        altText: m.altText,
-        sortOrder: m.sortOrder,
-      })),
-    };
-  }
 
   @Post()
   @ApiOperation({ summary: 'Create a category. Body: { name, color, description?, properties?, applications?, formatsSpecifications?, keyFigures?, ordering?, orderingNotes? }' })

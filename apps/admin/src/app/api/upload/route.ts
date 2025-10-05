@@ -11,6 +11,7 @@ export async function POST(req: Request) {
   const form = await req.formData(); // must include field: file
   const article = (form.get('article') as string | null) ?? null;
   const group = (form.get('group') as string | null) ?? null;
+  const category = (form.get('category') as string | null) ?? null;
 
   const upstream = await adminFetch('/admin/media/upload', {
     method: 'POST',
@@ -61,8 +62,30 @@ export async function POST(req: Request) {
       body: JSON.stringify({ mediaId }),
     });
     // absolute URL required in NextResponse.redirect
-    const url = new URL(`/articles/${(article)}?uploaded=1`, process.env.NEXT_PUBLIC_ADMIN_BASE ?? 'http://localhost:3002');
-    return NextResponse.redirect(url, { status: 302 });
+    const redirectUrl = new URL(`/articles/${(article)}?uploaded=1`, process.env.NEXT_PUBLIC_ADMIN_BASE ?? 'http://localhost:3002');
+    return NextResponse.redirect(redirectUrl, { status: 302 });
+  }
+
+  if (category && mediaId) {
+    // link to category as next sort
+    const linkRes = await adminFetch(`/admin/categories/${category}/media`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ mediaId, sortOrder: 0 }),
+    });
+
+    // If linking fails, show that error text
+    if (!linkRes.ok) {
+      const linkText = await linkRes.text();
+      return new NextResponse(
+        JSON.stringify({ error: 'link_failed', detail: linkText, uploaded: json }),
+        { status: 502, headers: { 'content-type': 'application/json' } },
+      );
+    }
+
+    // Redirect back to category page
+    const redirectUrl = new URL(`/categories/${category}?uploaded=1`, url.origin);
+    return NextResponse.redirect(redirectUrl, 303);
   }
 
   // No group given: just return the original upload JSON (with id, key, etc.)
