@@ -1,8 +1,5 @@
 import './globals.css';
 
-import Link from 'next/link';
-import Image from 'next/image';
-import Container from '@/components/container';
 import Footer from '@/components/footer';
 import Header from '@/components/header';
 

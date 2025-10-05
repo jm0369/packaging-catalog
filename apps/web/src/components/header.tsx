@@ -259,8 +259,12 @@ export default function Header() {
               group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:pointer-events-auto
               rounded-xl border border-emerald-900/10 bg-white shadow-xl ring-1 ring-black/5 ${hoverOpen.produkte ? "opacity-100 translate-y-0 pointer-events-auto" : ""} ${menuForceClosed.produkte ? "hidden" : ""}`}
                             >
-                                <Link href="/produkte" onClick={() => { blurActive(); forceCloseMenu("produkte"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 font-semibold ${isExact("/produkte") ? "bg-emerald-50 text-emerald-900" : "text-foreground/90"}`}>
-                                    {header.allProducts}
+                               
+                                <Link href="/produktgruppen" onClick={() => { blurActive(); forceCloseMenu("produkte"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 font-semibold ${isExact("/produktgruppen") ? "bg-emerald-50 text-emerald-900" : "text-foreground/90"}`}>
+                                    {"Produkgruppen"}
+                                </Link>
+                                <Link href="/artikel" onClick={() => { blurActive(); forceCloseMenu("produkte"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 font-semibold ${isExact("/artikel") ? "bg-emerald-50 text-emerald-900" : "text-foreground/90"}`}>
+                                    {"Artikel"}
                                 </Link>
                                 {categories.length > 0 && (
                                     <div className="border-t border-emerald-900/10 my-2" />
@@ -281,35 +285,7 @@ export default function Header() {
                                 ))}
                             </div>
                         </div>
-                        {/* Katalog dropdown */}
-                        <div className="relative group" onMouseEnter={() => onMenuEnter("katalog")} onMouseLeave={() => onMenuLeave("katalog")}>
-                            <Link
-                                href="/katalog"
-                                aria-current={isActive("/katalog") ? "page" : undefined}
-                                className={
-                                    "hover:opacity-100 hover:text-emerald-900 inline-flex items-center gap-1 group-focus-within:opacity-100 relative pb-1 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:bg-emerald-600 after:transition-[width] after:duration-200 " +
-                                    (isActive("/katalog") ? "text-emerald-900 after:w-full" : "hover:after:w-full")
-                                }
-                                onClick={() => { blurActive(); forceCloseMenu("katalog"); }}
-                            >
-                                {header.catalog}
-                                <ChevronDown className="h-4 w-4 opacity-70 transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />
-                            </Link>
-                            <div
-                                className={`absolute left-0 top-full min-w-[240px] z-50 p-2
-              opacity-0 translate-y-2 pointer-events-none transition-all duration-150 ease-out
-              group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto
-              group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:pointer-events-auto
-              rounded-xl border border-emerald-900/10 bg-white shadow-xl ring-1 ring-black/5 ${hoverOpen.katalog ? "opacity-100 translate-y-0 pointer-events-auto" : ""} ${menuForceClosed.katalog ? "hidden" : ""}`}
-                            >
-                                <Link href="/produktgruppen" onClick={() => { blurActive(); forceCloseMenu("katalog"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 ${isExact("/produktgruppen") || isActive("/produktgruppen/") ? "bg-emerald-50 font-semibold text-emerald-900" : "text-foreground/90"}`}>
-                                    {header.productGroups}
-                                </Link>
-                                <Link href="/artikel" onClick={() => { blurActive(); forceCloseMenu("katalog"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 ${isExact("/artikel") || isActive("/artikel/") ? "bg-emerald-50 font-semibold text-emerald-900" : "text-foreground/90"}`}>
-                                    {header.articles}
-                                </Link>
-                            </div>
-                        </div>
+                        
 
                     </nav>
                     <a
