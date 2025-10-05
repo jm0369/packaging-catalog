@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ImageGallery } from '@/components/image-gallery';
 import { ArticlesTable } from '@/components/articles-table';
-import { cleanGroupName, getGroupBadges } from '@/lib/group-utils';
 
 export const revalidate = 600;
 
