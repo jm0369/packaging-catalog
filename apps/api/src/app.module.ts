@@ -10,6 +10,8 @@ import { ArticleGroupsPublicController } from './routes/public/article-groups.co
 import { MediaController } from './media/media.controller';
 import { GroupsMediaController } from './routes/admin/groups-media.controller';
 import { ArticlesMediaController } from './routes/admin/articles-media.controller';
+import { CategoriesController } from './routes/admin/categories.controller';
+import { GroupsCategoriesController } from './routes/admin/groups-categories.controller';
 import { S3Service } from './media/s3.service';
 import { AdminGuard } from './routes/admin/admin.guard';
 
@@ -32,6 +34,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     MediaController,
     GroupsMediaController,
     ArticlesMediaController,
+    CategoriesController,
+    GroupsCategoriesController,
   ],
   providers: [PrismaService, S3Service, AdminGuard],
 })
