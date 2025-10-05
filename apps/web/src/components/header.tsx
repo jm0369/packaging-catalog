@@ -213,7 +213,7 @@ export default function Header() {
                         {/* Produkte dropdown */}
                         <div className="relative group" onMouseEnter={() => onMenuEnter("produkte")} onMouseLeave={() => onMenuLeave("produkte")}>
                             <Link
-                                href="/produkte"
+                                href="/groups"
                                 aria-current={isActive("/produkte") ? "page" : undefined}
                                 className={
                                     "hover:opacity-100 hover:text-emerald-900 inline-flex items-center gap-1 group-focus-within:opacity-100 relative pb-1 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:bg-emerald-600 after:transition-[width] after:duration-200 " +

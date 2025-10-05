@@ -316,7 +316,7 @@ export default function Page() {
                     <motion.div initial="hidden" whileInView="visible" viewport={viewport} variants={fadeUp}>
                         <SectionTitle center title={"Unser Leistungsangebot."} />
                     </motion.div>
-                    <div className="grid gap-15 md:gap-6 md:grid-cols-3 mt-20">
+                    <div className="grid gap-14 md:gap-6 md:grid-cols-3 mt-20">
                         {services.map((s: { title: string; text: string; icon: string; color: string }, idx: number) => (
                             <motion.div
                                 key={s.title}
