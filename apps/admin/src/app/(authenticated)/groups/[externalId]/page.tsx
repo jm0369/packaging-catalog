@@ -103,7 +103,7 @@ export default async function AdminGroupDetail({ params }: Params) {
           )}
         </div>
 
-        {availableCategories.length > 0 && (
+        {availableCategories.length > 0 ? (
           <form action={handleAssignCategory} className="flex gap-2 items-center">
             <select
               name="categoryId"
@@ -121,6 +121,10 @@ export default async function AdminGroupDetail({ params }: Params) {
               Add
             </button>
           </form>
+        ) : allCategories.length === 0 ? (
+          <p className="text-xs text-gray-500">No categories available. Create categories first.</p>
+        ) : (
+          <p className="text-xs text-gray-500">All available categories have been assigned.</p>
         )}
       </div>
 
