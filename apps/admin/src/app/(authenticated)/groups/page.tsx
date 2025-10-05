@@ -9,7 +9,19 @@ async function fetchGroups(q?: string, limit = 50, offset = 0) {
   sp.set('offset', String(offset));
   const r = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/article-groups?${sp.toString()}`, { cache: 'no-store' });
   if (!r.ok) throw new Error('Failed to load');
-  return r.json() as Promise<{ total: number; limit: number; offset: number; data: Array<{ id: string; externalId: string; name: string; description?: string | null; media: string[] }> }>;
+  return r.json() as Promise<{ 
+    total: number; 
+    limit: number; 
+    offset: number; 
+    data: Array<{ 
+      id: string; 
+      externalId: string; 
+      name: string; 
+      description?: string | null; 
+      media: string[];
+      categories: Array<{ id: string; name: string; color: string }>;
+    }> 
+  }>;
 }
 
 export default async function AdminGroupsPage({ searchParams }: { searchParams: Search }) {
@@ -42,12 +54,13 @@ export default async function AdminGroupsPage({ searchParams }: { searchParams: 
           <thead><tr className="border-b">
             <th className="px-3 py-2 text-left">Image</th>
             <th className="px-3 py-2 text-left">Name</th>
+            <th className="px-3 py-2 text-left">Categories</th>
             <th className="px-3 py-2 text-left">External ID</th>
             <th className="px-3 py-2 text-right">Actions</th>
           </tr></thead>
           <tbody>
             {data.length === 0 ? (
-              <tr><td colSpan={3} className="px-3 py-8 text-center text-gray-500">No groups found.</td></tr>
+              <tr><td colSpan={5} className="px-3 py-8 text-center text-gray-500">No groups found.</td></tr>
             ) : data.map((g) => (
               <tr key={g.id} className="border-b">
                 <td className="px-3 py-2">
@@ -61,6 +74,23 @@ export default async function AdminGroupsPage({ searchParams }: { searchParams: 
                 <td className="px-3 py-2">
                   <div className="font-medium">{g.name}</div>
                   {g.description ? <div className="text-xs text-gray-500 line-clamp-1">{g.description}</div> : null}
+                </td>
+                <td className="px-3 py-2">
+                  <div className="flex flex-wrap gap-1">
+                    {g.categories?.map((c) => (
+                      <span
+                        key={c.id}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border"
+                        style={{ borderColor: c.color }}
+                      >
+                        <div
+                          className="w-2 h-2 rounded-full"
+                          style={{ backgroundColor: c.color }}
+                        />
+                        {c.name}
+                      </span>
+                    ))}
+                  </div>
                 </td>
                 <td className="px-3 py-2"><code>{g.externalId}</code></td>
                 <td className="px-3 py-2 text-right">
