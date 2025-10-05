@@ -111,7 +111,7 @@ export default function ProduktDetailPage({ params }: ProduktDetailPageProps) {
               )}
 
               <div className="flex flex-wrap gap-4">
-                <Link href={`/groups?category=${categoryId}`}>
+                <Link href={`/produktgruppen?category=${categoryId}`}>
                   <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700">
                     Alle {category.name} anzeigen
                     <ArrowRight className="w-4 h-4 ml-2" />
@@ -303,7 +303,7 @@ export default function ProduktDetailPage({ params }: ProduktDetailPageProps) {
               finden Sie die perfekte Verpackungslösung für Ihre Anforderungen.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Link href={`/groups?category=${categoryId}`}>
+              <Link href={`/produktgruppen?category=${categoryId}`}>
                 <Button size="lg" variant="secondary" className="bg-white text-emerald-600 hover:bg-gray-100">
                   Alle {category.name} anzeigen
                 </Button>

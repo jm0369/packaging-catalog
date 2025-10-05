@@ -69,7 +69,7 @@ export default function KatalogPage() {
                                         Bildergalerien und Spezifikationen
                                     </li>
                                 </ul>
-                                <Link href="/groups">
+                                <Link href="/produktgruppen">
                                     <Button className="w-full group-hover:bg-emerald-700">
                                         Produktgruppen durchsuchen
                                         <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -112,7 +112,7 @@ export default function KatalogPage() {
                                         Maße, VPE und Palettierungsangaben
                                     </li>
                                 </ul>
-                                <Link href="/articles">
+                                <Link href="/artikel">
                                     <Button className="w-full group-hover:bg-emerald-700">
                                         Artikel durchsuchen
                                         <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -159,13 +159,13 @@ export default function KatalogPage() {
                             Starten Sie jetzt Ihre Suche in unserem umfassenden Katalog.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Link href="/groups">
+                            <Link href="/produktgruppen">
                                 <Button size="lg" className="bg-white text-emerald-700 hover:bg-gray-100">
                                     Produktgruppen erkunden
                                     <ArrowRight className="ml-2 h-5 w-5" />
                                 </Button>
                             </Link>
-                            <Link href="/articles">
+                            <Link href="/artikel">
                                 <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white/10">
                                     Artikel durchsuchen
                                     <ArrowRight className="ml-2 h-5 w-5" />

@@ -302,10 +302,10 @@ export default function Header() {
               group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:pointer-events-auto
               rounded-xl border border-emerald-900/10 bg-white shadow-xl ring-1 ring-black/5 ${hoverOpen.katalog ? "opacity-100 translate-y-0 pointer-events-auto" : ""} ${menuForceClosed.katalog ? "hidden" : ""}`}
                             >
-                                <Link href="/groups" onClick={() => { blurActive(); forceCloseMenu("katalog"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 ${isExact("/groups") || isActive("/groups/") ? "bg-emerald-50 font-semibold text-emerald-900" : "text-foreground/90"}`}>
+                                <Link href="/produktgruppen" onClick={() => { blurActive(); forceCloseMenu("katalog"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 ${isExact("/produktgruppen") || isActive("/produktgruppen/") ? "bg-emerald-50 font-semibold text-emerald-900" : "text-foreground/90"}`}>
                                     {header.productGroups}
                                 </Link>
-                                <Link href="/articles" onClick={() => { blurActive(); forceCloseMenu("katalog"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 ${isExact("/articles") || isActive("/articles/") ? "bg-emerald-50 font-semibold text-emerald-900" : "text-foreground/90"}`}>
+                                <Link href="/artikel" onClick={() => { blurActive(); forceCloseMenu("katalog"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 ${isExact("/artikel") || isActive("/artikel/") ? "bg-emerald-50 font-semibold text-emerald-900" : "text-foreground/90"}`}>
                                     {header.articles}
                                 </Link>
                             </div>
@@ -434,10 +434,10 @@ export default function Header() {
                                             <Link href="/katalog" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/katalog") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
                                                 {header.overview}
                                             </Link>
-                                            <Link href="/groups" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/groups") || isActive("/groups/") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
+                                            <Link href="/produktgruppen" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/produktgruppen") || isActive("/produktgruppen/") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
                                                 {header.productGroups}
                                             </Link>
-                                            <Link href="/articles" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/articles") || isActive("/articles/") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
+                                            <Link href="/artikel" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/artikel") || isActive("/artikel/") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
                                                 {header.articles}
                                             </Link>
                                         </div>

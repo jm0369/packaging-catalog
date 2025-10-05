@@ -128,12 +128,10 @@ export default function GroupPage({ params }: GroupPageProps) {
   const prevOffset = Math.max(0, offset - limit);
   const nextOffset = offset + limit;
 
-  const buildUrl = (params: { q?: string; limit?: number; offset?: number }) => {
+  const buildUrl = (params: { q?: string }) => {
     const sp = new URLSearchParams();
     if (params.q) sp.set('q', params.q);
-    if (params.limit) sp.set('limit', String(params.limit));
-    if (params.offset) sp.set('offset', String(params.offset));
-    return `/groups/${externalId}?${sp.toString()}`;
+    return `/produktgruppen/${externalId}?${sp.toString()}`;
   };
 
   return (
@@ -144,7 +142,7 @@ export default function GroupPage({ params }: GroupPageProps) {
           {/* Breadcrumb */}
           <div className="mb-8">
             <Link 
-              href="/groups"
+              href="/produktgruppen"
               className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-medium"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -309,7 +307,7 @@ export default function GroupPage({ params }: GroupPageProps) {
                   {q ? 'Versuchen Sie es mit anderen Suchbegriffen.' : 'Für diese Produktgruppe sind derzeit keine Artikel verfügbar.'}
                 </p>
                 {q && (
-                  <Link href={`/groups/${externalId}`}>
+                  <Link href={`/produktgruppen/${externalId}`}>
                     <Button variant="outline" className="border-emerald-600 text-emerald-600 hover:bg-emerald-50">
                       Alle Artikel anzeigen
                     </Button>
@@ -329,7 +327,7 @@ export default function GroupPage({ params }: GroupPageProps) {
                   </div>
                   <div className="flex gap-3">
                     <Link
-                      href={buildUrl({ q, limit, offset: prevOffset })}
+                      href={buildUrl({ q })}
                       className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 font-medium transition-all ${
                         offset === 0 
                           ? 'pointer-events-none opacity-40 border-gray-300' 
@@ -340,7 +338,7 @@ export default function GroupPage({ params }: GroupPageProps) {
                       Zurück
                     </Link>
                     <Link
-                      href={buildUrl({ q, limit, offset: nextOffset })}
+                      href={buildUrl({ q })}
                       className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 font-medium transition-all ${
                         nextOffset >= total 
                           ? 'pointer-events-none opacity-40 border-gray-300' 
@@ -375,7 +373,7 @@ export default function GroupPage({ params }: GroupPageProps) {
                   Kontakt aufnehmen
                 </Button>
               </Link>
-              <Link href="/groups">
+              <Link href="/produktgruppen">
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-emerald-600">
                   Weitere Produktgruppen
                 </Button>
