@@ -18,6 +18,7 @@ model ArticleGroupMirror {
   articles         ArticleMirror[]
 
   media            GroupMediaLink[]
+  categories       GroupCategoryLink[]
 
   @@index([externalId])
 }
@@ -85,4 +86,24 @@ model ArticleMediaLink {
   @@index([articleId])
   @@index([mediaId])
   @@unique([articleId, sortOrder])
+}
+model Category {
+  id     String  @id @default(uuid())
+  name   String  @unique
+  color  String
+
+  groups GroupCategoryLink[]
+}
+
+model GroupCategoryLink {
+  id         String  @id @default(uuid())
+  groupId    String
+  categoryId String
+
+  group    ArticleGroupMirror @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  category Category           @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([groupId])
+  @@index([categoryId])
+  @@unique([groupId, categoryId])
 }
