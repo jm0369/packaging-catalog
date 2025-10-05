@@ -2,6 +2,7 @@ export const revalidate = 0;
 
 import { adminFetch } from '@/lib/admin-client';
 import { RemoveCategoryButton } from './remove-category-button';
+import { revalidatePath } from 'next/cache';
 
 type Params = { params: Promise<{ externalId: string }> };
 
@@ -63,6 +64,8 @@ export default async function AdminGroupDetail({ params }: Params) {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ categoryId }),
     });
+    
+    revalidatePath(`/groups/${externalId}`);
   }
 
   async function handleRemoveCategory(categoryId: string) {
@@ -70,6 +73,8 @@ export default async function AdminGroupDetail({ params }: Params) {
     await adminFetch(`/admin/article-groups/${(externalId)}/categories/${categoryId}`, {
       method: 'DELETE',
     });
+    
+    revalidatePath(`/groups/${externalId}`);
   }
 
   return (
