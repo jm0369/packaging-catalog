@@ -10,7 +10,12 @@ export class ArticleGroupsPublicController {
   @Get()
   @ApiOperation({ summary: 'List article groups (only those with articles)' })
   @ApiOkResponse({ description: '{ total, limit, offset, data }' })
-  async list(@Query('limit') limitQ?: string, @Query('offset') offsetQ?: string, @Query('q') q?: string) {
+  async list(
+    @Query('limit') limitQ?: string, 
+    @Query('offset') offsetQ?: string, 
+    @Query('q') q?: string,
+    @Query('category') categoryId?: string,
+  ) {
     const limit = Math.min(100, Math.max(1, Number(limitQ ?? 24)));
     const offset = Math.max(0, Number(offsetQ ?? 0));
 
@@ -19,6 +24,8 @@ export class ArticleGroupsPublicController {
         q ? { name: { contains: q, mode: 'insensitive' as const } } : {},
         // have articles
         { articles: { some: {} } },
+        // filter by category if provided
+        categoryId ? { categories: { some: { categoryId } } } : {},
       ],
     };
 
