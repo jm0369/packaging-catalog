@@ -109,14 +109,14 @@ export class SyncService {
         where: { externalId: g.id },
         create: {
           externalId: g.id,
-          name: g.id,
-          description: cleanedName,
+          name: cleanedName,
+          description: g.description,
           parentExternalId: g.parentId,
           sortOrder: g.sortOrder,
         },
         update: {
-          name: g.id,
-          description: cleanedName,
+          name: cleanedName,
+          description: g.description,
           parentExternalId: g.parentId,
           sortOrder: g.sortOrder,
         },

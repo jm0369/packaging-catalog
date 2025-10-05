@@ -64,7 +64,7 @@ export default async function AdminGroupDetail({ params }: Params) {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ categoryId }),
     });
-
+    
     revalidatePath(`/groups/${externalId}`);
   }
 
@@ -73,17 +73,14 @@ export default async function AdminGroupDetail({ params }: Params) {
     await adminFetch(`/admin/article-groups/${(externalId)}/categories/${categoryId}`, {
       method: 'DELETE',
     });
-
+    
     revalidatePath(`/groups/${externalId}`);
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
-        <div className='flex flex-col gap-1'>
-          <h1 className="text-xl font-semibold">{group.name}</h1>
-          <p className='text-sm text-gray-500'>{group.description}</p>
-        </div>
+        <h1 className="text-xl font-semibold">{group.name} <span className="text-sm text-gray-500">({group.externalId})</span></h1>
         <a className="px-3 py-2 rounded bg-black text-white" href={`/upload?group=${(externalId)}`}>Upload new image</a>
       </div>
 
