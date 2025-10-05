@@ -5,7 +5,6 @@ import { ArticlesTable } from './articles-table';
 import { Lightbox } from './lightbox';
 import Link from 'next/link';
 import Image from 'next/image';
-import { cleanGroupName, getGroupBadges } from '@/lib/group-utils';
 
 type Group = {
   id: string;
@@ -68,9 +67,6 @@ export function GroupList({ groups, apiBase }: GroupListProps) {
             const isExpanded = expandedGroups.has(group.id);
             const articles = group.articles || [];
             
-            const badges = getGroupBadges(group.name, articles.length > 0 ? articles : undefined);
-            const cleanedName = cleanGroupName(group.name, group.externalId);
-
             return (
               <li key={group.id} className="border rounded overflow-hidden">
                 <div className="flex items-center gap-4 p-4 hover:bg-gray-50">
@@ -100,17 +96,9 @@ export function GroupList({ groups, apiBase }: GroupListProps) {
                       >
                         {group.externalId}
                       </Link>
-                      {badges.map((badge) => (
-                        <span
-                          key={badge.label}
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badge.color}`}
-                        >
-                          {badge.label}
-                        </span>
-                      ))}
                     </div>
                     <p className="text-sm text-gray-500 mt-1">
-                      {cleanedName}
+                      {group.name}
                     </p>
                     
                   </div>

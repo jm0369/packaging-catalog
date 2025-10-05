@@ -53,8 +53,8 @@ export default async function AdminGroupsPage({ searchParams }: { searchParams: 
         <table className="min-w-full text-sm">
           <thead><tr className="border-b">
             <th className="px-3 py-2 text-left">Image</th>
-            <th className="px-3 py-2 text-left">External ID</th>
             <th className="px-3 py-2 text-left">Name</th>
+            <th className="px-3 py-2 text-left">Description</th>
             <th className="px-3 py-2 text-left">Categories</th>
             <th className="px-3 py-2 text-right">Actions</th>
           </tr></thead>
@@ -71,10 +71,9 @@ export default async function AdminGroupsPage({ searchParams }: { searchParams: 
                     <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400">—</div>
                   )}
                 </td>
-                <td className="px-3 py-2"><code>{g.externalId}</code></td>
+                <td className="px-3 py-2">{g.name}</td>
                 <td className="px-3 py-2">
-                  <div className="font-medium">{g.name}</div>
-                  {g.description ? <div className="text-xs text-gray-500 line-clamp-1">{g.description}</div> : null}
+                  <div className="font-medium">{g.description && g.description}</div>
                 </td>
                 <td className="px-3 py-2">
                   <div className="flex flex-wrap gap-1">

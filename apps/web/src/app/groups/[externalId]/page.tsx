@@ -34,48 +34,6 @@ async function fetchGroup(externalId: string) {
   }>;
 }
 
-async function fetchGroupArticles(externalId: string, q?: string, limit = 24, offset = 0) {
-  const sp = new URLSearchParams();
-  if (q) sp.set('q', q);
-  sp.set('limit', String(limit));
-  sp.set('offset', String(offset));
-  sp.set('group', decodeURIComponent(externalId));
-  const r = await fetch(`${API}/api/articles?${sp.toString()}`, { next: { revalidate } });
-  if (!r.ok) notFound();
-  return r.json() as Promise<{
-    total: number;
-    limit: number;
-    offset: number;
-    data: Array<{
-      id: string;
-      externalId: string;
-      title: string;
-      description: string | null;
-      uom: string | null;
-      ean: string | null;
-      media: string[];
-      sku?: string | null;
-      attributes?: {
-        _INNENLAENGE?: string;
-        _INNENBREITE?: string;
-        _INNENHOEHE?: string;
-        _AUSSENLAENGE?: string;
-        _AUSSENBREITE?: string;
-        _AUSSENHOEHE?: string;
-        _VE2UEBERVERMENGE?: string;
-        _VE2UEBERVERPART?: string;
-        _VE2UEBERVERPLAENGE?: string;
-        _VE2UEBERVERPBREITE?: string;
-        _VE2UEBERVERPHOEHE?: string;
-        _VE3VERPACKUNGMENGE?: string;
-        _VE3PALETTENLAENGE?: string;
-        _VE3PALETTENBREITE?: string;
-        _VE3PALETTENHOEHE?: string;
-      } | null;
-    }>
-  }>;
-}
-
 export async function generateMetadata({ params }: { params: Props['params'] }) {
   const { externalId } = await params;
   const group = await fetchGroup(externalId);
@@ -112,24 +70,13 @@ export default async function GroupPage({ params, searchParams }: Props) {
   const prevOffset = Math.max(0, offset - limit);
   const nextOffset = offset + limit;
 
-  const badges = getGroupBadges(group.name, group.articles);
-  const cleanedName = cleanGroupName(group.name, group.externalId);
-
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <h1 className="text-2xl font-semibold">{decodeURIComponent(externalId)}</h1>
-        {badges.map((badge) => (
-          <span
-            key={badge.label}
-            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badge.color}`}
-          >
-            {badge.label}
-          </span>
-        ))}
       </div>
       <p className="text-sm text-gray-500 mt-1">
-        {cleanedName}
+        {group.name}
       </p>
       <ImageGallery images={group.media || []} alt={group.name} />
       {/* Search */}
