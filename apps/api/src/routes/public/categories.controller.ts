@@ -8,7 +8,7 @@ export class CategoriesPublicController {
   constructor(private prisma: PrismaService) {}
 
   @Get()
-  @ApiOperation({ summary: 'List all categories with group counts' })
+  @ApiOperation({ summary: 'List all categories with group counts and media' })
   @ApiOkResponse({ description: 'Array of categories' })
   async list() {
     const categories = await this.prisma.category.findMany({
@@ -17,8 +17,33 @@ export class CategoriesPublicController {
         id: true,
         name: true,
         color: true,
+        description: true,
+        properties: true,
+        applications: true,
+        formatsSpecifications: true,
+        keyFigures: true,
+        ordering: true,
+        orderingNotes: true,
         _count: {
           select: { groups: true },
+        },
+        media: {
+          select: {
+            id: true,
+            altText: true,
+            sortOrder: true,
+            media: {
+              select: {
+                id: true,
+                key: true,
+                mime: true,
+                width: true,
+                height: true,
+                variants: true,
+              },
+            },
+          },
+          orderBy: { sortOrder: 'asc' },
         },
       },
     });
@@ -27,7 +52,19 @@ export class CategoriesPublicController {
       id: c.id,
       name: c.name,
       color: c.color,
+      description: c.description,
+      properties: c.properties,
+      applications: c.applications,
+      formatsSpecifications: c.formatsSpecifications,
+      keyFigures: c.keyFigures,
+      ordering: c.ordering,
+      orderingNotes: c.orderingNotes,
       groupCount: c._count.groups,
+      media: c.media.map(m => ({
+        ...m.media,
+        altText: m.altText,
+        sortOrder: m.sortOrder,
+      })),
     }));
   }
 }

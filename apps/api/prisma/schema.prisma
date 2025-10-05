@@ -54,8 +54,9 @@ model MediaAsset {
   variants   Json?
 
   // reverse: links
-  groupLinks   GroupMediaLink[]
-  articleLinks ArticleMediaLink[]
+  groupLinks    GroupMediaLink[]
+  articleLinks  ArticleMediaLink[]
+  categoryLinks CategoryMediaLink[]
 }
 
 model GroupMediaLink {
@@ -87,12 +88,23 @@ model ArticleMediaLink {
   @@index([mediaId])
   @@unique([articleId, sortOrder])
 }
+
 model Category {
-  id     String  @id @default(uuid())
-  name   String  @unique
-  color  String
+  id          String  @id @default(uuid())
+  name        String  @unique
+  color       String
+  description String?
+  
+  // JSON arrays for structured data
+  properties              Json?  // Array of { name: string, description: string }
+  applications            Json?  // Array of strings
+  formatsSpecifications   Json?  // Array of strings
+  keyFigures              Json?  // Array of { name: string, description: string }
+  ordering                Json?  // Array of { name: string, description: string }
+  orderingNotes           Json?  // Array of strings
 
   groups GroupCategoryLink[]
+  media  CategoryMediaLink[]
 }
 
 model GroupCategoryLink {
@@ -106,4 +118,19 @@ model GroupCategoryLink {
   @@index([groupId])
   @@index([categoryId])
   @@unique([groupId, categoryId])
+}
+
+model CategoryMediaLink {
+  id         String  @id @default(uuid())
+  categoryId String
+  mediaId    String
+  altText    String?
+  sortOrder  Int     @default(0)
+
+  category Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  media    MediaAsset @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@index([categoryId])
+  @@index([mediaId])
+  @@unique([categoryId, sortOrder])
 }
