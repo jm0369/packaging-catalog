@@ -295,12 +295,8 @@ export default function Header() {
               group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:pointer-events-auto
               rounded-xl border border-emerald-900/10 bg-white shadow-xl ring-1 ring-black/5 ${hoverOpen.kategorien ? "opacity-100 translate-y-0 pointer-events-auto" : ""} ${menuForceClosed.kategorien ? "hidden" : ""}`}
                             >
-                                <Link href="/categories" onClick={() => { blurActive(); forceCloseMenu("kategorien"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 font-semibold ${isExact("/categories") ? "bg-emerald-50 text-emerald-900" : "text-foreground/90"}`}>
-                                    {header.allCategories}
-                                </Link>
-                                {categories.length > 0 && (
-                                    <div className="border-t border-emerald-900/10 my-2" />
-                                )}
+                               
+                                
                                 {categories.map((category) => (
                                     <Link 
                                         key={category.id}
