@@ -5,6 +5,65 @@ import { SelectLineClient } from '../selectline/selectline.client';
 import type { SlArticle, SlArticleGroup } from '../selectline/selectline.types';
 
 /**
+ * Clean group names by removing common prefixes/suffixes
+ */
+function cleanGroupName(name: string, externalId: string): string {
+  let cleaned = name;
+  
+  // Remove externalId FIRST (case-insensitive)
+  const externalIdRegex = new RegExp(externalId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+  cleaned = cleaned.replace(externalIdRegex, '');
+  
+  // Remove CO2-MASTER (case-insensitive, with or without separator, also matches CO21MASTER)
+  cleaned = cleaned.replace(/co2[-\s1]?master/gi, '');
+  
+  // Remove packCHAMPION (case-insensitive, with or without separator)
+  cleaned = cleaned.replace(/pack[-\s]?champion/gi, '');
+  
+  // Remove BRIEFBOX (case-insensitive, with or without separator)
+  cleaned = cleaned.replace(/brief[-\s]?box/gi, '');
+  
+  // Remove FIXBOX (case-insensitive, with or without separator)
+  cleaned = cleaned.replace(/fix[-\s]?box/gi, '');
+  
+  // Remove UNIVERSALVERPACKUNG (case-insensitive, with or without separator)
+  cleaned = cleaned.replace(/universal[-\s]?verpackung/gi, '');
+  
+  // Remove UNIVERSALVERSANDBOX (case-insensitive, with or without separator)
+  cleaned = cleaned.replace(/universal[-\s]?versand[-\s]?box/gi, '');
+  
+  // Remove ORDNERVERPACKUNG (case-insensitive, with or without separator)
+  cleaned = cleaned.replace(/ordner[-\s]?verpackung/gi, '');
+  
+  // Remove MAILBOX (case-insensitive, with or without separator)
+  cleaned = cleaned.replace(/mail[-\s]?box/gi, '');
+  
+  // Remove CARGO (case-insensitive, with or without separator)
+  cleaned = cleaned.replace(/\bcargo\b[-\s]?/gi, '');
+  cleaned = cleaned.replace(/[-\s]?\bcargo\b/gi, '');
+  
+  // Remove EXTRA (case-insensitive, with or without separator)
+  cleaned = cleaned.replace(/\bextra\b[-\s]?/gi, '');
+  cleaned = cleaned.replace(/[-\s]?\bextra\b/gi, '');
+  
+  // Remove PACK (case-insensitive, with or without separator)
+  cleaned = cleaned.replace(/\bpack\b[-\s]?/gi, '');
+  cleaned = cleaned.replace(/[-\s]?\bpack\b/gi, '');
+  
+  // Remove PC (case-insensitive, as whole word or with separator)
+  cleaned = cleaned.replace(/\bpc\b[-\s]?/gi, '');
+  cleaned = cleaned.replace(/[-\s]?\bpc\b/gi, '');
+  
+  // Clean up multiple spaces and trim
+  cleaned = cleaned.replace(/\s+/g, ' ').trim();
+  
+  // Remove leading/trailing separators
+  cleaned = cleaned.replace(/^[-\s]+|[-\s]+$/g, '');
+  
+  return cleaned;
+}
+
+/**
  * Pulls from SelectLine and mirrors into our DB.
  * Rule: only keep groups that have at least one article (SelectLine only returns active articles).
  */
@@ -45,17 +104,18 @@ export class SyncService {
 
     // 3) Upsert groups
     for (const g of filteredGroups) {
+      const cleanedName = cleanGroupName(g.name, g.id);
       await this.prisma.articleGroupMirror.upsert({
         where: { externalId: g.id },
         create: {
           externalId: g.id,
-          name: g.name,
+          name: cleanedName,
           description: g.description,
           parentExternalId: g.parentId,
           sortOrder: g.sortOrder,
         },
         update: {
-          name: g.name,
+          name: cleanedName,
           description: g.description,
           parentExternalId: g.parentId,
           sortOrder: g.sortOrder,
