@@ -20,6 +20,9 @@ const header = {
     dropshipping: "Dropshipping",
     products: "PRODUKTE",
     allProducts: "Alle Produkte",
+    catalog: "KATALOG",
+    productGroups: "Produktgruppen",
+    articles: "Artikel",
     shop: "SHOP",
     b2b: "B2B",
     login: "Login",
@@ -45,11 +48,12 @@ export default function Header() {
     const [showSug, setShowSug] = useState(false);
     const [activeIndex, setActiveIndex] = useState(-1);
     const [categories, setCategories] = useState<Category[]>([]);
-    type MenuKey = "unternehmen" | "leistungen" | "produkte" | "shop" | "b2b";
+    type MenuKey = "unternehmen" | "leistungen" | "produkte" | "katalog" | "shop" | "b2b";
     const [menuForceClosed, setMenuForceClosed] = useState<Record<MenuKey, boolean>>({
         unternehmen: false,
         leistungen: false,
         produkte: false,
+        katalog: false,
         shop: false,
         b2b: false,
     });
@@ -58,6 +62,7 @@ export default function Header() {
         unternehmen: false,
         leistungen: false,
         produkte: false,
+        katalog: false,
         shop: false,
         b2b: false,
     });
@@ -65,6 +70,7 @@ export default function Header() {
         unternehmen: null,
         leistungen: null,
         produkte: null,
+        katalog: null,
         shop: null,
         b2b: null,
     });
@@ -275,6 +281,35 @@ export default function Header() {
                                 ))}
                             </div>
                         </div>
+                        {/* Katalog dropdown */}
+                        <div className="relative group" onMouseEnter={() => onMenuEnter("katalog")} onMouseLeave={() => onMenuLeave("katalog")}>
+                            <Link
+                                href="/katalog"
+                                aria-current={isActive("/katalog") ? "page" : undefined}
+                                className={
+                                    "hover:opacity-100 hover:text-emerald-900 inline-flex items-center gap-1 group-focus-within:opacity-100 relative pb-1 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:bg-emerald-600 after:transition-[width] after:duration-200 " +
+                                    (isActive("/katalog") ? "text-emerald-900 after:w-full" : "hover:after:w-full")
+                                }
+                                onClick={() => { blurActive(); forceCloseMenu("katalog"); }}
+                            >
+                                {header.catalog}
+                                <ChevronDown className="h-4 w-4 opacity-70 transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />
+                            </Link>
+                            <div
+                                className={`absolute left-0 top-full min-w-[240px] z-50 p-2
+              opacity-0 translate-y-2 pointer-events-none transition-all duration-150 ease-out
+              group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto
+              group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:pointer-events-auto
+              rounded-xl border border-emerald-900/10 bg-white shadow-xl ring-1 ring-black/5 ${hoverOpen.katalog ? "opacity-100 translate-y-0 pointer-events-auto" : ""} ${menuForceClosed.katalog ? "hidden" : ""}`}
+                            >
+                                <Link href="/groups" onClick={() => { blurActive(); forceCloseMenu("katalog"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 ${isExact("/groups") || isActive("/groups/") ? "bg-emerald-50 font-semibold text-emerald-900" : "text-foreground/90"}`}>
+                                    {header.productGroups}
+                                </Link>
+                                <Link href="/articles" onClick={() => { blurActive(); forceCloseMenu("katalog"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 ${isExact("/articles") || isActive("/articles/") ? "bg-emerald-50 font-semibold text-emerald-900" : "text-foreground/90"}`}>
+                                    {header.articles}
+                                </Link>
+                            </div>
+                        </div>
 
                     </nav>
                     <a
@@ -388,6 +423,23 @@ export default function Header() {
                                                     {category.name}
                                                 </Link>
                                             ))}
+                                        </div>
+                                    </details>
+                                    <details className="group rounded-lg">
+                                        <summary className="flex items-center justify-between cursor-pointer py-3 px-2 -mx-1 rounded-md hover:bg-emerald-50">
+                                            <span className={isActive("/katalog") ? "text-emerald-900 font-semibold" : undefined}>{header.catalog}</span>
+                                            <ChevronDown className="h-4 w-4 opacity-70 transition-transform group-open:rotate-180" />
+                                        </summary>
+                                        <div className="pl-3 pb-2 ml-2 border-l border-primary/50 flex flex-col text-[14px]">
+                                            <Link href="/katalog" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/katalog") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
+                                                {header.overview}
+                                            </Link>
+                                            <Link href="/groups" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/groups") || isActive("/groups/") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
+                                                {header.productGroups}
+                                            </Link>
+                                            <Link href="/articles" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/articles") || isActive("/articles/") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
+                                                {header.articles}
+                                            </Link>
                                         </div>
                                     </details>
 
