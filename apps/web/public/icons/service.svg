@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 29.6.1, SVG Export Plug-In . SVG Version: 9.03 Build 0)  -->
+<svg version="1.0" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 128 128" style="enable-background:new 0 0 128 128;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;}
+	.st1{fill:none;stroke:#00AF52;stroke-width:3.0963;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+</style>
+<ellipse class="st0" cx="64.37" cy="63.89" rx="62.86" ry="62.86"/>
+<g>
+	<rect x="32.54" y="88.22" class="st1" width="66.38" height="7.16"/>
+	<g>
+		<polyline class="st1" points="34.77,84.17 34.77,55.63 66.28,55.63 66.28,84.17 		"/>
+	</g>
+	<polyline class="st1" points="54.45,55.82 54.45,64.26 50.53,62.89 46.6,64.26 46.6,55.82 	"/>
+	<g>
+		<polyline class="st1" points="49.58,98.36 49.58,101.02 38.15,101.02 38.15,98.36 		"/>
+		<polyline class="st1" points="93.31,98.36 93.31,101.02 81.88,101.02 81.88,98.36 		"/>
+	</g>
+	<rect x="42.99" y="75.42" class="st1" width="15.06" height="6.41"/>
+	<g>
+		<g>
+			<line class="st1" x1="66.28" y1="84.17" x2="66.28" y2="55.63"/>
+			<polyline class="st1" points="66.28,55.63 97.8,55.63 97.8,84.17 			"/>
+		</g>
+		<polyline class="st1" points="85.96,55.82 85.96,64.26 82.04,62.89 78.12,64.26 78.12,55.82 		"/>
+		<rect x="74.51" y="75.42" class="st1" width="15.06" height="6.41"/>
+	</g>
+	<g>
+		<g>
+			<line class="st1" x1="49.97" y1="52.25" x2="49.97" y2="23.71"/>
+			<polyline class="st1" points="49.97,23.71 81.48,23.71 81.48,52.25 			"/>
+		</g>
+		<polyline class="st1" points="69.65,23.89 69.65,32.34 65.73,30.97 61.8,32.34 61.8,23.89 		"/>
+		<rect x="58.2" y="43.5" class="st1" width="15.06" height="6.41"/>
+	</g>
+</g>
+</svg>
