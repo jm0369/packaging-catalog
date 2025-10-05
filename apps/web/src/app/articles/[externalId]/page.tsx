@@ -3,12 +3,13 @@
 import React, { useEffect, useState } from "react";
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ImageGallery } from '@/components/image-gallery';
+import Image from 'next/image';
+import { Lightbox } from '@/components/lightbox';
 import { ArticlesTable } from '@/components/articles-table';
 import Container from "@/components/container";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Package, Tag, Clock, Ruler, Box, Layers, Info } from "lucide-react";
+import { ArrowLeft, Package, Tag, Clock, Ruler, Box, Layers, Info, ExternalLink, ImageIcon } from "lucide-react";
 import { colors } from "@/lib/colors";
 
 const API = process.env.NEXT_PUBLIC_API_BASE!;
@@ -61,6 +62,18 @@ export default function ArticlePage({ params }: ArticlePageProps) {
   const [article, setArticle] = useState<ArticleData | null>(null);
   const [loading, setLoading] = useState(true);
   const [externalId, setExternalId] = useState<string>("");
+  const [lightboxImages, setLightboxImages] = useState<string[] | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+
+  const openLightbox = (images: string[], index: number = 0) => {
+    setLightboxImages(images);
+    setLightboxIndex(index);
+  };
+
+  const closeLightbox = () => {
+    setLightboxImages(null);
+    setLightboxIndex(0);
+  };
 
   useEffect(() => {
     params.then((p) => setExternalId(p.externalId));
@@ -209,14 +222,79 @@ export default function ArticlePage({ params }: ArticlePageProps) {
             </div>
 
             {/* Image Gallery */}
-            {article.media && article.media.length > 0 && (
-              <div>
-                <ImageGallery images={article.media} alt={article.title} />
-              </div>
-            )}
+            <div className="space-y-4">
+              {article.media && article.media.length > 0 ? (
+                <>
+                  {/* Main Image */}
+                  <button
+                    onClick={() => openLightbox(article.media, 0)}
+                    className="relative w-full aspect-video rounded-2xl overflow-hidden cursor-pointer group bg-gray-100 shadow-2xl"
+                    aria-label="Bilder anzeigen"
+                  >
+                    <Image 
+                      src={article.media[0]} 
+                      alt={article.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 rounded-full p-3">
+                        <ExternalLink className="w-6 h-6 text-gray-900" />
+                      </div>
+                    </div>
+                    {article.media.length > 1 && (
+                      <div className="absolute top-4 right-4 bg-black/70 text-white text-sm font-medium px-3 py-1.5 rounded-full backdrop-blur-sm">
+                        {article.media.length} Bilder
+                      </div>
+                    )}
+                  </button>
+
+                  {/* Thumbnail Grid */}
+                  {article.media.length > 1 && (
+                    <div className="grid grid-cols-4 gap-3">
+                      {article.media.slice(1, 5).map((image, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => openLightbox(article.media, idx + 1)}
+                          className="relative aspect-square rounded-xl overflow-hidden cursor-pointer group bg-gray-100 shadow-md hover:shadow-xl transition-all"
+                          aria-label={`Bild ${idx + 2} anzeigen`}
+                        >
+                          <Image 
+                            src={image} 
+                            alt={`${article.title} - Bild ${idx + 2}`}
+                            fill
+                            sizes="150px"
+                            className="object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+                          {idx === 3 && article.media.length > 5 && (
+                            <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                              <span className="text-white text-lg font-bold">+{article.media.length - 5}</span>
+                            </div>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="relative w-full aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center shadow-2xl">
+                  <ImageIcon className="w-24 h-24 text-gray-400" />
+                </div>
+              )}
+            </div>
           </div>
         </Container>
       </section>
+
+      {lightboxImages && (
+        <Lightbox
+          images={lightboxImages}
+          initialIndex={lightboxIndex}
+          onClose={closeLightbox}
+        />
+      )}
 
       {/* Specifications Section */}
       {article.attributes && Object.keys(article.attributes).length > 0 && (

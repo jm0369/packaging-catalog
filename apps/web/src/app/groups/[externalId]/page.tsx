@@ -2,13 +2,14 @@
 
 import React, { useEffect, useState } from "react";
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { ImageGallery } from '@/components/image-gallery';
+import { Lightbox } from '@/components/lightbox';
 import { ArticlesTable } from '@/components/articles-table';
 import Container from "@/components/container";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Search, ArrowLeft, ArrowRight, Package, Tag } from "lucide-react";
+import { Search, ArrowLeft, ArrowRight, Package, Tag, ExternalLink, ImageIcon } from "lucide-react";
 import { colors } from "@/lib/colors";
 import { useSearchParams } from "next/navigation";
 
@@ -47,6 +48,18 @@ export default function GroupPage({ params }: GroupPageProps) {
   const [loading, setLoading] = useState(true);
   const [externalId, setExternalId] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [lightboxImages, setLightboxImages] = useState<string[] | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+
+  const openLightbox = (images: string[], index: number = 0) => {
+    setLightboxImages(images);
+    setLightboxIndex(index);
+  };
+
+  const closeLightbox = () => {
+    setLightboxImages(null);
+    setLightboxIndex(0);
+  };
 
   const q = searchParams.get('q') || undefined;
   const limit = Math.min(100, Math.max(1, Number(searchParams.get('limit') ?? 24)));
@@ -196,14 +209,79 @@ export default function GroupPage({ params }: GroupPageProps) {
             </div>
 
             {/* Image Gallery */}
-            {group.media && group.media.length > 0 && (
-              <div className="rounded-2xl overflow-hidden shadow-2xl">
-                <ImageGallery images={group.media} alt={group.name} />
-              </div>
-            )}
+            <div className="space-y-4">
+              {group.media && group.media.length > 0 ? (
+                <>
+                  {/* Main Image */}
+                  <button
+                    onClick={() => openLightbox(group.media, 0)}
+                    className="relative w-full aspect-video rounded-2xl overflow-hidden cursor-pointer group bg-gray-100 shadow-2xl"
+                    aria-label="Bilder anzeigen"
+                  >
+                    <Image 
+                      src={group.media[0]} 
+                      alt={group.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 rounded-full p-3">
+                        <ExternalLink className="w-6 h-6 text-gray-900" />
+                      </div>
+                    </div>
+                    {group.media.length > 1 && (
+                      <div className="absolute top-4 right-4 bg-black/70 text-white text-sm font-medium px-3 py-1.5 rounded-full backdrop-blur-sm">
+                        {group.media.length} Bilder
+                      </div>
+                    )}
+                  </button>
+
+                  {/* Thumbnail Grid */}
+                  {group.media.length > 1 && (
+                    <div className="grid grid-cols-4 gap-3">
+                      {group.media.slice(1, 5).map((image, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => openLightbox(group.media, idx + 1)}
+                          className="relative aspect-square rounded-xl overflow-hidden cursor-pointer group bg-gray-100 shadow-md hover:shadow-xl transition-all"
+                          aria-label={`Bild ${idx + 2} anzeigen`}
+                        >
+                          <Image 
+                            src={image} 
+                            alt={`${group.name} - Bild ${idx + 2}`}
+                            fill
+                            sizes="150px"
+                            className="object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+                          {idx === 3 && group.media.length > 5 && (
+                            <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                              <span className="text-white text-lg font-bold">+{group.media.length - 5}</span>
+                            </div>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="relative w-full aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center shadow-2xl">
+                  <ImageIcon className="w-24 h-24 text-gray-400" />
+                </div>
+              )}
+            </div>
           </div>
         </Container>
       </section>
+
+      {lightboxImages && (
+        <Lightbox
+          images={lightboxImages}
+          initialIndex={lightboxIndex}
+          onClose={closeLightbox}
+        />
+      )}
 
       {/* Articles Section */}
       <section className="py-12 bg-gray-50">
