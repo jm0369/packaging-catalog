@@ -1,17 +1,17 @@
 export const revalidate = 0;
 
-import { adminFetch } from '@/lib/admin-client';
 import Link from 'next/link';
 
 type Category = {
   id: string;
   name: string;
   color: string;
-  _count: { groups: number };
+  groupCount: number;
 };
 
 async function fetchCategories(): Promise<Category[]> {
-  const r = await adminFetch('/admin/categories', { cache: 'no-store' });
+  const API = process.env.NEXT_PUBLIC_API_BASE!;
+  const r = await fetch(`${API}/api/categories`, { cache: 'no-store' });
   if (!r.ok) throw new Error('Failed to load categories');
   return r.json();
 }
@@ -62,7 +62,7 @@ export default async function CategoriesPage() {
                     <div className="font-medium">{c.name}</div>
                   </td>
                   <td className="px-3 py-2">
-                    <span className="text-gray-600">{c._count.groups} groups</span>
+                    <span className="text-gray-600">{c.groupCount} groups</span>
                   </td>
                   <td className="px-3 py-2 text-right">
                     <Link className="underline" href={`/categories/${c.id}`}>

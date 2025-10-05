@@ -33,7 +33,8 @@ async function getGroupCategories(externalId: string): Promise<Category[]> {
 }
 
 async function getAllCategories(): Promise<Category[]> {
-  const r = await adminFetch('/admin/categories', { cache: 'no-store' });
+  const API = process.env.NEXT_PUBLIC_API_BASE!;
+  const r = await fetch(`${API}/api/categories`, { cache: 'no-store' });
   if (!r.ok) return [];
   return r.json();
 }

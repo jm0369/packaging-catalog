@@ -10,23 +10,6 @@ import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 export class CategoriesController {
   constructor(private prisma: PrismaService) {}
 
-  @Get()
-  @ApiOperation({ summary: 'List all categories' })
-  async list() {
-    const categories = await this.prisma.category.findMany({
-      orderBy: { name: 'asc' },
-      select: {
-        id: true,
-        name: true,
-        color: true,
-        _count: {
-          select: { groups: true },
-        },
-      },
-    });
-    return categories;
-  }
-
   @Get(':id')
   @ApiOperation({ summary: 'Get a single category' })
   async getById(@Param('id') id: string) {
