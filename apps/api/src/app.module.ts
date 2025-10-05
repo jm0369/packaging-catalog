@@ -7,6 +7,7 @@ import { PrismaService } from './prisma/prisma.service';
 import { HealthController } from './health.controller';
 import { ArticlesPublicController } from './routes/public/articles.controller';
 import { ArticleGroupsPublicController } from './routes/public/article-groups.controller';
+import { CategoriesPublicController } from './routes/public/categories.controller';
 import { MediaController } from './media/media.controller';
 import { GroupsMediaController } from './routes/admin/groups-media.controller';
 import { ArticlesMediaController } from './routes/admin/articles-media.controller';
@@ -31,6 +32,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     HealthController,
     ArticleGroupsPublicController,
     ArticlesPublicController,
+    CategoriesPublicController,
     MediaController,
     GroupsMediaController,
     ArticlesMediaController,

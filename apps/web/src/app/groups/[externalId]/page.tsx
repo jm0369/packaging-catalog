@@ -12,6 +12,12 @@ type Props = {
 
 const API = process.env.NEXT_PUBLIC_API_BASE!;
 
+type Category = {
+  id: string;
+  name: string;
+  color: string;
+};
+
 async function fetchGroup(externalId: string) {
   const r = await fetch(`${API}/api/article-groups/${(externalId)}`, { next: { revalidate } });
   if (r.status === 404) return null;
@@ -22,6 +28,7 @@ async function fetchGroup(externalId: string) {
     name: string;
     description: string | null;
     media: string[];
+    categories: Category[];
     articles: Array<{
       id: string;
       externalId: string;
@@ -77,6 +84,27 @@ export default async function GroupPage({ params, searchParams }: Props) {
       <p className="text-sm text-gray-500 mt-1">
         {group.name}
       </p>
+      
+      {/* Categories */}
+      {group.categories && group.categories.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {group.categories.map((category) => (
+            <Link
+              key={category.id}
+              href={`/?category=${category.id}`}
+              className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm border transition-colors hover:opacity-80"
+              style={{ 
+                backgroundColor: category.color + '20',
+                borderColor: category.color,
+                color: category.color 
+              }}
+            >
+              {category.name}
+            </Link>
+          ))}
+        </div>
+      )}
+      
       <ImageGallery images={group.media || []} alt={group.name} />
       {/* Search */}
       <form className="flex gap-2 mb-8" action={`/groups/${(externalId)}`} method="get">

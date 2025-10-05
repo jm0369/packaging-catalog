@@ -6,12 +6,19 @@ import { Lightbox } from './lightbox';
 import Link from 'next/link';
 import Image from 'next/image';
 
+type Category = {
+  id: string;
+  name: string;
+  color: string;
+};
+
 type Group = {
   id: string;
   externalId: string;
   name: string;
   description?: string | null;
   media: string[];
+  categories?: Category[];
 };
 
 type Article = {
@@ -123,6 +130,24 @@ export function GroupList({ groups, apiBase }: GroupListProps) {
                     <p className="text-sm text-gray-500 mt-1">
                       {group.externalId}
                     </p>
+                    {group.categories && group.categories.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {group.categories.map((category) => (
+                          <span
+                            key={category.id}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs"
+                            style={{ 
+                              backgroundColor: category.color + '20',
+                              borderColor: category.color,
+                              borderWidth: '1px',
+                              color: category.color 
+                            }}
+                          >
+                            {category.name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                     {group.description && (
                       <p className="text-sm text-gray-600 mt-1 line-clamp-2">
                         {group.description}
