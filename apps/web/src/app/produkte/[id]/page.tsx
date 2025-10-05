@@ -36,14 +36,14 @@ async function fetchCategory(id: string): Promise<Category | null> {
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
   const category = await fetchCategory(id);
-  if (!category) return { title: 'Category not found' };
+  if (!category) return { title: 'Produkt nicht gefunden' };
   return { 
-    title: category.name, 
-    description: category.description ?? `Browse ${category.name} products` 
+    title: `${category.name} - PackChampion`, 
+    description: category.description ?? `Entdecken Sie unsere ${category.name} Verpackungslösungen` 
   };
 }
 
-export default async function CategoryPage({ params }: Props) {
+export default async function ProduktDetailPage({ params }: Props) {
   const { id } = await params;
   const category = await fetchCategory(id);
   
@@ -68,7 +68,7 @@ export default async function CategoryPage({ params }: Props) {
         )}
 
         <div className="text-sm text-gray-600">
-          {category.groupCount} {category.groupCount === 1 ? 'group' : 'groups'}
+          {category.groupCount} {category.groupCount === 1 ? 'Produkt' : 'Produkte'}
         </div>
       </div>
 
@@ -82,7 +82,7 @@ export default async function CategoryPage({ params }: Props) {
       {/* Properties */}
       {category.properties && category.properties.length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-2xl font-semibold text-gray-900">Properties</h2>
+          <h2 className="text-2xl font-semibold text-gray-900">Eigenschaften</h2>
           <div className="grid gap-4 md:grid-cols-2">
             {category.properties.map((prop, idx) => (
               <div key={idx} className="border rounded-lg p-4 bg-white">
@@ -97,7 +97,7 @@ export default async function CategoryPage({ params }: Props) {
       {/* Applications */}
       {category.applications && category.applications.length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-2xl font-semibold text-gray-900">Applications</h2>
+          <h2 className="text-2xl font-semibold text-gray-900">Anwendungen</h2>
           <ul className="list-disc list-inside space-y-2 text-gray-700">
             {category.applications.map((app, idx) => (
               <li key={idx}>{app}</li>
@@ -109,7 +109,7 @@ export default async function CategoryPage({ params }: Props) {
       {/* Formats & Specifications */}
       {category.formatsSpecifications && category.formatsSpecifications.length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-2xl font-semibold text-gray-900">Formats & Specifications</h2>
+          <h2 className="text-2xl font-semibold text-gray-900">Formate & Spezifikationen</h2>
           <ul className="list-disc list-inside space-y-2 text-gray-700">
             {category.formatsSpecifications.map((format, idx) => (
               <li key={idx}>{format}</li>
@@ -121,7 +121,7 @@ export default async function CategoryPage({ params }: Props) {
       {/* Key Figures */}
       {category.keyFigures && category.keyFigures.length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-2xl font-semibold text-gray-900">Key Figures</h2>
+          <h2 className="text-2xl font-semibold text-gray-900">Kennzahlen</h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {category.keyFigures.map((figure, idx) => (
               <div key={idx} className="border rounded-lg p-4 bg-white">
@@ -136,7 +136,7 @@ export default async function CategoryPage({ params }: Props) {
       {/* Ordering */}
       {category.ordering && category.ordering.length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-2xl font-semibold text-gray-900">Ordering Information</h2>
+          <h2 className="text-2xl font-semibold text-gray-900">Bestellinformationen</h2>
           <div className="space-y-3">
             {category.ordering.map((order, idx) => (
               <div key={idx} className="border rounded-lg p-4 bg-white">
@@ -151,7 +151,7 @@ export default async function CategoryPage({ params }: Props) {
       {/* Ordering Notes */}
       {category.orderingNotes && category.orderingNotes.length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-2xl font-semibold text-gray-900">Ordering Notes</h2>
+          <h2 className="text-2xl font-semibold text-gray-900">Hinweise zur Bestellung</h2>
           <ul className="list-disc list-inside space-y-2 text-gray-700">
             {category.orderingNotes.map((note, idx) => (
               <li key={idx}>{note}</li>
@@ -160,13 +160,13 @@ export default async function CategoryPage({ params }: Props) {
         </div>
       )}
 
-      {/* Back to Home */}
+      {/* Back to Products */}
       <div className="pt-8 border-t">
         <Link 
           href={`/groups?category=${id}`}
           className="inline-flex items-center gap-2 text-gray-700 hover:text-gray-900"
         >
-          ← View all {category.name} products
+          ← Alle {category.name} anzeigen
         </Link>
       </div>
     </div>

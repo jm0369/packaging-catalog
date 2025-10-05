@@ -244,7 +244,7 @@ export default function Page() {
                                 variants={fadeUp}
                                 transition={{ delay: idx * 0.08 }}
                             >
-                                <Link href={"/categories/" + c.id} aria-label={"what"} className="relative isolate overflow-hidden shadow block group">
+                                <Link href={"/produkte/" + c.id} aria-label={"what"} className="relative isolate overflow-hidden shadow block group">
                                     <motion.div
                                         className="h-60 bg-cover bg-center"
                                         style={{ backgroundImage: `url(${c.media[0]})` }}

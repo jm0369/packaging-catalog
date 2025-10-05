@@ -20,22 +20,22 @@ async function fetchCategories(): Promise<Category[]> {
 }
 
 export const metadata = {
-  title: 'Categories - Catalog',
-  description: 'Browse our product categories',
+  title: 'Produkte - PackChampion',
+  description: 'Entdecken Sie unsere nachhaltigen Verpackungslösungen',
 };
 
-export default async function CategoriesPage() {
+export default async function ProduktePage() {
   const categories = await fetchCategories();
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-4xl font-bold text-gray-900">Categories</h1>
-        <p className="text-gray-600 mt-2">Explore our product categories</p>
+        <h1 className="text-4xl font-bold text-gray-900">Unsere Produkte</h1>
+        <p className="text-gray-600 mt-2">Entdecken Sie unsere nachhaltigen Verpackungslösungen</p>
       </div>
 
       {categories.length === 0 ? (
-        <p className="text-gray-500">No categories available.</p>
+        <p className="text-gray-500">Keine Produkte verfügbar.</p>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {categories.map((category) => {
@@ -45,7 +45,7 @@ export default async function CategoriesPage() {
             return (
               <Link
                 key={category.id}
-                href={`/categories/${category.id}`}
+                href={`/produkte/${category.id}`}
                 className="group border rounded-lg overflow-hidden hover:shadow-lg transition-shadow bg-white"
               >
                 {/* Image */}
@@ -88,7 +88,7 @@ export default async function CategoriesPage() {
                   )}
                   
                   <div className="text-sm text-gray-500">
-                    {category.groupCount} {category.groupCount === 1 ? 'group' : 'groups'}
+                    {category.groupCount} {category.groupCount === 1 ? 'Produkt' : 'Produkte'}
                   </div>
                 </div>
               </Link>
