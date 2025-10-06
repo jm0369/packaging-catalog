@@ -294,22 +294,12 @@ export default function Header() {
                         
 
                     </nav>
-                    <a
-                        href="mailto:info@packchampion.de"
-                        aria-label="E-Mail senden"
-                        className="ml-auto inline-flex h-12 w-12 items-center justify-center rounded-full bg-emerald-600 text-white shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+                    <Link
+                        href="/unternehmen/kontakt"
+                        className="ml-auto inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-emerald-600 text-white font-semibold shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
                     >
-                        <Mail className="h-5 w-5" />
-                    </a>
-                    <a
-                        href="https://wa.me/4912345678900"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="WhatsApp öffnen"
-                        className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-emerald-600 text-white shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
-                    >
-                        <MessageCircle className="h-5 w-5" />
-                    </a>
+                        <span>Kontakt</span>
+                    </Link>
                     <div className="flex items-center gap-3">
 
                         {/* Mobile hamburger (moved to the right) */}
