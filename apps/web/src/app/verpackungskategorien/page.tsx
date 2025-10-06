@@ -61,53 +61,7 @@ export default function ProduktePage() {
 
   return (
     <>
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-emerald-50 to-white py-20">
-        <Container>
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="text-sm font-semibold tracking-widest uppercase mb-4" style={{ color: colors.lightGreen }}>
-                Unsere Verpackungskategorien
-              </div>
-              <h1 className="text-4xl md:text-5xl font-extrabold mb-6" style={{ color: colors.darkGreen }}>
-                Verpackungskategorien für jeden Bedarf
-              </h1>
-              <p className="text-lg text-foreground/80 mb-8 leading-relaxed">
-                Entdecken Sie unsere vielfältigen Verpackungskategorien. Von nachhaltigen 
-                Lösungen bis zu individuellen Designs – wir haben die perfekte Verpackung 
-                für jeden Bedarf.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <Link href="/unternehmen/kontakt">
-                  <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700">
-                    Beratung anfragen
-                  </Button>
-                </Link>
-                <Link href="/leistungen">
-                  <Button size="lg" variant="outline" className="border-emerald-600 text-emerald-600 hover:bg-emerald-50">
-                    Unsere Leistungen
-                  </Button>
-                </Link>
-              </div>
-            </div>
-            <div className="relative">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-4">
-                  <div className="h-32 bg-emerald-100 rounded-lg" />
-                  <div className="h-48 bg-emerald-200 rounded-lg" />
-                </div>
-                <div className="space-y-4 mt-8">
-                  <div className="h-48 bg-emerald-300 rounded-lg" />
-                  <div className="h-32 bg-emerald-200 rounded-lg" />
-                </div>
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Package className="w-24 h-24 text-emerald-600 opacity-50" />
-              </div>
-            </div>
-          </div>
-        </Container>
-      </section>
+     
 
       {/* Products Categories Section */}
       <section className="py-20 bg-gray-50">
