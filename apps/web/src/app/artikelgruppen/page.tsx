@@ -92,46 +92,7 @@ export default function GroupsPage() {
 
   return (
     <>
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-emerald-50 to-white py-16">
-        <Container>
-          <div className="max-w-4xl">
-            <div className="text-sm font-semibold tracking-widest uppercase mb-4" style={{ color: colors.lightGreen }}>
-              Artikelgruppen
-            </div>
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-6" style={{ color: colors.darkGreen }}>
-              Finden Sie die perfekte Verpackungslösung
-            </h1>
-            <p className="text-lg text-foreground/80 mb-8 leading-relaxed">
-              Durchsuchen Sie unsere umfangreiche Auswahl an Verpackungsprodukten. 
-              Filtern Sie nach Kategorien oder nutzen Sie die Suche, um genau das zu finden, was Sie brauchen.
-            </p>
-
-            {/* Search Bar */}
-            <Card className="border-0 shadow-xl">
-              <CardContent className="p-6">
-                <form action="/artikelgruppen" method="get" className="flex gap-3">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      name="q"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Artikelgruppen durchsuchen..."
-                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    />
-                  </div>
-                  {categoryName && <input type="hidden" name="category" value={categoryName} />}
-                  <input type="hidden" name="limit" value={String(limit)} />
-                  <Button type="submit" size="lg" className="bg-emerald-600 hover:bg-emerald-700 px-8">
-                    Suchen
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </div>
-        </Container>
-      </section>
+     
 
       {/* Filters Section */}
       <section className="py-8 bg-white border-b">
