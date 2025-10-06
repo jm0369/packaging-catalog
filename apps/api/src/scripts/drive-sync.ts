@@ -41,11 +41,14 @@ function parseTargetFromName(
 ): { type: 'article' | 'group'; id: string; matched: string; sortOrder: number } | null {
   const baseName = name.replace(/\.[a-z0-9]+$/i, '');
   
-  // Article pattern: (Article) E (number)
-  const articleMatch = baseName.match(/^(.+?)\s+E\s+(\d+)$/i);
+  // Article pattern: (Article) E (number) or (Article) E(number) with no space
+  // Also handles image numbers with dashes like "14-2" -> extract "14" and "2" -> use "142"
+  const articleMatch = baseName.match(/^(.+?)\s+E\s*(\d+(?:-\d+)?)$/i);
   if (articleMatch) {
     const searchTerm = normalizeForMatching(articleMatch[1]);
-    const sortOrder = parseInt(articleMatch[2], 10);
+    // Remove dashes from the sort order number (e.g., "14-2" -> "142")
+    const sortOrderStr = articleMatch[2].replace(/-/g, '');
+    const sortOrder = parseInt(sortOrderStr, 10);
     
     for (const article of articles) {
       const normalized = normalizeForMatching(article.externalId);
@@ -64,11 +67,14 @@ function parseTargetFromName(
     }
   }
   
-  // Group pattern: (ArticleGroup) (number)
-  const groupMatch = baseName.match(/^(.+?)\s+(\d+)$/i);
+  // Group pattern: (ArticleGroup) (number) or (ArticleGroup) (number-subnum)
+  // Also handles image numbers with dashes
+  const groupMatch = baseName.match(/^(.+?)\s+(\d+(?:-\d+)?)$/i);
   if (groupMatch) {
     const searchTerm = normalizeForMatching(groupMatch[1]);
-    const sortOrder = parseInt(groupMatch[2], 10);
+    // Remove dashes from the sort order number (e.g., "14-2" -> "142")
+    const sortOrderStr = groupMatch[2].replace(/-/g, '');
+    const sortOrder = parseInt(sortOrderStr, 10);
     
     for (const group of groups) {
       const normalized = normalizeForMatching(group.externalId);
@@ -316,6 +322,8 @@ async function main() {
               `[${idx + 1}/${toProcess.length}] ${isUpdate ? 'UPDATE' : 'ADD'}  ${file.name} → ${target.type}:${target.id}`
             );
 
+            /*
+
             // Download file
             const buffer = await downloadFile(drive, file.id, file.name);
             if (!buffer) {
@@ -375,6 +383,8 @@ async function main() {
             }
 
             console.log(`   ✓ Success (mediaId=${mediaId}, sha256=${checksum.slice(0, 8)}…)`);
+
+            */
           })
         )
       );
