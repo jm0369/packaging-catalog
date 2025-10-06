@@ -146,7 +146,7 @@ export function GroupList({ groups, apiBase }: GroupListProps) {
                     <div className="flex-grow min-w-0 space-y-3">
                       <div>
                         <Link 
-                          href={`/groups/${encodeURIComponent(group.externalId)}`}
+                          href={`/produktgruppen/${encodeURIComponent(group.externalId)}`}
                           className="text-2xl font-bold text-gray-900 hover:text-emerald-600 transition-colors inline-flex items-center gap-2 group/link"
                         >
                           {group.name}

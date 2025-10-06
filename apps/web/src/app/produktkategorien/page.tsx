@@ -109,25 +109,6 @@ export default function ProduktePage() {
         </Container>
       </section>
 
-      {/* Highlights Section */}
-      <section className="py-16 bg-white">
-        <Container>
-          <div className="grid md:grid-cols-3 gap-8">
-            {highlights.map((highlight, index) => (
-              <Card key={index} className="text-center border-0 shadow-lg">
-                <CardContent className="pt-8">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 mb-4">
-                    <highlight.icon className="w-8 h-8 text-emerald-600" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-2">{highlight.title}</h3>
-                  <p className="text-foreground/70">{highlight.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </Container>
-      </section>
-
       {/* Products Categories Section */}
       <section className="py-20 bg-gray-50">
         <Container>
