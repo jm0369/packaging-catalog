@@ -133,7 +133,7 @@ export default function KatalogPage() {
                             Beide Wege führen Sie zu detaillierten Produktinformationen und Spezifikationen.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Link href="/produkte">
+                            <Link href="/produktkategorien">
                                 <Button variant="outline" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50">
                                     Zu den Produktkategorien
                                 </Button>

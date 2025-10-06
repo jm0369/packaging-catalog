@@ -63,7 +63,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/produkte" className="hover:underline">
+                <Link href="/produktkategorien" className="hover:underline">
                   Produkte
                 </Link>
               </li>

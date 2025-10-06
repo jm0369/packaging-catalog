@@ -304,7 +304,7 @@ export default function Page() {
                     </div>
                     <motion.div initial="hidden" whileInView="visible" viewport={viewport} variants={fadeUp} transition={{ delay: 0.15 }}>
                         <Button asChild className="mt-8">
-                            <Link href="/produkte/co2-master">CO₂‑Fußabdruck reduzieren</Link>
+                            <Link href="/produktkategorien/co2-master">CO₂‑Fußabdruck reduzieren</Link>
                         </Button>
                     </motion.div>
                 </Container>

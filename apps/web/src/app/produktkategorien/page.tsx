@@ -67,15 +67,15 @@ export default function ProduktePage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <div className="text-sm font-semibold tracking-widest uppercase mb-4" style={{ color: colors.lightGreen }}>
-                Unsere Produktpalette
+                Unsere Produktkategorien
               </div>
               <h1 className="text-4xl md:text-5xl font-extrabold mb-6" style={{ color: colors.darkGreen }}>
-                Nachhaltige Verpackungslösungen für jeden Bedarf
+                Verpackungskategorien für jeden Bedarf
               </h1>
               <p className="text-lg text-foreground/80 mb-8 leading-relaxed">
-                Entdecken Sie unsere vielfältige Auswahl an umweltfreundlichen Verpackungen. 
-                Von Versandkartons über Polstermaterialien bis hin zu individuellen Lösungen – 
-                wir bieten die perfekte Verpackung für Ihre Produkte.
+                Entdecken Sie unsere vielfältigen Verpackungskategorien. Von nachhaltigen 
+                Lösungen bis zu individuellen Designs – wir haben die perfekte Verpackung 
+                für jeden Bedarf.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link href="/unternehmen/kontakt">
@@ -134,7 +134,7 @@ export default function ProduktePage() {
           <div className="text-center mb-12">
             <SectionTitle 
               title="Produktkategorien" 
-              kicker="Wählen Sie aus unseren nachhaltigen Verpackungslösungen"
+              kicker="Wählen Sie aus unseren spezialisierten Verpackungskategorien"
               center
             />
           </div>

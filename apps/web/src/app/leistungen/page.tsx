@@ -107,7 +107,7 @@ export default function LeistungenPage() {
                     Jetzt beraten lassen
                   </Button>
                 </Link>
-                <Link href="/produkte">
+                <Link href="/produktkategorien">
                   <Button size="lg" variant="outline" className="border-emerald-600 text-emerald-600 hover:bg-emerald-50">
                     Produkte ansehen
                   </Button>

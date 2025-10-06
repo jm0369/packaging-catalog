@@ -125,7 +125,7 @@ export default function VerpackungenPage() {
                 Lösung für Ihre Produkte. Nachhaltig, sicher und in höchster Qualität.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Link href="/produkte">
+                <Link href="/produktkategorien">
                   <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700">
                     Produkte entdecken
                   </Button>
@@ -289,7 +289,7 @@ export default function VerpackungenPage() {
               unseren Experten beraten. Wir helfen Ihnen, die optimale Verpackungslösung zu finden.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Link href="/produkte">
+              <Link href="/produktkategorien">
                 <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700">
                   Alle Produkte ansehen
                 </Button>

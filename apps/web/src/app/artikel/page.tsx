@@ -53,7 +53,7 @@ export default function ArticlesPage() {
         sp.set('limit', String(limit));
         sp.set('offset', String(offset));
 
-        const r = await fetch(`${API}/api/artikel?${sp}`);
+        const r = await fetch(`${API}/api/articles?${sp}`);
         if (r.ok) {
           const data = await r.json();
           setArticles(data.data || []);
