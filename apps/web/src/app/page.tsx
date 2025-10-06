@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Leaf, Zap, Boxes, PackageSearch, Timer, Recycle, Truck, ChevronRight, Package2 } from "lucide-react";
 import { colors } from "@/lib/colors";
 import Image from "next/image";
-import { motion, type Variants } from "framer-motion";
 import Container from "@/components/container";
 import SectionTitle from "@/components/section-title";
 import HeroSlider from "@/components/hero-slider";
@@ -111,23 +110,11 @@ const teamMembers = [
 
 export default function Page() {
 
-    //const categories = await fetchCategories();
-
     const [categories, setCategories] = React.useState<Category[]>([]);
 
     React.useEffect(() => {
         fetchCategories().then(setCategories);
     }, []);
-
-    const fadeUp: Variants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
-    };
-    const viewport = { once: false, amount: 0.2 } as const;
-    const scaleIn: Variants = {
-        hidden: { opacity: 0, scale: 0.96 },
-        visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
-    };
 
     return (
         <div className="bg-white" style={{ color: colors.darkGreen }}>
@@ -137,13 +124,7 @@ export default function Page() {
             {/* USP STRIP */}
             <section className="py-10" style={{ backgroundColor: colors.darkGreen, color: "white" }}>
                 <Container>
-                    <motion.div
-                        className="grid md:grid-cols-[1fr_auto] items-center gap-8"
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={viewport}
-                        variants={fadeUp}
-                    >
+                    <div className="grid md:grid-cols-[1fr_auto] items-center gap-8">
                         <div>
                             <h3 className="text-2xl md:text-3xl font-extrabold">Wir liefern Lösungen.</h3>
                             <p className="opacity-90 mt-2 max-w-3xl">Unser Ziel ist es, nicht nur Produkte, sondern komplette Lösungen zu bieten.</p>
@@ -151,23 +132,15 @@ export default function Page() {
                         <Button asChild>
                             <Link href="/leistungen">Unsere Leistungen</Link>
                         </Button>
-                    </motion.div>
+                    </div>
                     <div className="mt-7 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 text-center text-[15px]">
                         {uspBullets.map((b: string, idx: number) => {
                             const Icon = [Leaf, Zap, PackageSearch, Timer][idx];
                             return (
-                                <motion.div
-                                    key={b}
-                                    className="space-y-2"
-                                    initial="hidden"
-                                    whileInView="visible"
-                                    viewport={viewport}
-                                    variants={fadeUp}
-                                    transition={{ delay: idx * 0.08 }}
-                                >
+                                <div key={b} className="space-y-2">
                                     <div><Icon className="mx-auto size-10" style={{ color: colors.lightGreen }} /></div>
                                     <div className="font-semibold">{b}</div>
-                                </motion.div>
+                                </div>
                             );
                         })}
                     </div>
@@ -177,43 +150,32 @@ export default function Page() {
             {/* VERPACKUNG WEITERGEDACHT */}
             <section id="unternehmen" className="py-16 md:py-24">
                 <Container>
-                    <motion.div initial="hidden" whileInView="visible" viewport={viewport} variants={fadeUp}>
+                    <div>
                         <SectionTitle center title={"Verpackungen weitergedacht."} />
-                    </motion.div>
-                    <motion.div className="text-center opacity-80 max-w-3xl mx-auto" initial="hidden" whileInView="visible" viewport={viewport} variants={fadeUp} transition={{ delay: 0.05 }}>
+                    </div>
+                    <div className="text-center opacity-80 max-w-3xl mx-auto">
                         Sortiment, Qualität und Verfügbarkeit sind Standards –
                         aber keine Differenzierung.
                         Wir denken in Lösungen:
                         Praktische Details wie Aufreißfaden und Selbstklebeverschluss
                         verbessern das Nutzungserlebnis, während unsere Co2-reduzierten
                         Verpackungen für Nachhaltigkeit und Innovation stehen.
-                    </motion.div>
+                    </div>
 
                     <div className="mt-10 grid gap-7 md:grid-cols-3">
-                        {features.map((c: { title: string; text: string; img: string }, idx: number) => (
-                            <motion.div
-                                key={c.title}
-                                initial="hidden"
-                                whileInView="visible"
-                                viewport={viewport}
-                                variants={fadeUp}
-                                transition={{ delay: idx * 0.08 }}
-                            >
+                        {features.map((c: { title: string; text: string; img: string }) => (
+                            <div key={c.title}>
                                 <Card className="overflow-hidden shadow-sm border-primary/50">
-                                    <motion.div
+                                    <div
                                         className="h-60 w-full bg-center bg-cover"
                                         style={{ backgroundImage: `url(${c.img})` }}
-                                        initial="hidden"
-                                        whileInView="visible"
-                                        viewport={viewport}
-                                        variants={scaleIn}
                                     />
                                     <CardHeader>
                                         <CardTitle className="text-lg" style={{ color: colors.green900 }}>{c.title}</CardTitle>
                                     </CardHeader>
                                     <CardContent className="opacity-80">{c.text}</CardContent>
                                 </Card>
-                            </motion.div>
+                            </div>
                         ))}
                     </div>
 
@@ -223,35 +185,18 @@ export default function Page() {
             {/* PRODUCT CLUSTERS – big row */}
             <section id="produkte" className="py-10 md:py-16" style={{ backgroundColor: colors.lightCopper }}>
                 <Container>
-                    <motion.h3
-                        className="text-3xl md:text-4xl font-extrabold mb-20 text-center"
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={viewport}
-                        variants={fadeUp}
-                    >
+                    <h3 className="text-3xl md:text-4xl font-extrabold mb-20 text-center">
                         Unser Standard.
                         <br />
                         <span style={{ color: colors.lightGreen }}>Ihre Produkte, unsere Lösungen.</span>
-                    </motion.h3>
+                    </h3>
                     <div className="grid gap-6 md:grid-cols-3">
-                        {categories.map((c: Category, idx: number) => (
-                            <motion.div
-                                key={c.id}
-                                initial="hidden"
-                                whileInView="visible"
-                                viewport={viewport}
-                                variants={fadeUp}
-                                transition={{ delay: idx * 0.08 }}
-                            >
+                        {categories.map((c: Category) => (
+                            <div key={c.id}>
                                 <Link href={"/produkte/" + c.id} aria-label={"what"} className="relative isolate overflow-hidden shadow block group">
-                                    <motion.div
+                                    <div
                                         className="h-60 bg-cover bg-center"
                                         style={{ backgroundImage: `url(${c.media[0]})` }}
-                                        initial="hidden"
-                                        whileInView="visible"
-                                        viewport={viewport}
-                                        variants={scaleIn}
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
                                     <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white">
@@ -261,7 +206,7 @@ export default function Page() {
                                         </span>
                                     </div>
                                 </Link>
-                            </motion.div>
+                            </div>
                         ))}
                     </div>
 
@@ -271,61 +216,40 @@ export default function Page() {
             {/* CO2 banner */}
             <section className="py-16 md:py-20 text-white text-center" style={{ backgroundColor: colors.darkGreen }}>
                 <Container>
-                    <motion.h3
-                        className="text-3xl md:text-4xl font-extrabold"
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={viewport}
-                        variants={fadeUp}
-                    >
+                    <h3 className="text-3xl md:text-4xl font-extrabold">
                         Champions in Sachen
                         <br />
                         <span style={{ color: colors.lightGreen }}>CO₂‑Reduktion.</span>
-                    </motion.h3>
+                    </h3>
                     <div className="mt-10 grid gap-8 sm:grid-cols-2 md:grid-cols-4 text-sm">
                         {co2Items.map((co: { title: string; text: string }, idx: number) => {
                             const Icon = [Boxes, Package2, Recycle, Truck][idx];
                             return (
-                                <motion.div
-                                    key={co.title}
-                                    className="space-y-2"
-                                    initial="hidden"
-                                    whileInView="visible"
-                                    viewport={viewport}
-                                    variants={fadeUp}
-                                    transition={{ delay: idx * 0.08 }}
-                                >
+                                <div key={co.title} className="space-y-2">
                                     <div><Icon className="mx-auto size-14" style={{ color: colors.lightGreen }} /></div>
                                     <div className="font-semibold">{co.title}</div>
                                     <p className="text-white/85 leading-snug">{co.text}</p>
-                                </motion.div>
+                                </div>
                             );
                         })}
                     </div>
-                    <motion.div initial="hidden" whileInView="visible" viewport={viewport} variants={fadeUp} transition={{ delay: 0.15 }}>
+                    <div>
                         <Button asChild className="mt-8">
                             <Link href="/produktkategorien/CO2-MASTER">CO₂‑Fußabdruck reduzieren</Link>
                         </Button>
-                    </motion.div>
+                    </div>
                 </Container>
             </section>
 
             {/* Leistungen */}
             <section id="leistungen" className="py-16 md:py-24">
                 <Container>
-                    <motion.div initial="hidden" whileInView="visible" viewport={viewport} variants={fadeUp}>
+                    <div>
                         <SectionTitle center title={"Unser Leistungsangebot."} />
-                    </motion.div>
+                    </div>
                     <div className="grid gap-14 md:gap-6 md:grid-cols-3 mt-20">
-                        {services.map((s: { title: string; text: string; icon: string; color: string }, idx: number) => (
-                            <motion.div
-                                key={s.title}
-                                initial="hidden"
-                                whileInView="visible"
-                                viewport={viewport}
-                                variants={fadeUp}
-                                transition={{ delay: idx * 0.08 }}
-                            >
+                        {services.map((s: { title: string; text: string; icon: string; color: string }) => (
+                            <div key={s.title}>
                                 <Card className="text-center text-white" style={{ borderColor: s.color, backgroundColor: s.color }}>
                                     <CardHeader>
                                         <Image className="mx-auto mb-2 mt-[-75px]" width="100" height="100" src={s.icon} alt=""></Image>
@@ -333,7 +257,7 @@ export default function Page() {
                                     </CardHeader>
                                     <CardContent className="opacity-80">{s.text}</CardContent>
                                 </Card>
-                            </motion.div>
+                            </div>
                         ))}
                     </div>
                 </Container>
@@ -342,19 +266,13 @@ export default function Page() {
             {/* Team */}
             <section className="mt-[-75px] py-16 md:py-24">
                 <Container>
-                    <motion.div initial="hidden" whileInView="visible" viewport={viewport} variants={fadeUp}>
+                    <div>
                         <SectionTitle center title={"Unsere Champions für Sie"} />
-                    </motion.div>
+                    </div>
                     <div className="grid md:grid-cols-2 gap-8">
-                        <motion.div
-                            className="overflow-hidden shadow relative w-full h-full min-h-70"
-                            initial="hidden"
-                            whileInView="visible"
-                            viewport={viewport}
-                            variants={scaleIn}
-                        >
+                        <div className="overflow-hidden shadow relative w-full h-full min-h-70">
                             <Image src="/team.JPG" alt="Team" fill className="object-cover" />
-                        </motion.div>
+                        </div>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 content-start">
                             {teamMembers.map((p: { name: string; role: string }, idx: number) => {
                                 // Map names to image file names (ensure these exist in /public)
@@ -369,15 +287,7 @@ export default function Page() {
                                 };
                                 const imgSrc = imageMap[p.name] || "/team.JPG"; // fallback
                                 return (
-                                    <motion.div
-                                        key={p.name}
-                                        className="text-center"
-                                        initial="hidden"
-                                        whileInView="visible"
-                                        viewport={viewport}
-                                        variants={fadeUp}
-                                        transition={{ delay: idx * 0.08 }}
-                                    >
+                                    <div key={p.name} className="text-center">
                                         <div className="relative mx-auto h-24 w-24 overflow-hidden shadow-sm">
                                             <Image
                                                 src={imgSrc}
@@ -390,12 +300,12 @@ export default function Page() {
                                         </div>
                                         <div className="mt-3 font-semibold leading-tight" style={{ color: colors.green900 }}>{p.name}</div>
                                         <div className="text-xs opacity-75">{p.role}</div>
-                                    </motion.div>
+                                    </div>
                                 );
                             })}
-                            <motion.div className="col-span-full" initial="hidden" whileInView="visible" viewport={viewport} variants={fadeUp} transition={{ delay: 0.15 }}>
+                            <div className="col-span-full">
                                 <Button className="w-full">Alle Ansprechpartner</Button>
-                            </motion.div>
+                            </div>
                         </div>
                     </div>
                 </Container>
