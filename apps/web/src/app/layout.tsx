@@ -2,6 +2,7 @@ import './globals.css';
 
 import Footer from '@/components/footer';
 import Header from '@/components/header';
+import { CookieConsent } from '@/components/cookie-consent';
 
 export const metadata = {
   title: 'Catalog',
@@ -15,6 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         <main>{children}</main>
         <Footer />
+        <CookieConsent />
       </body>
     </html>
   );

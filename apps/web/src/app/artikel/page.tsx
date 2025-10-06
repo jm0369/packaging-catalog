@@ -6,7 +6,7 @@ import { ArticlesTable } from '@/components/articles-table';
 import Container from "@/components/container";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Search, Package, ArrowLeft, ArrowRight, X } from "lucide-react";
+import { Search, Package, ArrowLeft, ArrowRight, X, Ruler } from "lucide-react";
 import { colors } from "@/lib/colors";
 import { useSearchParams } from "next/navigation";
 
@@ -35,14 +35,23 @@ export default function ArticlesPage() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [length, setLength] = useState("");
+  const [width, setWidth] = useState("");
+  const [height, setHeight] = useState("");
 
   const q = searchParams.get('q') || undefined;
+  const lengthParam = searchParams.get('length') || undefined;
+  const widthParam = searchParams.get('width') || undefined;
+  const heightParam = searchParams.get('height') || undefined;
   const limit = Math.min(100, Math.max(1, Number(searchParams.get('limit') ?? 24)));
   const offset = Math.max(0, Number(searchParams.get('offset') ?? 0));
 
   useEffect(() => {
     setSearchQuery(q || "");
-  }, [q]);
+    setLength(lengthParam || "");
+    setWidth(widthParam || "");
+    setHeight(heightParam || "");
+  }, [q, lengthParam, widthParam, heightParam]);
 
   useEffect(() => {
     async function fetchArticles() {
@@ -50,6 +59,9 @@ export default function ArticlesPage() {
       try {
         const sp = new URLSearchParams();
         if (q) sp.set('q', q);
+        if (lengthParam) sp.set('length', lengthParam);
+        if (widthParam) sp.set('width', widthParam);
+        if (heightParam) sp.set('height', heightParam);
         sp.set('limit', String(limit));
         sp.set('offset', String(offset));
 
@@ -66,18 +78,24 @@ export default function ArticlesPage() {
       }
     }
     fetchArticles();
-  }, [q, limit, offset]);
+  }, [q, lengthParam, widthParam, heightParam, limit, offset]);
 
   const prevOffset = Math.max(0, offset - limit);
   const nextOffset = offset + limit;
 
-  const buildUrl = (params: { q?: string; limit?: number; offset?: number }) => {
+  const buildUrl = (params: { q?: string; length?: string; width?: string; height?: string; limit?: number; offset?: number }) => {
     const sp = new URLSearchParams();
     if (params.q) sp.set('q', params.q);
+    if (params.length) sp.set('length', params.length);
+    if (params.width) sp.set('width', params.width);
+    if (params.height) sp.set('height', params.height);
     if (params.limit) sp.set('limit', String(params.limit));
     if (params.offset) sp.set('offset', String(params.offset));
     return `/artikel?${sp.toString()}`;
   };
+
+  const hasDimensionFilter = lengthParam || widthParam || heightParam;
+  const hasAnyFilter = q || hasDimensionFilter;
 
   return (
     <>
@@ -99,21 +117,87 @@ export default function ArticlesPage() {
             {/* Search Bar */}
             <Card className="border-0 shadow-xl">
               <CardContent className="p-6">
-                <form action="/artikel" method="get" className="flex gap-3">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      name="q"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Nach Titel, SKU oder EAN suchen..."
-                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    />
+                <form action="/artikel" method="get" className="space-y-4">
+                  {/* Text Search */}
+                  <div className="flex gap-3">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <input
+                        name="q"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Nach Titel, SKU oder EAN suchen..."
+                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      />
+                    </div>
+                    <input type="hidden" name="limit" value={String(limit)} />
+                    <Button type="submit" size="lg" className="bg-emerald-600 hover:bg-emerald-700 px-8">
+                      Suchen
+                    </Button>
                   </div>
-                  <input type="hidden" name="limit" value={String(limit)} />
-                  <Button type="submit" size="lg" className="bg-emerald-600 hover:bg-emerald-700 px-8">
-                    Suchen
-                  </Button>
+
+                  {/* Dimension Filters */}
+                  <div className="border-t pt-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Ruler className="w-4 h-4 text-gray-600" />
+                      <span className="text-sm font-medium text-gray-700">
+                        Maßfilter (mm) - Findet Artikel, in die Ihr Produkt passt:
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label htmlFor="length" className="block text-xs text-gray-600 mb-1.5">
+                          Länge (mm)
+                        </label>
+                        <input
+                          id="length"
+                          name="length"
+                          type="number"
+                          min="0"
+                          step="1"
+                          value={length}
+                          onChange={(e) => setLength(e.target.value)}
+                          placeholder="z.B. 100"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="width" className="block text-xs text-gray-600 mb-1.5">
+                          Breite (mm)
+                        </label>
+                        <input
+                          id="width"
+                          name="width"
+                          type="number"
+                          min="0"
+                          step="1"
+                          value={width}
+                          onChange={(e) => setWidth(e.target.value)}
+                          placeholder="z.B. 50"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="height" className="block text-xs text-gray-600 mb-1.5">
+                          Höhe (mm)
+                        </label>
+                        <input
+                          id="height"
+                          name="height"
+                          type="number"
+                          min="0"
+                          step="1"
+                          value={height}
+                          onChange={(e) => setHeight(e.target.value)}
+                          placeholder="z.B. 30"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                        />
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Hinweis: Die Reihenfolge der Maße spielt keine Rolle. Es werden alle passenden Orientierungen berücksichtigt.
+                    </p>
+                  </div>
                 </form>
               </CardContent>
             </Card>
@@ -122,18 +206,38 @@ export default function ArticlesPage() {
       </section>
 
       {/* Active Search Display */}
-      {q && (
+      {hasAnyFilter && (
         <section className="py-6 bg-white border-b">
           <Container>
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-gray-600">Aktive Suche:</span>
-              <Link
-                href="/artikel"
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 hover:bg-gray-200 transition-colors"
-              >
-                &quot;{q}&quot;
-                <X className="w-4 h-4" />
-              </Link>
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="text-sm text-gray-600">Aktive Filter:</span>
+              {q && (
+                <Link
+                  href={buildUrl({ length: lengthParam, width: widthParam, height: heightParam, limit, offset: 0 })}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                  Suche: &quot;{q}&quot;
+                  <X className="w-4 h-4" />
+                </Link>
+              )}
+              {hasDimensionFilter && (
+                <Link
+                  href={buildUrl({ q, limit, offset: 0 })}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-emerald-100 hover:bg-emerald-200 transition-colors"
+                >
+                  <Ruler className="w-3 h-3" />
+                  Maße: {lengthParam || '?'} × {widthParam || '?'} × {heightParam || '?'} mm
+                  <X className="w-4 h-4" />
+                </Link>
+              )}
+              {hasAnyFilter && (
+                <Link
+                  href="/artikel"
+                  className="text-sm text-gray-500 hover:text-gray-700 underline"
+                >
+                  Alle Filter zurücksetzen
+                </Link>
+              )}
             </div>
           </Container>
         </section>
@@ -147,7 +251,7 @@ export default function ArticlesPage() {
             <div className="flex items-center gap-3">
               <Package className="w-6 h-6 text-emerald-600" />
               <h2 className="text-2xl font-bold" style={{ color: colors.darkGreen }}>
-                {q ? 'Suchergebnisse' : 'Alle Artikel'}
+                {hasDimensionFilter ? 'Passende Artikel' : q ? 'Suchergebnisse' : 'Alle Artikel'}
               </h2>
             </div>
             <div className="text-sm text-gray-600">
@@ -175,11 +279,13 @@ export default function ArticlesPage() {
                   Keine Artikel gefunden
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  {q 
+                  {hasDimensionFilter 
+                    ? 'Für die angegebenen Maße wurden keine passenden Artikel gefunden. Versuchen Sie es mit größeren Maßen.' 
+                    : q 
                     ? 'Versuchen Sie es mit anderen Suchbegriffen oder entfernen Sie Filter.' 
                     : 'Derzeit sind keine Artikel verfügbar.'}
                 </p>
-                {q && (
+                {hasAnyFilter && (
                   <Link href="/artikel">
                     <Button variant="outline" className="border-emerald-600 text-emerald-600 hover:bg-emerald-50">
                       Alle Artikel anzeigen
@@ -200,7 +306,7 @@ export default function ArticlesPage() {
                   </div>
                   <div className="flex gap-3">
                     <Link
-                      href={buildUrl({ q, limit, offset: prevOffset })}
+                      href={buildUrl({ q, length: lengthParam, width: widthParam, height: heightParam, limit, offset: prevOffset })}
                       className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 font-medium transition-all ${
                         offset === 0 
                           ? 'pointer-events-none opacity-40 border-gray-300' 
@@ -211,7 +317,7 @@ export default function ArticlesPage() {
                       Zurück
                     </Link>
                     <Link
-                      href={buildUrl({ q, limit, offset: nextOffset })}
+                      href={buildUrl({ q, length: lengthParam, width: widthParam, height: heightParam, limit, offset: nextOffset })}
                       className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 font-medium transition-all ${
                         nextOffset >= total 
                           ? 'pointer-events-none opacity-40 border-gray-300' 
