@@ -19,6 +19,7 @@ type Article = {
     _AUSSENLAENGE?: string;
     _AUSSENBREITE?: string;
     _AUSSENHOEHE?: string;
+    Gewicht?: string;
     _VE2UEBERVERMENGE?: string;
     _VE2UEBERVERPART?: string;
     _VE2UEBERVERPLAENGE?: string;
@@ -70,7 +71,7 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-bold text-emerald-900 uppercase tracking-wider">Bild</th>
                 <th className="px-4 py-3 text-left text-xs font-bold text-emerald-900 uppercase tracking-wider" colSpan={2}>Artikel</th>
-                <th className="px-4 py-3 text-left text-xs font-bold text-emerald-900 uppercase tracking-wider" colSpan={2}>Maße (mm)</th>
+                <th className="px-4 py-3 text-left text-xs font-bold text-emerald-900 uppercase tracking-wider" colSpan={3}>Maße (mm)</th>
                 <th className="px-4 py-3 text-left text-xs font-bold text-emerald-900 uppercase tracking-wider" colSpan={3}>VPE</th>
                 <th className="px-4 py-3 text-left text-xs font-bold text-emerald-900 uppercase tracking-wider" colSpan={2}>Palette</th>
               </tr>
@@ -80,6 +81,7 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600">SKU</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600">Innen</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600">Außen</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-600">Gewicht</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600">Menge</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600">Art</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600">Maß</th>
@@ -139,6 +141,7 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
                     <td className="px-4 py-3 text-sm text-gray-600 font-mono whitespace-nowrap">
                       {article.attributes?._AUSSENLAENGE || '—'} × {article.attributes?._AUSSENBREITE || '—'} × {article.attributes?._AUSSENHOEHE || '—'}
                     </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{article.attributes?.Gewicht || '—'}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{article.attributes?._VE2UEBERVERMENGE || '—'}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{article.attributes?._VE2UEBERVERPART || '—'}</td>
                     <td className="px-4 py-3 text-sm text-gray-600 font-mono whitespace-nowrap">
@@ -215,7 +218,7 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
                     {/* Specifications */}
                     <div className="space-y-2">
                       {/* Dimensions */}
-                      {(article.attributes?._INNENLAENGE || article.attributes?._AUSSENLAENGE) && (
+                      {(article.attributes?._INNENLAENGE || article.attributes?._AUSSENLAENGE || article.attributes?.Gewicht) && (
                         <div className="flex items-start gap-2">
                           <Ruler className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
                           <div className="text-sm">
@@ -229,6 +232,11 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
                               {article.attributes?._AUSSENLAENGE && (
                                 <div className="font-mono text-xs">
                                   Außen: {article.attributes._AUSSENLAENGE} × {article.attributes._AUSSENBREITE} × {article.attributes._AUSSENHOEHE} mm
+                                </div>
+                              )}
+                              {article.attributes?.Gewicht && (
+                                <div className="text-xs">
+                                  Gewicht: {article.attributes.Gewicht} g
                                 </div>
                               )}
                             </div>
