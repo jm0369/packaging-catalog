@@ -97,7 +97,7 @@ export function GroupList({ groups, apiBase }: GroupListProps) {
         <Card className="border-0 shadow-lg">
           <CardContent className="py-16 text-center">
             <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg">Keine Produktgruppen gefunden.</p>
+            <p className="text-gray-500 text-lg">Keine Artikelgruppen gefunden.</p>
           </CardContent>
         </Card>
       ) : (
@@ -146,7 +146,7 @@ export function GroupList({ groups, apiBase }: GroupListProps) {
                     <div className="flex-grow min-w-0 space-y-3">
                       <div>
                         <Link 
-                          href={`/produktgruppen/${encodeURIComponent(group.externalId)}`}
+                          href={`/artikelgruppen/${encodeURIComponent(group.externalId)}`}
                           className="text-2xl font-bold text-gray-900 hover:text-emerald-600 transition-colors inline-flex items-center gap-2 group/link"
                         >
                           {group.name}

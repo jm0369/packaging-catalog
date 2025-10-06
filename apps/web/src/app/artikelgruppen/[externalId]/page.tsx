@@ -100,7 +100,7 @@ export default function GroupPage({ params }: GroupPageProps) {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block w-12 h-12 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-gray-500">Produktgruppe wird geladen...</p>
+          <p className="text-gray-500">Artikelgruppe wird geladen...</p>
         </div>
       </div>
     );
@@ -131,7 +131,7 @@ export default function GroupPage({ params }: GroupPageProps) {
   const buildUrl = (params: { q?: string }) => {
     const sp = new URLSearchParams();
     if (params.q) sp.set('q', params.q);
-    return `/produktgruppen/${externalId}?${sp.toString()}`;
+    return `/artikelgruppen/${externalId}?${sp.toString()}`;
   };
 
   return (
@@ -142,11 +142,11 @@ export default function GroupPage({ params }: GroupPageProps) {
           {/* Breadcrumb */}
           <div className="mb-8">
             <Link 
-              href="/produktgruppen"
+              href="/artikelgruppen"
               className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-medium"
             >
               <ArrowLeft className="w-4 h-4" />
-              Zurück zu allen Produktgruppen
+              Zurück zu allen Artikelgruppen
             </Link>
           </div>
 
@@ -304,10 +304,10 @@ export default function GroupPage({ params }: GroupPageProps) {
                   Keine Artikel gefunden
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  {q ? 'Versuchen Sie es mit anderen Suchbegriffen.' : 'Für diese Produktgruppe sind derzeit keine Artikel verfügbar.'}
+                  {q ? 'Versuchen Sie es mit anderen Suchbegriffen.' : 'Für diese Artikelgruppe sind derzeit keine Artikel verfügbar.'}
                 </p>
                 {q && (
-                  <Link href={`/produktgruppen/${externalId}`}>
+                  <Link href={`/artikelgruppen/${externalId}`}>
                     <Button variant="outline" className="border-emerald-600 text-emerald-600 hover:bg-emerald-50">
                       Alle Artikel anzeigen
                     </Button>
@@ -373,9 +373,9 @@ export default function GroupPage({ params }: GroupPageProps) {
                   Kontakt aufnehmen
                 </Button>
               </Link>
-              <Link href="/produktgruppen">
+              <Link href="/artikelgruppen">
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-emerald-600">
-                  Weitere Produktgruppen
+                  Weitere Artikelgruppen
                 </Button>
               </Link>
             </div>

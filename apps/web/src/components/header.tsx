@@ -21,7 +21,7 @@ const header = {
     products: "PRODUKTE",
     allProducts: "Alle Produktkategorien",
     catalog: "KATALOG",
-    productGroups: "Produktgruppen",
+    productGroups: "Artikelgruppen",
     articles: "Artikel",
     shop: "SHOP",
     b2b: "B2B",
@@ -266,7 +266,7 @@ export default function Header() {
               rounded-2xl border border-gray-200 bg-white shadow-2xl ${hoverOpen.produkte ? "opacity-100 translate-y-0 pointer-events-auto" : ""} ${menuForceClosed.produkte ? "hidden" : ""}`}
                             >
                                
-                                <Link href="/produktgruppen" onClick={() => { blurActive(); forceCloseMenu("produkte"); }} className={`flex items-center gap-3 rounded-xl px-4 py-3 font-semibold transition-colors ${isExact("/produktgruppen") ? "bg-emerald-50 text-emerald-700" : "text-gray-700 hover:bg-gray-50"}`}>
+                                <Link href="/artikelgruppen" onClick={() => { blurActive(); forceCloseMenu("produkte"); }} className={`flex items-center gap-3 rounded-xl px-4 py-3 font-semibold transition-colors ${isExact("/artikelgruppen") ? "bg-emerald-50 text-emerald-700" : "text-gray-700 hover:bg-gray-50"}`}>
                                     {header.productGroups}
                                 </Link>
                                 <Link href="/artikel" onClick={() => { blurActive(); forceCloseMenu("produkte"); }} className={`flex items-center gap-3 rounded-xl px-4 py-3 font-semibold transition-colors ${isExact("/artikel") ? "bg-emerald-50 text-emerald-700" : "text-gray-700 hover:bg-gray-50"}`}>
@@ -406,7 +406,7 @@ export default function Header() {
                                             <Link href="/katalog" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/katalog") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
                                                 {header.overview}
                                             </Link>
-                                            <Link href="/produktgruppen" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/produktgruppen") || isActive("/produktgruppen/") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
+                                            <Link href="/artikelgruppen" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/artikelgruppen") || isActive("/artikelgruppen/") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
                                                 {header.productGroups}
                                             </Link>
                                             <Link href="/artikel" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/artikel") || isActive("/artikel/") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>

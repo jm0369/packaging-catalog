@@ -352,9 +352,9 @@ export default function ArticlesPage() {
                   Kontakt aufnehmen
                 </Button>
               </Link>
-              <Link href="/produktgruppen">
+              <Link href="/artikelgruppen">
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-emerald-600">
-                  Produktgruppen durchsuchen
+                  Artikelgruppen durchsuchen
                 </Button>
               </Link>
             </div>

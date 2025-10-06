@@ -87,7 +87,7 @@ export default function GroupsPage() {
     if (params.category) sp.set('category', params.category);
     if (params.limit) sp.set('limit', String(params.limit));
     if (params.offset) sp.set('offset', String(params.offset));
-    return `/produktgruppen?${sp.toString()}`;
+    return `/artikelgruppen?${sp.toString()}`;
   };
 
   return (
@@ -97,7 +97,7 @@ export default function GroupsPage() {
         <Container>
           <div className="max-w-4xl">
             <div className="text-sm font-semibold tracking-widest uppercase mb-4" style={{ color: colors.lightGreen }}>
-              Produktgruppen
+              Artikelgruppen
             </div>
             <h1 className="text-4xl md:text-5xl font-extrabold mb-6" style={{ color: colors.darkGreen }}>
               Finden Sie die perfekte Verpackungslösung
@@ -110,14 +110,14 @@ export default function GroupsPage() {
             {/* Search Bar */}
             <Card className="border-0 shadow-xl">
               <CardContent className="p-6">
-                <form action="/produktgruppen" method="get" className="flex gap-3">
+                <form action="/artikelgruppen" method="get" className="flex gap-3">
                   <div className="relative flex-1">
                     <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
                       name="q"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Produktgruppen durchsuchen..."
+                      placeholder="Artikelgruppen durchsuchen..."
                       className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     />
                   </div>
@@ -145,7 +145,7 @@ export default function GroupsPage() {
             {categories.length > 0 && (
               <div className="flex flex-wrap gap-3">
                 <Link
-                  href="/produktgruppen"
+                  href="/artikelgruppen"
                   className={`px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all ${
                     !categoryName 
                       ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg' 
@@ -215,7 +215,7 @@ export default function GroupsPage() {
             <div className="flex items-center gap-3">
               <Package className="w-6 h-6 text-emerald-600" />
               <h2 className="text-2xl font-bold" style={{ color: colors.darkGreen }}>
-                {selectedCategory ? selectedCategory.name : 'Alle Produktgruppen'}
+                {selectedCategory ? selectedCategory.name : 'Alle Artikelgruppen'}
               </h2>
             </div>
             <div className="text-sm text-gray-600">
@@ -245,7 +245,7 @@ export default function GroupsPage() {
                 <p className="text-gray-600 mb-6">
                   Versuchen Sie es mit anderen Suchbegriffen oder entfernen Sie Filter.
                 </p>
-                <Link href="/produktgruppen">
+                <Link href="/artikelgruppen">
                   <Button variant="outline" className="border-emerald-600 text-emerald-600 hover:bg-emerald-50">
                     Alle Produkte anzeigen
                   </Button>

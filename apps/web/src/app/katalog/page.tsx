@@ -24,7 +24,7 @@ export default function KatalogPage() {
                             Unser Katalog
                         </h1>
                         <p className="text-lg md:text-xl text-white/90 leading-relaxed mb-8 max-w-2xl">
-                            Durchsuchen Sie unseren umfassenden Katalog mit Produktgruppen und einzelnen Artikeln. 
+                            Durchsuchen Sie unseren umfassenden Katalog mit Artikelgruppen und einzelnen Artikeln. 
                             Finden Sie die perfekte Verpackungslösung für Ihre Anforderungen.
                         </p>
                     </div>
@@ -35,7 +35,7 @@ export default function KatalogPage() {
             <section className="py-16 md:py-24">
                 <Container>
                     <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-                        {/* Produktgruppen Card */}
+                        {/* Artikelgruppen Card */}
                         <Card className="group relative overflow-hidden border-2 hover:border-emerald-600 hover:shadow-2xl transition-all duration-300">
                             <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-white opacity-0 group-hover:opacity-100 transition-opacity" />
                             <div className="relative p-8">
@@ -44,10 +44,10 @@ export default function KatalogPage() {
                                         <Grid3x3 className="h-8 w-8" />
                                     </div>
                                     <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                                        Produktgruppen
+                                        Artikelgruppen
                                     </h2>
                                     <p className="text-gray-600 leading-relaxed mb-6">
-                                        Erkunden Sie unsere organisierten Produktgruppen. Jede Gruppe enthält 
+                                        Erkunden Sie unsere organisierten Artikelgruppen. Jede Gruppe enthält 
                                         verwandte Artikel, die nach Kategorien und Eigenschaften sortiert sind.
                                     </p>
                                 </div>
@@ -69,9 +69,9 @@ export default function KatalogPage() {
                                         Bildergalerien und Spezifikationen
                                     </li>
                                 </ul>
-                                <Link href="/produktgruppen">
+                                <Link href="/artikelgruppen">
                                     <Button className="w-full group-hover:bg-emerald-700">
-                                        Produktgruppen durchsuchen
+                                        Artikelgruppen durchsuchen
                                         <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                     </Button>
                                 </Link>
@@ -128,7 +128,7 @@ export default function KatalogPage() {
                             Nicht sicher, wo Sie anfangen sollen?
                         </h3>
                         <p className="text-gray-600 leading-relaxed mb-8">
-                            Unsere Produktgruppen bieten einen strukturierten Überblick über verwandte Artikel, 
+                            Unsere Artikelgruppen bieten einen strukturierten Überblick über verwandte Artikel, 
                             während die Artikelsuche direkten Zugriff auf spezifische Produkte ermöglicht. 
                             Beide Wege führen Sie zu detaillierten Produktinformationen und Spezifikationen.
                         </p>
@@ -159,9 +159,9 @@ export default function KatalogPage() {
                             Starten Sie jetzt Ihre Suche in unserem umfassenden Katalog.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Link href="/produktgruppen">
+                            <Link href="/artikelgruppen">
                                 <Button size="lg" className="bg-white text-emerald-700 hover:bg-gray-100">
-                                    Produktgruppen erkunden
+                                    Artikelgruppen erkunden
                                     <ArrowRight className="ml-2 h-5 w-5" />
                                 </Button>
                             </Link>
