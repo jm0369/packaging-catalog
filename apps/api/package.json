@@ -10,7 +10,7 @@
     "prisma:migrate": "prisma migrate dev",
     "sync": "nest build && node dist/scripts/sync.js",
     "cleanup:media": "tsx src/scripts/cleanup-media.ts",
-    "drive:import": "tsx src/scripts/drive-import.ts"
+    "drive:sync": "tsx src/scripts/drive-sync.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.637.0",

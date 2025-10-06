@@ -43,6 +43,23 @@ model ArticleMirror {
   @@index([articleGroupId])
 }
 
+model DriveSyncState {
+  id            String   @id @default(uuid())
+  driveFileId   String   @unique
+  driveFileName String
+  driveChecksum String?  // MD5 from Drive metadata
+  mediaAssetId  String?  @unique
+  targetType    String   // 'article' | 'group'
+  targetId      String   // externalId of article/group
+  sortOrder     Int
+  lastSyncedAt  DateTime @default(now())
+  
+  mediaAsset    MediaAsset? @relation(fields: [mediaAssetId], references: [id], onDelete: SetNull)
+  
+  @@index([driveFileId])
+  @@index([targetType, targetId])
+}
+
 model MediaAsset {
   id         String   @id @default(uuid())
   key        String
@@ -52,6 +69,7 @@ model MediaAsset {
   sizeBytes  Int?
   checksum   String?
   variants   Json?
+  driveSync  DriveSyncState?
 
   // reverse: links
   groupLinks    GroupMediaLink[]
