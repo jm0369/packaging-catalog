@@ -71,7 +71,7 @@ export default function NachhaltigkeitPage() {
                 Wir entwickeln Verpackungslösungen, die sowohl funktional als auch umweltfreundlich sind und 
                 aktiv zum Schutz unseres Planeten beitragen.
               </p>
-              <Link href="/produktkategorien/co2-master">
+              <Link href="/verpackungskategorien/co2-master">
                 <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700">
                   CO₂-Master entdecken
                 </Button>
@@ -195,7 +195,7 @@ export default function NachhaltigkeitPage() {
               Entdecken Sie unsere umweltfreundlichen Verpackungslösungen und tragen Sie aktiv zum Umweltschutz bei.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Link href="/produktkategorien">
+              <Link href="/verpackungskategorien">
                 <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700">
                   Produkte ansehen
                 </Button>

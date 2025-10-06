@@ -19,7 +19,7 @@ const header = {
     packagingDesign: "Verpackungsdesign",
     dropshipping: "Dropshipping",
     products: "PRODUKTE",
-    allProducts: "Alle Produktkategorien",
+    allProducts: "Alle Verpackungskategorien",
     catalog: "KATALOG",
     productGroups: "Artikelgruppen",
     articles: "Artikel",
@@ -245,11 +245,11 @@ export default function Header() {
                         {/* Produkte dropdown */}
                         <div className="relative group" onMouseEnter={() => onMenuEnter("produkte")} onMouseLeave={() => onMenuLeave("produkte")}>
                             <Link
-                                href="/produktkategorien"
-                                aria-current={isActive("/produktkategorien") ? "page" : undefined}
+                                href="/verpackungskategorien"
+                                aria-current={isActive("/verpackungskategorien") ? "page" : undefined}
                                 className={
                                     "px-4 py-2 rounded-lg inline-flex items-center gap-1.5 transition-all duration-200 " +
-                                    (isActive("/produktkategorien") 
+                                    (isActive("/verpackungskategorien") 
                                         ? "text-emerald-700 bg-emerald-50 font-semibold" 
                                         : "hover:text-emerald-700 hover:bg-gray-50")
                                 }
@@ -278,9 +278,9 @@ export default function Header() {
                                 {categories.map((category) => (
                                     <Link 
                                         key={category.id}
-                                        href={`/produktkategorien/${encodeURIComponent(category.name)}`} 
+                                        href={`/verpackungskategorien/${encodeURIComponent(category.name)}`} 
                                         onClick={() => { blurActive(); forceCloseMenu("produkte"); }} 
-                                        className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-colors ${isActive(`/produktkategorien/${encodeURIComponent(category.name)}`) ? "bg-emerald-50 font-semibold text-emerald-700" : "text-gray-700 hover:bg-gray-50"}`}
+                                        className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-colors ${isActive(`/verpackungskategorien/${encodeURIComponent(category.name)}`) ? "bg-emerald-50 font-semibold text-emerald-700" : "text-gray-700 hover:bg-gray-50"}`}
                                     >
                                         <div 
                                             className="w-2.5 h-2.5 rounded-full flex-shrink-0"
@@ -374,18 +374,18 @@ export default function Header() {
                                     </details>
                                     <details className="group rounded-xl">
                                         <summary className="flex items-center justify-between cursor-pointer py-4 px-4 -mx-1 rounded-xl hover:bg-gray-50 transition-colors">
-                                            <span className={isActive("/produktkategorien") ? "text-emerald-700 font-semibold" : "text-gray-800"}>{header.products}</span>
+                                            <span className={isActive("/verpackungskategorien") ? "text-emerald-700 font-semibold" : "text-gray-800"}>{header.products}</span>
                                             <ChevronDown className="h-4 w-4 text-gray-500 transition-transform group-open:rotate-180" />
                                         </summary>
                                         <div className="pl-6 pb-2 ml-2 border-l-2 border-gray-200 flex flex-col text-[14px] space-y-1">
-                                            <Link href="/produktkategorien" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/produktkategorien") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
+                                            <Link href="/verpackungskategorien" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/verpackungskategorien") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
                                                 {header.allProducts}
                                             </Link>
                                             {categories.map((category) => (
                                                 <Link 
                                                     key={category.id}
-                                                    href={`/produktkategorien/${encodeURIComponent(category.name)}`} 
-                                                    className={`py-2.5 px-4 rounded-lg transition-colors flex items-center gap-3 ${isActive(`/produktkategorien/${encodeURIComponent(category.name)}`) ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} 
+                                                    href={`/verpackungskategorien/${encodeURIComponent(category.name)}`} 
+                                                    className={`py-2.5 px-4 rounded-lg transition-colors flex items-center gap-3 ${isActive(`/verpackungskategorien/${encodeURIComponent(category.name)}`) ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} 
                                                     onClick={() => setMobileOpen(false)}
                                                 >
                                                     <div 

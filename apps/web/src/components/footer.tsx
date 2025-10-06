@@ -71,8 +71,8 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/produktkategorien" className="text-emerald-50/80 hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center group">
-                    <span className="group-hover:underline">Produktkategorien</span>
+                  <Link href="/verpackungskategorien" className="text-emerald-50/80 hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center group">
+                    <span className="group-hover:underline">Verpackungskategorien</span>
                   </Link>
                 </li>
                 <li>

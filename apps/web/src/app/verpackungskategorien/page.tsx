@@ -67,7 +67,7 @@ export default function ProduktePage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <div className="text-sm font-semibold tracking-widest uppercase mb-4" style={{ color: colors.lightGreen }}>
-                Unsere Produktkategorien
+                Unsere Verpackungskategorien
               </div>
               <h1 className="text-4xl md:text-5xl font-extrabold mb-6" style={{ color: colors.darkGreen }}>
                 Verpackungskategorien für jeden Bedarf
@@ -114,7 +114,7 @@ export default function ProduktePage() {
         <Container>
           <div className="text-center mb-12">
             <SectionTitle 
-              title="Produktkategorien" 
+              title="Verpackungskategorien" 
               kicker="Wählen Sie aus unseren spezialisierten Verpackungskategorien"
               center
             />
@@ -137,7 +137,7 @@ export default function ProduktePage() {
                 return (
                   <Link
                     key={category.id}
-                    href={`/produktkategorien/${encodeURIComponent(category.name)}`}
+                    href={`/verpackungskategorien/${encodeURIComponent(category.name)}`}
                     className="group"
                   >
                     <Card className="h-full overflow-hidden hover:shadow-xl transition-all duration-300 border-0">

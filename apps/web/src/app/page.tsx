@@ -235,7 +235,7 @@ export default function Page() {
                     </div>
                     <div>
                         <Button asChild className="mt-8">
-                            <Link href="/produktkategorien/CO2-MASTER">CO₂‑Fußabdruck reduzieren</Link>
+                            <Link href="/verpackungskategorien/CO2-MASTER">CO₂‑Fußabdruck reduzieren</Link>
                         </Button>
                     </div>
                 </Container>

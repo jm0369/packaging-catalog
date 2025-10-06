@@ -82,11 +82,11 @@ export default function ProduktDetailPage({ params }: ProduktDetailPageProps) {
           {/* Breadcrumb */}
           <div className="mb-8">
             <Link 
-              href="/produktkategorien"
+              href="/verpackungskategorien"
               className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-medium"
             >
               <ArrowLeft className="w-4 h-4" />
-              Zurück zu den Produktkategorien
+              Zurück zu den Verpackungskategorien
             </Link>
           </div>
 
