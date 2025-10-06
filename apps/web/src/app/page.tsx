@@ -193,7 +193,7 @@ export default function Page() {
                     <div className="grid gap-6 md:grid-cols-3">
                         {categories.map((c: Category) => (
                             <div key={c.id}>
-                                <Link href={"/produkte/" + c.id} aria-label={"what"} className="relative isolate overflow-hidden shadow block group">
+                                <Link href={"/verpackungskategorien/" + encodeURIComponent(c.name)} aria-label={"what"} className="relative isolate overflow-hidden shadow block group">
                                     <div
                                         className="h-60 bg-cover bg-center"
                                         style={{ backgroundImage: `url(${c.media[0]})` }}
@@ -304,7 +304,7 @@ export default function Page() {
                                 );
                             })}
                             <div className="col-span-full">
-                                <Button className="w-full">Alle Ansprechpartner</Button>
+                                <Button className="w-full" asChild><Link href="/unternehmen/ansprechpartner">Alle Ansprechpartner</Link></Button>
                             </div>
                         </div>
                     </div>

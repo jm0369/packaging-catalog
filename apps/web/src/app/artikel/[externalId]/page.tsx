@@ -124,7 +124,7 @@ export default function ArticlePage({ params }: ArticlePageProps) {
           {/* Breadcrumb */}
           <div className="mb-8">
             <Link 
-              href={`/groups/${encodeURIComponent(article.group.externalId)}`}
+              href={`/artikelgruppen/${encodeURIComponent(article.group.externalId)}`}
               className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-medium"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -170,7 +170,7 @@ export default function ArticlePage({ params }: ArticlePageProps) {
                   <span className="text-sm font-semibold text-gray-700">Produktgruppe:</span>
                 </div>
                 <Link 
-                  href={`/groups/${encodeURIComponent(article.group.externalId)}`}
+                  href={`/artikelgruppe/${encodeURIComponent(article.group.externalId)}`}
                   className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors font-medium text-emerald-700"
                 >
                   {article.group.name || article.group.externalId}

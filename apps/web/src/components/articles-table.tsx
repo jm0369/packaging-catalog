@@ -125,7 +125,7 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
                     </td>
                     <td className="px-4 py-3">
                       <Link 
-                        href={`/articles/${encodeURIComponent(article.externalId)}`}
+                        href={`/artikel/${encodeURIComponent(article.externalId)}`}
                         className="text-emerald-600 hover:text-emerald-700 font-medium hover:underline inline-flex items-center gap-1 group"
                       >
                         {article.title}

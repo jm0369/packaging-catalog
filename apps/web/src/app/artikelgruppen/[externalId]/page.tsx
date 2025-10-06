@@ -9,7 +9,7 @@ import { ArticlesTable } from '@/components/articles-table';
 import Container from "@/components/container";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Search, ArrowLeft, ArrowRight, Package, Tag, ExternalLink, ImageIcon } from "lucide-react";
+import { ArrowLeft, ArrowRight, Package, Tag, ExternalLink, ImageIcon } from "lucide-react";
 import { colors } from "@/lib/colors";
 import { useSearchParams } from "next/navigation";
 
@@ -181,7 +181,7 @@ export default function GroupPage({ params }: GroupPageProps) {
                     {group.categories.map((category) => (
                       <Link
                         key={category.id}
-                        href={`/produkte/${category.id}`}
+                        href={`/verpackungskategorien/${encodeURI(category.name)}`}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border shadow-sm transition-all hover:shadow-md"
                         style={{ 
                           backgroundColor: category.color + '20',
