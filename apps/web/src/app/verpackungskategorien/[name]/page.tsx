@@ -3,11 +3,12 @@
 import React, { useEffect, useState } from "react";
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ImageGallery } from '@/components/image-gallery';
+import Image from 'next/image';
+import { Lightbox } from '@/components/lightbox';
 import Container from "@/components/container";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Package, CheckCircle2, Info, Ruler, BarChart3, ShoppingCart, ArrowLeft, ArrowRight } from "lucide-react";
+import { Package, CheckCircle2, Info, Ruler, BarChart3, ShoppingCart, ArrowLeft, ArrowRight, ExternalLink, ImageIcon } from "lucide-react";
 import { colors } from "@/lib/colors";
 
 const API = process.env.NEXT_PUBLIC_API_BASE!;
@@ -35,6 +36,18 @@ export default function ProduktDetailPage({ params }: ProduktDetailPageProps) {
   const [category, setCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(true);
   const [categoryName, setCategoryName] = useState<string>("");
+  const [lightboxImages, setLightboxImages] = useState<string[] | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+
+  const openLightbox = (images: string[], index: number = 0) => {
+    setLightboxImages(images);
+    setLightboxIndex(index);
+  };
+
+  const closeLightbox = () => {
+    setLightboxImages(null);
+    setLightboxIndex(0);
+  };
 
   useEffect(() => {
     params.then((p) => setCategoryName(p.name));
@@ -129,13 +142,72 @@ export default function ProduktDetailPage({ params }: ProduktDetailPageProps) {
 
             {/* Media Gallery */}
             {category.media && category.media.length > 0 && (
-              <div className="rounded-2xl overflow-hidden shadow-2xl">
-                <ImageGallery images={category.media} alt={category.name} />
+              <div className="space-y-4">
+                {/* Main Image */}
+                <button
+                  onClick={() => openLightbox(category.media, 0)}
+                  className="relative w-full aspect-video rounded-2xl overflow-hidden cursor-pointer group bg-gray-100 shadow-2xl"
+                  aria-label="Bilder anzeigen"
+                >
+                  <Image 
+                    src={category.media[0]} 
+                    alt={category.name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 rounded-full p-3">
+                      <ExternalLink className="w-6 h-6 text-gray-900" />
+                    </div>
+                  </div>
+                  {category.media.length > 1 && (
+                    <div className="absolute top-4 right-4 bg-black/70 text-white text-sm font-medium px-3 py-1.5 rounded-full backdrop-blur-sm">
+                      {category.media.length} Bilder
+                    </div>
+                  )}
+                </button>
+
+                {/* Thumbnail Grid */}
+                {category.media.length > 1 && (
+                  <div className="grid grid-cols-4 gap-3">
+                    {category.media.slice(1, 5).map((image, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => openLightbox(category.media, idx + 1)}
+                        className="relative aspect-square rounded-xl overflow-hidden cursor-pointer group bg-gray-100 shadow-md hover:shadow-xl transition-all"
+                        aria-label={`Bild ${idx + 2} anzeigen`}
+                      >
+                        <Image 
+                          src={image} 
+                          alt={`${category.name} - Bild ${idx + 2}`}
+                          fill
+                          sizes="150px"
+                          className="object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+                        {idx === 3 && category.media.length > 5 && (
+                          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                            <span className="text-white text-lg font-bold">+{category.media.length - 5}</span>
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
         </Container>
       </section>
+
+      {lightboxImages && (
+        <Lightbox
+          images={lightboxImages}
+          initialIndex={lightboxIndex}
+          onClose={closeLightbox}
+        />
+      )}
 
       {/* Properties */}
       {category.properties && category.properties.length > 0 && (
