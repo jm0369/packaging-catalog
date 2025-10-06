@@ -14,10 +14,25 @@ export class ArticleGroupsPublicController {
     @Query('limit') limitQ?: string, 
     @Query('offset') offsetQ?: string, 
     @Query('q') q?: string,
-    @Query('category') categoryId?: string,
+    @Query('category') categoryName?: string,
   ) {
     const limit = Math.min(100, Math.max(1, Number(limitQ ?? 24)));
     const offset = Math.max(0, Number(offsetQ ?? 0));
+
+    // Look up category by name if provided
+    let categoryId: string | undefined;
+    if (categoryName) {
+      const category = await this.prisma.category.findFirst({
+        where: { 
+          name: {
+            equals: categoryName,
+            mode: 'insensitive',
+          }
+        },
+        select: { id: true },
+      });
+      categoryId = category?.id;
+    }
 
     const where = {
       AND: [
