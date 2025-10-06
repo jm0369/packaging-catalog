@@ -36,7 +36,7 @@ export default function GroupsPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const q = searchParams.get('q') || undefined;
-  const categoryId = searchParams.get('category') || undefined;
+  const categoryName = searchParams.get('category') || undefined;
   const limit = Math.min(100, Math.max(1, Number(searchParams.get('limit') ?? 24)));
   const offset = Math.max(0, Number(searchParams.get('offset') ?? 0));
 
@@ -51,7 +51,7 @@ export default function GroupsPage() {
         const [groupsRes, categoriesRes] = await Promise.all([
           fetch(`${API}/api/article-groups?${new URLSearchParams({
             ...(q && { q }),
-            ...(categoryId && { category: categoryId }),
+            ...(categoryName && { category: categoryName }),
             limit: String(limit),
             offset: String(offset),
           }).toString()}`),
@@ -75,11 +75,11 @@ export default function GroupsPage() {
       }
     }
     fetchData();
-  }, [q, categoryId, limit, offset]);
+  }, [q, categoryName, limit, offset]);
 
   const prevOffset = Math.max(0, offset - limit);
   const nextOffset = offset + limit;
-  const selectedCategory = categories.find(c => c.id === categoryId);
+  const selectedCategory = categories.find(c => c.name === categoryName);
 
   const buildSearchUrl = (params: { q?: string; category?: string; limit?: number; offset?: number }) => {
     const sp = new URLSearchParams();
@@ -121,7 +121,7 @@ export default function GroupsPage() {
                       className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     />
                   </div>
-                  {categoryId && <input type="hidden" name="category" value={categoryId} />}
+                  {categoryName && <input type="hidden" name="category" value={categoryName} />}
                   <input type="hidden" name="limit" value={String(limit)} />
                   <Button type="submit" size="lg" className="bg-emerald-600 hover:bg-emerald-700 px-8">
                     Suchen
@@ -147,7 +147,7 @@ export default function GroupsPage() {
                 <Link
                   href="/produktgruppen"
                   className={`px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all ${
-                    !categoryId 
+                    !categoryName 
                       ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg' 
                       : 'border-gray-300 hover:border-emerald-600 hover:bg-emerald-50'
                   }`}
@@ -157,21 +157,21 @@ export default function GroupsPage() {
                 {categories.map((category) => (
                   <Link
                     key={category.id}
-                    href={buildSearchUrl({ q, category: category.id, limit })}
+                    href={buildSearchUrl({ q, category: category.name, limit })}
                     className={`px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all flex items-center gap-2 ${
-                      categoryId === category.id
+                      categoryName === category.name
                         ? 'text-white shadow-lg'
                         : 'hover:shadow-md'
                     }`}
                     style={{
-                      backgroundColor: categoryId === category.id ? category.color : 'white',
+                      backgroundColor: categoryName === category.name ? category.color : 'white',
                       borderColor: category.color,
-                      color: categoryId === category.id ? 'white' : '#374151',
+                      color: categoryName === category.name ? 'white' : '#374151',
                     }}
                   >
                     <div 
                       className="w-2.5 h-2.5 rounded-full"
-                      style={{ backgroundColor: categoryId === category.id ? 'white' : category.color }}
+                      style={{ backgroundColor: categoryName === category.name ? 'white' : category.color }}
                     />
                     {category.name}
                   </Link>
@@ -194,7 +194,7 @@ export default function GroupsPage() {
                 )}
                 {q && (
                   <Link
-                    href={buildSearchUrl({ category: categoryId, limit })}
+                    href={buildSearchUrl({ category: categoryName, limit })}
                     className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 hover:bg-gray-200 transition-colors"
                   >
                     Suche: &quot;{q}&quot;
@@ -264,7 +264,7 @@ export default function GroupsPage() {
                   </div>
                   <div className="flex gap-3">
                     <Link
-                      href={buildSearchUrl({ q, category: categoryId, limit, offset: prevOffset })}
+                      href={buildSearchUrl({ q, category: categoryName, limit, offset: prevOffset })}
                       className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 font-medium transition-all ${
                         offset === 0 
                           ? 'pointer-events-none opacity-40 border-gray-300' 
@@ -275,7 +275,7 @@ export default function GroupsPage() {
                       Zurück
                     </Link>
                     <Link
-                      href={buildSearchUrl({ q, category: categoryId, limit, offset: nextOffset })}
+                      href={buildSearchUrl({ q, category: categoryName, limit, offset: nextOffset })}
                       className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 font-medium transition-all ${
                         nextOffset >= total 
                           ? 'pointer-events-none opacity-40 border-gray-300' 
