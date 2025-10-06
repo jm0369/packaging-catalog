@@ -1,6 +1,7 @@
 import { createCategory } from '../actions';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { StringArrayField, ObjectArrayField } from '../array-field';
 
 export default function NewCategoryPage() {
   async function handleCreate(formData: FormData) {
@@ -68,83 +69,44 @@ export default function NewCategoryPage() {
           />
         </div>
 
-        <div>
-          <label htmlFor="properties" className="block text-sm font-medium mb-1">
-            Properties <span className="text-xs text-gray-500">(JSON array of objects with name and description)</span>
-          </label>
-          <textarea
-            id="properties"
-            name="properties"
-            rows={4}
-            className="border rounded px-3 py-2 w-full font-mono text-sm"
-            placeholder='[{"name": "Property name", "description": "Property description"}]'
-          />
-        </div>
+        <ObjectArrayField
+          label="Properties"
+          name="properties"
+          namePlaceholder="Property name (e.g., Material, Thickness)"
+          descriptionPlaceholder="Property description or value"
+        />
 
-        <div>
-          <label htmlFor="applications" className="block text-sm font-medium mb-1">
-            Applications <span className="text-xs text-gray-500">(JSON array of strings)</span>
-          </label>
-          <textarea
-            id="applications"
-            name="applications"
-            rows={3}
-            className="border rounded px-3 py-2 w-full font-mono text-sm"
-            placeholder='["Application 1", "Application 2"]'
-          />
-        </div>
+        <StringArrayField
+          label="Applications"
+          name="applications"
+          placeholder="Application (e.g., Food packaging, Shipping)"
+        />
 
-        <div>
-          <label htmlFor="formatsSpecifications" className="block text-sm font-medium mb-1">
-            Formats & Specifications <span className="text-xs text-gray-500">(JSON array of strings)</span>
-          </label>
-          <textarea
-            id="formatsSpecifications"
-            name="formatsSpecifications"
-            rows={3}
-            className="border rounded px-3 py-2 w-full font-mono text-sm"
-            placeholder='["Format 1", "Format 2"]'
-          />
-        </div>
+        <StringArrayField
+          label="Formats & Specifications"
+          name="formatsSpecifications"
+          placeholder="Format or specification"
+        />
 
-        <div>
-          <label htmlFor="keyFigures" className="block text-sm font-medium mb-1">
-            Key Figures <span className="text-xs text-gray-500">(JSON array of objects with name and description)</span>
-          </label>
-          <textarea
-            id="keyFigures"
-            name="keyFigures"
-            rows={4}
-            className="border rounded px-3 py-2 w-full font-mono text-sm"
-            placeholder='[{"name": "Key figure name", "description": "Value or description"}]'
-          />
-        </div>
+        <ObjectArrayField
+          label="Key Figures"
+          name="keyFigures"
+          namePlaceholder="Key figure name (e.g., Weight, Size)"
+          descriptionPlaceholder="Value or description"
+        />
 
-        <div>
-          <label htmlFor="ordering" className="block text-sm font-medium mb-1">
-            Ordering <span className="text-xs text-gray-500">(JSON array of objects with name and description)</span>
-          </label>
-          <textarea
-            id="ordering"
-            name="ordering"
-            rows={4}
-            className="border rounded px-3 py-2 w-full font-mono text-sm"
-            placeholder='[{"name": "Order option", "description": "Order description"}]'
-          />
-        </div>
+        <ObjectArrayField
+          label="Ordering"
+          name="ordering"
+          namePlaceholder="Order option (e.g., Minimum quantity)"
+          descriptionPlaceholder="Order description or requirement"
+        />
 
-        <div>
-          <label htmlFor="orderingNotes" className="block text-sm font-medium mb-1">
-            Ordering Notes <span className="text-xs text-gray-500">(JSON array of strings)</span>
-          </label>
-          <textarea
-            id="orderingNotes"
-            name="orderingNotes"
-            rows={3}
-            className="border rounded px-3 py-2 w-full font-mono text-sm"
-            placeholder='["Note 1", "Note 2"]'
-          />
-        </div>
+        <StringArrayField
+          label="Ordering Notes"
+          name="orderingNotes"
+          placeholder="Note (e.g., Lead time information)"
+        />
 
         <div className="flex gap-2">
           <button type="submit" className="px-4 py-2 rounded bg-black text-white">

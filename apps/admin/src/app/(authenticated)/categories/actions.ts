@@ -9,15 +9,32 @@ export async function createCategory(formData: FormData): Promise<{ ok: boolean;
   const color = formData.get('color') as string;
   const description = formData.get('description') as string;
   
-  // Parse JSON fields
-  const parseJsonField = (fieldName: string) => {
-    const value = formData.get(fieldName) as string;
-    if (!value || value.trim() === '') return undefined;
-    try {
-      return JSON.parse(value);
-    } catch {
-      return undefined;
+  // Helper to parse array fields from FormData
+  const parseArrayField = (fieldName: string) => {
+    const entries = Array.from(formData.entries())
+      .filter(([key]) => key.startsWith(`${fieldName}[`))
+      .map(([, value]) => value as string)
+      .filter(v => v && v.trim() !== '');
+    return entries.length > 0 ? entries : undefined;
+  };
+
+  // Helper to parse object array fields from FormData
+  const parseObjectArrayField = (fieldName: string) => {
+    const items: Array<{ name: string; description: string }> = [];
+    let index = 0;
+    while (true) {
+      const nameKey = `${fieldName}[${index}].name`;
+      const descKey = `${fieldName}[${index}].description`;
+      const name = formData.get(nameKey) as string;
+      const description = formData.get(descKey) as string;
+      
+      if (!name && !description) break;
+      if (name || description) {
+        items.push({ name: name || '', description: description || '' });
+      }
+      index++;
     }
+    return items.length > 0 ? items : undefined;
   };
 
   if (!name || !color) {
@@ -37,22 +54,22 @@ export async function createCategory(formData: FormData): Promise<{ ok: boolean;
   } = { name, color };
   if (description) body.description = description;
   
-  const properties = parseJsonField('properties');
+  const properties = parseObjectArrayField('properties');
   if (properties) body.properties = properties;
   
-  const applications = parseJsonField('applications');
+  const applications = parseArrayField('applications');
   if (applications) body.applications = applications;
   
-  const formatsSpecifications = parseJsonField('formatsSpecifications');
+  const formatsSpecifications = parseArrayField('formatsSpecifications');
   if (formatsSpecifications) body.formatsSpecifications = formatsSpecifications;
   
-  const keyFigures = parseJsonField('keyFigures');
+  const keyFigures = parseObjectArrayField('keyFigures');
   if (keyFigures) body.keyFigures = keyFigures;
   
-  const ordering = parseJsonField('ordering');
+  const ordering = parseObjectArrayField('ordering');
   if (ordering) body.ordering = ordering;
   
-  const orderingNotes = parseJsonField('orderingNotes');
+  const orderingNotes = parseArrayField('orderingNotes');
   if (orderingNotes) body.orderingNotes = orderingNotes;
 
   const res = await adminFetch('/admin/categories', {
@@ -79,15 +96,32 @@ export async function updateCategory(
   const color = formData.get('color') as string;
   const description = formData.get('description') as string;
   
-  // Parse JSON fields
-  const parseJsonField = (fieldName: string) => {
-    const value = formData.get(fieldName) as string;
-    if (!value || value.trim() === '') return undefined;
-    try {
-      return JSON.parse(value);
-    } catch {
-      return undefined;
+  // Helper to parse array fields from FormData
+  const parseArrayField = (fieldName: string) => {
+    const entries = Array.from(formData.entries())
+      .filter(([key]) => key.startsWith(`${fieldName}[`))
+      .map(([, value]) => value as string)
+      .filter(v => v && v.trim() !== '');
+    return entries.length > 0 ? entries : undefined;
+  };
+
+  // Helper to parse object array fields from FormData
+  const parseObjectArrayField = (fieldName: string) => {
+    const items: Array<{ name: string; description: string }> = [];
+    let index = 0;
+    while (true) {
+      const nameKey = `${fieldName}[${index}].name`;
+      const descKey = `${fieldName}[${index}].description`;
+      const name = formData.get(nameKey) as string;
+      const description = formData.get(descKey) as string;
+      
+      if (!name && !description) break;
+      if (name || description) {
+        items.push({ name: name || '', description: description || '' });
+      }
+      index++;
     }
+    return items.length > 0 ? items : undefined;
   };
 
   if (!name || !color) {
@@ -107,22 +141,22 @@ export async function updateCategory(
   } = { name, color };
   if (description) body.description = description;
   
-  const properties = parseJsonField('properties');
+  const properties = parseObjectArrayField('properties');
   if (properties !== undefined) body.properties = properties;
   
-  const applications = parseJsonField('applications');
+  const applications = parseArrayField('applications');
   if (applications !== undefined) body.applications = applications;
   
-  const formatsSpecifications = parseJsonField('formatsSpecifications');
+  const formatsSpecifications = parseArrayField('formatsSpecifications');
   if (formatsSpecifications !== undefined) body.formatsSpecifications = formatsSpecifications;
   
-  const keyFigures = parseJsonField('keyFigures');
+  const keyFigures = parseObjectArrayField('keyFigures');
   if (keyFigures !== undefined) body.keyFigures = keyFigures;
   
-  const ordering = parseJsonField('ordering');
+  const ordering = parseObjectArrayField('ordering');
   if (ordering !== undefined) body.ordering = ordering;
   
-  const orderingNotes = parseJsonField('orderingNotes');
+  const orderingNotes = parseArrayField('orderingNotes');
   if (orderingNotes !== undefined) body.orderingNotes = orderingNotes;
 
   const res = await adminFetch(`/admin/categories/${id}`, {

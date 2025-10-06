@@ -191,7 +191,7 @@ export default function Page() {
                         <span style={{ color: colors.lightGreen }}>Ihre Produkte, unsere Lösungen.</span>
                     </h3>
                     <div className="grid gap-6 md:grid-cols-3">
-                        {categories.map((c: Category) => (
+                        {categories.slice(0, 6).map((c: Category) => (
                             <div key={c.id}>
                                 <Link href={"/verpackungskategorien/" + encodeURIComponent(c.name)} aria-label={"what"} className="relative isolate overflow-hidden shadow block group">
                                     <div
