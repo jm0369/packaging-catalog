@@ -40,53 +40,74 @@ function parseTargetFromName(
   groups: Array<{ externalId: string; name: string }>
 ): { type: 'article' | 'group'; id: string; matched: string; sortOrder: number } | null {
   const baseName = name.replace(/\.[a-z0-9]+$/i, '');
+  const normalizedFileName = normalizeForMatching(baseName);
   
-  // Article pattern: (Article) E (number) or (Article) E(number) with no space
-  // Also handles image numbers with dashes like "14-2" -> extract "14" and "2" -> use "142"
-  const articleMatch = baseName.match(/^(.+?)\s+E\s*(\d+(?:-\d+)?)$/i);
-  if (articleMatch) {
-    const searchTerm = normalizeForMatching(articleMatch[1]);
-    // Remove dashes from the sort order number (e.g., "14-2" -> "142")
-    const sortOrderStr = articleMatch[2].replace(/-/g, '');
+  // Check if filename contains "E" followed by digits (article image indicator)
+  // Extract sort order: "E 01", "E01", "E 14-2", "E00" etc.
+  const eMatch = baseName.match(/\bE\s*(\d+(?:-\d+)?)\b/i);
+  
+  if (eMatch) {
+    // This is an article image
+    const sortOrderStr = eMatch[1].replace(/-/g, '');
     const sortOrder = parseInt(sortOrderStr, 10);
     
-    for (const article of articles) {
+    // Try to find any article whose externalId, title, or SKU appears in the filename
+    // Sort by length (longest first) to prefer more specific matches
+    const sortedArticles = [...articles].sort((a, b) => {
+      const aLen = Math.max(
+        a.externalId.length,
+        a.title.length,
+        a.sku?.length ?? 0
+      );
+      const bLen = Math.max(
+        b.externalId.length,
+        b.title.length,
+        b.sku?.length ?? 0
+      );
+      return bLen - aLen;
+    });
+    
+    for (const article of sortedArticles) {
       const normalized = normalizeForMatching(article.externalId);
       const normalizedTitle = normalizeForMatching(article.title);
       const normalizedSku = article.sku ? normalizeForMatching(article.sku) : '';
       
+      // Check if any identifier appears in the filename
       if (
-        normalized === searchTerm ||
-        normalizedTitle === searchTerm ||
-        normalizedSku === searchTerm ||
-        normalized.includes(searchTerm) ||
-        searchTerm.includes(normalized)
+        (normalized.length >= 3 && normalizedFileName.includes(normalized)) ||
+        (normalizedTitle.length >= 3 && normalizedFileName.includes(normalizedTitle)) ||
+        (normalizedSku.length >= 3 && normalizedFileName.includes(normalizedSku))
       ) {
         return { type: 'article', id: article.externalId, matched: article.title, sortOrder };
       }
     }
-  }
-  
-  // Group pattern: (ArticleGroup) (number) or (ArticleGroup) (number-subnum)
-  // Also handles image numbers with dashes
-  const groupMatch = baseName.match(/^(.+?)\s+(\d+(?:-\d+)?)$/i);
-  if (groupMatch) {
-    const searchTerm = normalizeForMatching(groupMatch[1]);
-    // Remove dashes from the sort order number (e.g., "14-2" -> "142")
-    const sortOrderStr = groupMatch[2].replace(/-/g, '');
-    const sortOrder = parseInt(sortOrderStr, 10);
-    
-    for (const group of groups) {
-      const normalized = normalizeForMatching(group.externalId);
-      const normalizedName = normalizeForMatching(group.name);
+  } else {
+    // No "E" marker, so this is likely a group image
+    // Extract sort order from trailing number: "PC P FBS 14", "PC P B 02 14-2"
+    const groupMatch = baseName.match(/\s+(\d+(?:-\d+)?)\s*$/);
+    if (groupMatch) {
+      const sortOrderStr = groupMatch[1].replace(/-/g, '');
+      const sortOrder = parseInt(sortOrderStr, 10);
       
-      if (
-        normalized === searchTerm ||
-        normalizedName === searchTerm ||
-        normalized.includes(searchTerm) ||
-        searchTerm.includes(normalized)
-      ) {
-        return { type: 'group', id: group.externalId, matched: group.name, sortOrder };
+      // Try to find any group whose externalId or name appears in the filename
+      // Sort by length (longest first) to prefer more specific matches
+      const sortedGroups = [...groups].sort((a, b) => {
+        const aLen = Math.max(a.externalId.length, a.name.length);
+        const bLen = Math.max(b.externalId.length, b.name.length);
+        return bLen - aLen;
+      });
+      
+      for (const group of sortedGroups) {
+        const normalized = normalizeForMatching(group.externalId);
+        const normalizedName = normalizeForMatching(group.name);
+        
+        // Check if any identifier appears in the filename
+        if (
+          (normalized.length >= 3 && normalizedFileName.includes(normalized)) ||
+          (normalizedName.length >= 3 && normalizedFileName.includes(normalizedName))
+        ) {
+          return { type: 'group', id: group.externalId, matched: group.name, sortOrder };
+        }
       }
     }
   }
@@ -318,11 +339,11 @@ async function main() {
             const existing = syncMap.get(file.id);
             const isUpdate = !!existing;
 
+            /*
+
             console.log(
               `[${idx + 1}/${toProcess.length}] ${isUpdate ? 'UPDATE' : 'ADD'}  ${file.name} → ${target.type}:${target.id}`
             );
-
-            /*
 
             // Download file
             const buffer = await downloadFile(drive, file.id, file.name);
