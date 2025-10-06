@@ -75,9 +75,9 @@ function parseTargetFromName(
       // Check if any identifier appears in the filename
       // Use minimum length of 5 to avoid false positives with short codes
       if (
-        (normalized.length >= 5 && normalizedFileName.includes(normalized)) ||
-        (normalizedTitle.length >= 5 && normalizedFileName.includes(normalizedTitle)) ||
-        (normalizedSku.length >= 5 && normalizedFileName.includes(normalizedSku))
+        (normalized.length >= 4 && normalizedFileName.includes(normalized)) ||
+        (normalizedTitle.length >= 4 && normalizedFileName.includes(normalizedTitle)) ||
+        (normalizedSku.length >= 4 && normalizedFileName.includes(normalizedSku))
       ) {
         return { type: 'article', id: article.externalId, matched: article.title, sortOrder };
       }
@@ -95,7 +95,7 @@ function parseTargetFromName(
       
       // Calculate match score based on how much of the identifier matches
       const calcMatchScore = (identifier: string) => {
-        if (identifier.length < 4) return 0;
+        if (identifier.length < 3) return 0;
         // Check if identifier is contained in filename
         if (normalizedBeforeE.includes(identifier)) return identifier.length;
         // Check if filename starts with identifier
@@ -110,7 +110,7 @@ function parseTargetFromName(
       const scoreSku = calcMatchScore(normalizedSku);
       const maxScore = Math.max(scoreId, scoreTitle, scoreSku);
       
-      if (maxScore >= 5) {
+      if (maxScore >= 3) {
         return { type: 'article', id: article.externalId, matched: article.title, sortOrder };
       }
     }
@@ -142,8 +142,8 @@ function parseTargetFromName(
         
         // Check if any identifier appears in the filename
         if (
-          (normalized.length >= 5 && normalizedFileName.includes(normalized)) ||
-          (normalizedName.length >= 5 && normalizedFileName.includes(normalizedName))
+          (normalized.length >= 4 && normalizedFileName.includes(normalized)) ||
+          (normalizedName.length >= 4 && normalizedFileName.includes(normalizedName))
         ) {
           return { type: 'group', id: group.externalId, matched: group.name, sortOrder };
         }
@@ -158,7 +158,7 @@ function parseTargetFromName(
         const normalizedName = normalizeForMatching(group.name);
         
         const calcMatchScore = (identifier: string) => {
-          if (identifier.length < 4) return 0;
+          if (identifier.length < 3) return 0;
           if (normalizedBeforeNumber.includes(identifier)) return identifier.length;
           if (normalizedBeforeNumber.startsWith(identifier.substring(0, Math.min(identifier.length, 6)))) {
             return identifier.length * 0.8;
@@ -170,7 +170,7 @@ function parseTargetFromName(
         const scoreName = calcMatchScore(normalizedName);
         const maxScore = Math.max(scoreId, scoreName);
         
-        if (maxScore >= 5) {
+        if (maxScore >= 3) {
           return { type: 'group', id: group.externalId, matched: group.name, sortOrder };
         }
       }
@@ -253,21 +253,49 @@ async function linkMedia(
       ? `/admin/articles/${encodeURIComponent(targetId)}/media`
       : `/admin/article-groups/${encodeURIComponent(targetId)}/media`;
 
-  const resp = await fetch(`${ADMIN_BASE}${linkPath}`, {
-    method: 'POST',
-    headers: {
-      'x-admin-secret': ADMIN_SECRET,
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({ mediaId, sortOrder }),
-  });
+  let attempt = 0;
+  while (attempt < 3) {
+    try {
+      const resp = await fetch(`${ADMIN_BASE}${linkPath}`, {
+        method: 'POST',
+        headers: {
+          'x-admin-secret': ADMIN_SECRET,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ mediaId, sortOrder }),
+      });
 
-  if (!resp.ok) {
-    const errorText = await resp.text().catch(() => '');
-    console.error(`Link failed (${resp.status}): ${errorText}`);
+      if (resp.ok) {
+        return true;
+      }
+
+      const errorText = await resp.text().catch(() => '');
+      
+      // Check for duplicate sortOrder error
+      if (resp.status === 500 && errorText.includes('Unique constraint failed')) {
+        console.warn(`   ⚠️  Duplicate sortOrder ${sortOrder}, retrying with next available...`);
+        // Increment sortOrder and retry
+        sortOrder = sortOrder + 1;
+        attempt++;
+        continue;
+      }
+
+      // Check if it's routing to wrong endpoint
+      if (errorText.includes('groupMediaLink') && targetType === 'article') {
+        console.error(`   ✗ API routing error: article route calling groupMediaLink.create()`);
+        return false;
+      }
+
+      console.error(`Link failed (${resp.status}): ${errorText}`);
+      return false;
+      
+    } catch (e: any) {
+      console.error(`   ✗ Link error: ${e?.message}`);
+      return false;
+    }
   }
   
-  return resp.ok;
+  return false;
 }
 
 async function main() {
