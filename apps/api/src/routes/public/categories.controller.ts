@@ -68,10 +68,74 @@ export class CategoriesPublicController {
 
 
     @Get(':id')
-    @ApiOperation({ summary: 'Get a single category' })
+    @ApiOperation({ summary: 'Get a single category by ID' })
     async getById(@Param('id') id: string) {
         const category = await this.prisma.category.findUnique({
             where: { id },
+            select: {
+                id: true,
+                name: true,
+                color: true,
+                description: true,
+                properties: true,
+                applications: true,
+                formatsSpecifications: true,
+                keyFigures: true,
+                ordering: true,
+                orderingNotes: true,
+                groups: {
+                    select: {
+                        group: {
+                            select: {
+                                id: true,
+                                externalId: true,
+                                name: true,
+                            },
+                        },
+                    },
+                },
+                media: {
+                    select: {
+                        id: true,
+                        mediaId: true,
+                        altText: true,
+                        sortOrder: true,
+                        media: {
+                            select: {
+                                id: true,
+                                key: true,
+                                mime: true,
+                                width: true,
+                                height: true,
+                                variants: true,
+                            },
+                        },
+                    },
+                    orderBy: { sortOrder: 'asc' },
+                },
+            },
+        });
+        if (!category) return { statusCode: 404, message: 'Category not found' };
+
+        const base = process.env.PUBLIC_CDN_BASE!;
+
+        return {
+            ...category,
+            groups: category.groups.map(g => g.group),
+            media: category.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
+        };
+    }
+
+    @Get('by-name/:name')
+    @ApiOperation({ summary: 'Get a single category by name' })
+    async getByName(@Param('name') name: string) {
+        const category = await this.prisma.category.findFirst({
+            where: { 
+                name: {
+                    equals: name,
+                    mode: 'insensitive',
+                }
+            },
             select: {
                 id: true,
                 name: true,
