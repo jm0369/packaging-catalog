@@ -43,7 +43,7 @@ function parseTargetFromName(
   const normalizedFileName = normalizeForMatching(baseName);
   
   // Check if filename contains "E" followed by digits (article image indicator)
-  // Extract sort order: "E 01", "E01", "E 14-2", "E00" etc.
+  // Extract sort order: "E 01", "E01", "E 14-2", "E00", "E 00-2" etc.
   const eMatch = baseName.match(/\bE\s*(\d+(?:-\d+)?)\b/i);
   
   if (eMatch) {
@@ -52,19 +52,19 @@ function parseTargetFromName(
     const sortOrder = parseInt(sortOrderStr, 10);
     
     // Try to find any article whose externalId, title, or SKU appears in the filename
-    // Sort by length (longest first) to prefer more specific matches
+    // Sort by normalized length (longest first) to prefer more specific matches
     const sortedArticles = [...articles].sort((a, b) => {
-      const aLen = Math.max(
-        a.externalId.length,
-        a.title.length,
-        a.sku?.length ?? 0
+      const aNormLen = Math.max(
+        normalizeForMatching(a.externalId).length,
+        normalizeForMatching(a.title).length,
+        a.sku ? normalizeForMatching(a.sku).length : 0
       );
-      const bLen = Math.max(
-        b.externalId.length,
-        b.title.length,
-        b.sku?.length ?? 0
+      const bNormLen = Math.max(
+        normalizeForMatching(b.externalId).length,
+        normalizeForMatching(b.title).length,
+        b.sku ? normalizeForMatching(b.sku).length : 0
       );
-      return bLen - aLen;
+      return bNormLen - aNormLen;
     });
     
     for (const article of sortedArticles) {
@@ -73,28 +73,67 @@ function parseTargetFromName(
       const normalizedSku = article.sku ? normalizeForMatching(article.sku) : '';
       
       // Check if any identifier appears in the filename
+      // Use minimum length of 5 to avoid false positives with short codes
       if (
-        (normalized.length >= 3 && normalizedFileName.includes(normalized)) ||
-        (normalizedTitle.length >= 3 && normalizedFileName.includes(normalizedTitle)) ||
-        (normalizedSku.length >= 3 && normalizedFileName.includes(normalizedSku))
+        (normalized.length >= 5 && normalizedFileName.includes(normalized)) ||
+        (normalizedTitle.length >= 5 && normalizedFileName.includes(normalizedTitle)) ||
+        (normalizedSku.length >= 5 && normalizedFileName.includes(normalizedSku))
       ) {
+        return { type: 'article', id: article.externalId, matched: article.title, sortOrder };
+      }
+    }
+    
+    // If no match found with strict criteria, try fuzzy matching
+    // Extract the main part before "E" and try partial matching
+    const beforeE = baseName.substring(0, eMatch.index).trim();
+    const normalizedBeforeE = normalizeForMatching(beforeE);
+    
+    for (const article of sortedArticles) {
+      const normalized = normalizeForMatching(article.externalId);
+      const normalizedTitle = normalizeForMatching(article.title);
+      const normalizedSku = article.sku ? normalizeForMatching(article.sku) : '';
+      
+      // Calculate match score based on how much of the identifier matches
+      const calcMatchScore = (identifier: string) => {
+        if (identifier.length < 4) return 0;
+        // Check if identifier is contained in filename
+        if (normalizedBeforeE.includes(identifier)) return identifier.length;
+        // Check if filename starts with identifier
+        if (normalizedBeforeE.startsWith(identifier.substring(0, Math.min(identifier.length, 6)))) {
+          return identifier.length * 0.8;
+        }
+        return 0;
+      };
+      
+      const scoreId = calcMatchScore(normalized);
+      const scoreTitle = calcMatchScore(normalizedTitle);
+      const scoreSku = calcMatchScore(normalizedSku);
+      const maxScore = Math.max(scoreId, scoreTitle, scoreSku);
+      
+      if (maxScore >= 5) {
         return { type: 'article', id: article.externalId, matched: article.title, sortOrder };
       }
     }
   } else {
     // No "E" marker, so this is likely a group image
-    // Extract sort order from trailing number: "PC P FBS 14", "PC P B 02 14-2"
-    const groupMatch = baseName.match(/\s+(\d+(?:-\d+)?)\s*$/);
+    // Extract sort order from trailing number: "PC P FBS 14", "PC P B 02 14-2", "PC P LB 10 00_"
+    const groupMatch = baseName.match(/\s+(\d+(?:-\d+)?)\s*_?\s*$/);
     if (groupMatch) {
       const sortOrderStr = groupMatch[1].replace(/-/g, '');
       const sortOrder = parseInt(sortOrderStr, 10);
       
       // Try to find any group whose externalId or name appears in the filename
-      // Sort by length (longest first) to prefer more specific matches
+      // Sort by normalized length (longest first) to prefer more specific matches
       const sortedGroups = [...groups].sort((a, b) => {
-        const aLen = Math.max(a.externalId.length, a.name.length);
-        const bLen = Math.max(b.externalId.length, b.name.length);
-        return bLen - aLen;
+        const aNormLen = Math.max(
+          normalizeForMatching(a.externalId).length,
+          normalizeForMatching(a.name).length
+        );
+        const bNormLen = Math.max(
+          normalizeForMatching(b.externalId).length,
+          normalizeForMatching(b.name).length
+        );
+        return bNormLen - aNormLen;
       });
       
       for (const group of sortedGroups) {
@@ -103,9 +142,35 @@ function parseTargetFromName(
         
         // Check if any identifier appears in the filename
         if (
-          (normalized.length >= 3 && normalizedFileName.includes(normalized)) ||
-          (normalizedName.length >= 3 && normalizedFileName.includes(normalizedName))
+          (normalized.length >= 5 && normalizedFileName.includes(normalized)) ||
+          (normalizedName.length >= 5 && normalizedFileName.includes(normalizedName))
         ) {
+          return { type: 'group', id: group.externalId, matched: group.name, sortOrder };
+        }
+      }
+      
+      // Fuzzy matching for groups
+      const beforeNumber = baseName.substring(0, groupMatch.index).trim();
+      const normalizedBeforeNumber = normalizeForMatching(beforeNumber);
+      
+      for (const group of sortedGroups) {
+        const normalized = normalizeForMatching(group.externalId);
+        const normalizedName = normalizeForMatching(group.name);
+        
+        const calcMatchScore = (identifier: string) => {
+          if (identifier.length < 4) return 0;
+          if (normalizedBeforeNumber.includes(identifier)) return identifier.length;
+          if (normalizedBeforeNumber.startsWith(identifier.substring(0, Math.min(identifier.length, 6)))) {
+            return identifier.length * 0.8;
+          }
+          return 0;
+        };
+        
+        const scoreId = calcMatchScore(normalized);
+        const scoreName = calcMatchScore(normalizedName);
+        const maxScore = Math.max(scoreId, scoreName);
+        
+        if (maxScore >= 5) {
           return { type: 'group', id: group.externalId, matched: group.name, sortOrder };
         }
       }
@@ -339,8 +404,6 @@ async function main() {
             const existing = syncMap.get(file.id);
             const isUpdate = !!existing;
 
-            /*
-
             console.log(
               `[${idx + 1}/${toProcess.length}] ${isUpdate ? 'UPDATE' : 'ADD'}  ${file.name} → ${target.type}:${target.id}`
             );
@@ -404,8 +467,6 @@ async function main() {
             }
 
             console.log(`   ✓ Success (mediaId=${mediaId}, sha256=${checksum.slice(0, 8)}…)`);
-
-            */
           })
         )
       );
