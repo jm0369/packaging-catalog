@@ -170,43 +170,45 @@ export default function Header() {
 
     return (
         <>
-            <header className={`sticky "top-0" z-[70] w-full border-b bg-white relative`}>
-                <Container className="flex h-16 items-center gap-6">
-                    <Link href="/" className="shrink-0">
-                        <Image src="/logo.png" alt="PackChampion Logo" width={140} height={36} />
+            <header className="sticky top-0 z-[70] w-full border-b border-gray-200 bg-white/95 backdrop-blur-sm shadow-sm">
+                <Container className="flex h-20 items-center gap-8">
+                    <Link href="/" className="shrink-0 transition-opacity hover:opacity-80">
+                        <Image src="/logo.png" alt="PackChampion Logo" width={160} height={40} priority />
                     </Link>
-                    <nav className="hidden md:flex items-center gap-7 text-[15px] font-medium text-foreground/90 ml-3">
+                    <nav className="hidden lg:flex items-center gap-1 text-[15px] font-medium text-gray-700 ml-4">
                         {/* Unternehmen dropdown */}
                         <div className="relative group" onMouseEnter={() => onMenuEnter("unternehmen")} onMouseLeave={() => onMenuLeave("unternehmen")}>
                             <Link
                                 href="/unternehmen"
                                 aria-current={isActive("/unternehmen") ? "page" : undefined}
                                 className={
-                                    "hover:opacity-100 hover:text-emerald-900 inline-flex items-center gap-1 group-focus-within:opacity-100 relative pb-1 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:bg-emerald-600 after:transition-[width] after:duration-200 " +
-                                    (isActive("/unternehmen") ? "text-emerald-900 after:w-full" : "hover:after:w-full")
+                                    "px-4 py-2 rounded-lg inline-flex items-center gap-1.5 transition-all duration-200 " +
+                                    (isActive("/unternehmen") 
+                                        ? "text-emerald-700 bg-emerald-50 font-semibold" 
+                                        : "hover:text-emerald-700 hover:bg-gray-50")
                                 }
                                 onClick={() => { blurActive(); forceCloseMenu("unternehmen"); }}
                             >
                                 {header.company}
-                                <ChevronDown className="h-4 w-4 opacity-70 transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />
+                                <ChevronDown className="h-3.5 w-3.5 opacity-60 transition-transform group-hover:rotate-180" />
                             </Link>
                             <div
-                                className={`absolute left-0 top-full min-w-[240px] z-50 p-2
-              opacity-0 translate-y-2 pointer-events-none transition-all duration-150 ease-out
+                                className={`absolute left-0 top-full mt-2 min-w-[260px] z-50 p-3
+              opacity-0 translate-y-1 pointer-events-none transition-all duration-200 ease-out
               group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto
               group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:pointer-events-auto
-              rounded-xl border border-emerald-900/10 bg-white shadow-xl ring-1 ring-black/5 ${hoverOpen.unternehmen ? "opacity-100 translate-y-0 pointer-events-auto" : ""} ${menuForceClosed.unternehmen ? "hidden" : ""}`}
+              rounded-2xl border border-gray-200 bg-white shadow-2xl ${hoverOpen.unternehmen ? "opacity-100 translate-y-0 pointer-events-auto" : ""} ${menuForceClosed.unternehmen ? "hidden" : ""}`}
                             >
-                                <Link href="/unternehmen/nachhaltigkeit" onClick={() => { blurActive(); forceCloseMenu("unternehmen"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 ${isExact("/unternehmen/nachhaltigkeit") ? "bg-emerald-50 font-semibold text-emerald-900" : "text-foreground/90"}`}>
+                                <Link href="/unternehmen/nachhaltigkeit" onClick={() => { blurActive(); forceCloseMenu("unternehmen"); }} className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-colors ${isExact("/unternehmen/nachhaltigkeit") ? "bg-emerald-50 font-semibold text-emerald-700" : "text-gray-700 hover:bg-gray-50"}`}>
                                     {header.sustainability}
                                 </Link>
-                                <Link href="/unternehmen/karriere" onClick={() => { blurActive(); forceCloseMenu("unternehmen"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 ${isExact("/unternehmen/karriere") ? "bg-emerald-50 font-semibold text-emerald-900" : "text-foreground/90"}`}>
+                                <Link href="/unternehmen/karriere" onClick={() => { blurActive(); forceCloseMenu("unternehmen"); }} className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-colors ${isExact("/unternehmen/karriere") ? "bg-emerald-50 font-semibold text-emerald-700" : "text-gray-700 hover:bg-gray-50"}`}>
                                     {header.careers}
                                 </Link>
-                                <Link href="/unternehmen/ansprechpartner" onClick={() => { blurActive(); forceCloseMenu("unternehmen"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 ${isExact("/unternehmen/ansprechpartner") ? "bg-emerald-50 font-semibold text-emerald-900" : "text-foreground/90"}`}>
+                                <Link href="/unternehmen/ansprechpartner" onClick={() => { blurActive(); forceCloseMenu("unternehmen"); }} className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-colors ${isExact("/unternehmen/ansprechpartner") ? "bg-emerald-50 font-semibold text-emerald-700" : "text-gray-700 hover:bg-gray-50"}`}>
                                     {header.contacts}
                                 </Link>
-                                <Link href="/unternehmen/kontakt" onClick={() => { blurActive(); forceCloseMenu("unternehmen"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 ${isExact("/unternehmen/kontakt") ? "bg-emerald-50 font-semibold text-emerald-900" : "text-foreground/90"}`}>
+                                <Link href="/unternehmen/kontakt" onClick={() => { blurActive(); forceCloseMenu("unternehmen"); }} className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-colors ${isExact("/unternehmen/kontakt") ? "bg-emerald-50 font-semibold text-emerald-700" : "text-gray-700 hover:bg-gray-50"}`}>
                                     {header.contact}
                                 </Link>
                             </div>
@@ -217,25 +219,27 @@ export default function Header() {
                                 href="/leistungen"
                                 aria-current={isActive("/leistungen") ? "page" : undefined}
                                 className={
-                                    "hover:opacity-100 hover:text-emerald-900 inline-flex items-center gap-1 group-focus-within:opacity-100 relative pb-1 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:bg-emerald-600 after:transition-[width] after:duration-200 " +
-                                    (isActive("/leistungen") ? "text-emerald-900 after:w-full" : "hover:after:w-full")
+                                    "px-4 py-2 rounded-lg inline-flex items-center gap-1.5 transition-all duration-200 " +
+                                    (isActive("/leistungen") 
+                                        ? "text-emerald-700 bg-emerald-50 font-semibold" 
+                                        : "hover:text-emerald-700 hover:bg-gray-50")
                                 }
                                 onClick={() => { blurActive(); forceCloseMenu("leistungen"); }}
                             >
                                 {header.services}
-                                <ChevronDown className="h-4 w-4 opacity-70 transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />
+                                <ChevronDown className="h-3.5 w-3.5 opacity-60 transition-transform group-hover:rotate-180" />
                             </Link>
                             <div
-                                className={`absolute left-0 top-full min-w-[260px] z-50 p-2
-              opacity-0 translate-y-2 pointer-events-none transition-all duration-150 ease-out
+                                className={`absolute left-0 top-full mt-2 min-w-[280px] z-50 p-3
+              opacity-0 translate-y-1 pointer-events-none transition-all duration-200 ease-out
               group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto
               group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:pointer-events-auto
-              rounded-xl border border-emerald-900/10 bg-white shadow-xl ring-1 ring-black/5 ${hoverOpen.leistungen ? "opacity-100 translate-y-0 pointer-events-auto" : ""} ${menuForceClosed.leistungen ? "hidden" : ""}`}
+              rounded-2xl border border-gray-200 bg-white shadow-2xl ${hoverOpen.leistungen ? "opacity-100 translate-y-0 pointer-events-auto" : ""} ${menuForceClosed.leistungen ? "hidden" : ""}`}
                             >
-                                <Link href="/leistungen/verpackungen" onClick={() => { blurActive(); forceCloseMenu("leistungen"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 ${isExact("/leistungen/verpackungen") ? "bg-emerald-50 font-semibold text-emerald-900" : "text-foreground/90"}`}>{header.packaging}</Link>
-                                <Link href="/leistungen/verpackungsentwicklung" onClick={() => { blurActive(); forceCloseMenu("leistungen"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 ${isExact("/leistungen/verpackungsentwicklung") ? "bg-emerald-50 font-semibold text-emerald-900" : "text-foreground/90"}`}>{header.packagingDevelopment}</Link>
-                                <Link href="/leistungen/verpackungsdesign" onClick={() => { blurActive(); forceCloseMenu("leistungen"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 ${isExact("/leistungen/verpackungsdesign") ? "bg-emerald-50 font-semibold text-emerald-900" : "text-foreground/90"}`}>{header.packagingDesign}</Link>
-                                <Link href="/leistungen/dropshipping" onClick={() => { blurActive(); forceCloseMenu("leistungen"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 ${isExact("/leistungen/dropshipping") ? "bg-emerald-50 font-semibold text-emerald-900" : "text-foreground/90"}`}>{header.dropshipping}</Link>
+                                <Link href="/leistungen/verpackungen" onClick={() => { blurActive(); forceCloseMenu("leistungen"); }} className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-colors ${isExact("/leistungen/verpackungen") ? "bg-emerald-50 font-semibold text-emerald-700" : "text-gray-700 hover:bg-gray-50"}`}>{header.packaging}</Link>
+                                <Link href="/leistungen/verpackungsentwicklung" onClick={() => { blurActive(); forceCloseMenu("leistungen"); }} className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-colors ${isExact("/leistungen/verpackungsentwicklung") ? "bg-emerald-50 font-semibold text-emerald-700" : "text-gray-700 hover:bg-gray-50"}`}>{header.packagingDevelopment}</Link>
+                                <Link href="/leistungen/verpackungsdesign" onClick={() => { blurActive(); forceCloseMenu("leistungen"); }} className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-colors ${isExact("/leistungen/verpackungsdesign") ? "bg-emerald-50 font-semibold text-emerald-700" : "text-gray-700 hover:bg-gray-50"}`}>{header.packagingDesign}</Link>
+                                <Link href="/leistungen/dropshipping" onClick={() => { blurActive(); forceCloseMenu("leistungen"); }} className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-colors ${isExact("/leistungen/dropshipping") ? "bg-emerald-50 font-semibold text-emerald-700" : "text-gray-700 hover:bg-gray-50"}`}>{header.dropshipping}</Link>
                             </div>
                         </div>
                         {/* Produkte dropdown */}
@@ -244,40 +248,42 @@ export default function Header() {
                                 href="/produktkategorien"
                                 aria-current={isActive("/produktkategorien") ? "page" : undefined}
                                 className={
-                                    "hover:opacity-100 hover:text-emerald-900 inline-flex items-center gap-1 group-focus-within:opacity-100 relative pb-1 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:bg-emerald-600 after:transition-[width] after:duration-200 " +
-                                    (isActive("/produktkategorien") ? "text-emerald-900 after:w-full" : "hover:after:w-full")
+                                    "px-4 py-2 rounded-lg inline-flex items-center gap-1.5 transition-all duration-200 " +
+                                    (isActive("/produktkategorien") 
+                                        ? "text-emerald-700 bg-emerald-50 font-semibold" 
+                                        : "hover:text-emerald-700 hover:bg-gray-50")
                                 }
                                 onClick={() => { blurActive(); forceCloseMenu("produkte"); }}
                             >
                                 {header.products}
-                                <ChevronDown className="h-4 w-4 opacity-70 transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />
+                                <ChevronDown className="h-3.5 w-3.5 opacity-60 transition-transform group-hover:rotate-180" />
                             </Link>
                             <div
-                                className={`absolute left-0 top-full min-w-[280px] max-h-[70vh] overflow-y-auto z-50 p-2
-              opacity-0 translate-y-2 pointer-events-none transition-all duration-150 ease-out
+                                className={`absolute left-0 top-full mt-2 min-w-[300px] max-h-[70vh] overflow-y-auto z-50 p-3
+              opacity-0 translate-y-1 pointer-events-none transition-all duration-200 ease-out
               group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto
               group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:pointer-events-auto
-              rounded-xl border border-emerald-900/10 bg-white shadow-xl ring-1 ring-black/5 ${hoverOpen.produkte ? "opacity-100 translate-y-0 pointer-events-auto" : ""} ${menuForceClosed.produkte ? "hidden" : ""}`}
+              rounded-2xl border border-gray-200 bg-white shadow-2xl ${hoverOpen.produkte ? "opacity-100 translate-y-0 pointer-events-auto" : ""} ${menuForceClosed.produkte ? "hidden" : ""}`}
                             >
                                
-                                <Link href="/produktgruppen" onClick={() => { blurActive(); forceCloseMenu("produkte"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 font-semibold ${isExact("/produktgruppen") ? "bg-emerald-50 text-emerald-900" : "text-foreground/90"}`}>
-                                    {"Produkgruppen"}
+                                <Link href="/produktgruppen" onClick={() => { blurActive(); forceCloseMenu("produkte"); }} className={`flex items-center gap-3 rounded-xl px-4 py-3 font-semibold transition-colors ${isExact("/produktgruppen") ? "bg-emerald-50 text-emerald-700" : "text-gray-700 hover:bg-gray-50"}`}>
+                                    {header.productGroups}
                                 </Link>
-                                <Link href="/artikel" onClick={() => { blurActive(); forceCloseMenu("produkte"); }} className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 font-semibold ${isExact("/artikel") ? "bg-emerald-50 text-emerald-900" : "text-foreground/90"}`}>
-                                    {"Artikel"}
+                                <Link href="/artikel" onClick={() => { blurActive(); forceCloseMenu("produkte"); }} className={`flex items-center gap-3 rounded-xl px-4 py-3 font-semibold transition-colors ${isExact("/artikel") ? "bg-emerald-50 text-emerald-700" : "text-gray-700 hover:bg-gray-50"}`}>
+                                    {header.articles}
                                 </Link>
                                 {categories.length > 0 && (
-                                    <div className="border-t border-emerald-900/10 my-2" />
+                                    <div className="border-t border-gray-200 my-2" />
                                 )}
                                 {categories.map((category) => (
                                     <Link 
                                         key={category.id}
                                         href={`/produktkategorien/${category.id}`} 
                                         onClick={() => { blurActive(); forceCloseMenu("produkte"); }} 
-                                        className={`flex items-center gap-2 rounded-md px-3 py-2 hover:bg-emerald-50 ${isActive(`/produktkategorien/${category.id}`) ? "bg-emerald-50 font-semibold text-emerald-900" : "text-foreground/90"}`}
+                                        className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-colors ${isActive(`/produktkategorien/${category.id}`) ? "bg-emerald-50 font-semibold text-emerald-700" : "text-gray-700 hover:bg-gray-50"}`}
                                     >
                                         <div 
-                                            className="w-2 h-2 rounded-full flex-shrink-0"
+                                            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                                             style={{ backgroundColor: category.color }}
                                         />
                                         {category.name}
@@ -291,25 +297,25 @@ export default function Header() {
                     <a
                         href="mailto:info@packchampion.de"
                         aria-label="E-Mail senden"
-                        className="ml-auto inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-emerald-900 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8dc00]"
+                        className="ml-auto inline-flex h-12 w-12 items-center justify-center rounded-full bg-emerald-600 text-white shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
                     >
-                        <Mail className="h-6 w-6" />
+                        <Mail className="h-5 w-5" />
                     </a>
                     <a
                         href="https://wa.me/4912345678900"
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="WhatsApp öffnen"
-                        className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-emerald-900 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8dc00]"
+                        className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-emerald-600 text-white shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
                     >
-                        <MessageCircle className="h-6 w-6" />
+                        <MessageCircle className="h-5 w-5" />
                     </a>
                     <div className="flex items-center gap-3">
 
                         {/* Mobile hamburger (moved to the right) */}
                         <button
                             type="button"
-                            className="md:hidden inline-flex items-center justify-center p-2 text-foreground/80 hover:text-foreground focus:outline-none"
+                            className="lg:hidden inline-flex items-center justify-center p-2.5 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors focus:outline-none"
                             aria-label={"open"}
                             aria-expanded={mobileOpen}
                             aria-controls="mobile-menu"
@@ -325,75 +331,75 @@ export default function Header() {
                     <>
                         <div
                             id="mobile-menu"
-                            className={`md:hidden fixed left-0 right-0 top-16 z-[60] rounded-b-2xl border border-emerald-900/10 bg-white shadow-xl ring-1 ring-black/5 animate-in fade-in slide-in-from-top-4`}
+                            className="lg:hidden fixed left-0 right-0 top-20 z-[60] max-h-[calc(100vh-5rem)] overflow-y-auto rounded-b-3xl border-b border-gray-200 bg-white/98 backdrop-blur-sm shadow-2xl"
                         >
-                            <Container className="py-4">
-                                <nav className="flex flex-col gap-1.5 text-[15px] font-medium">
+                            <Container className="py-6">
+                                <nav className="flex flex-col gap-2 text-[15px] font-medium">
                                     {/* Unternehmen collapsible */}
-                                    <details className="group rounded-lg">
-                                        <summary className="flex items-center justify-between cursor-pointer py-3 px-2 -mx-1 rounded-md hover:bg-emerald-50">
-                                            <span className={isActive("/unternehmen") ? "text-emerald-900 font-semibold" : undefined}>{header.company}</span>
-                                            <ChevronDown className="h-4 w-4 opacity-70 transition-transform group-open:rotate-180" />
+                                    <details className="group rounded-xl">
+                                        <summary className="flex items-center justify-between cursor-pointer py-4 px-4 -mx-1 rounded-xl hover:bg-gray-50 transition-colors">
+                                            <span className={isActive("/unternehmen") ? "text-emerald-700 font-semibold" : "text-gray-800"}>{header.company}</span>
+                                            <ChevronDown className="h-4 w-4 text-gray-500 transition-transform group-open:rotate-180" />
                                         </summary>
-                                        <div className="pl-3 pb-2 ml-2 border-l border-primary/50 flex flex-col text-[14px]">
-                                            <Link href="/unternehmen" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/unternehmen") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
+                                        <div className="pl-6 pb-2 ml-2 border-l-2 border-gray-200 flex flex-col text-[14px] space-y-1">
+                                            <Link href="/unternehmen" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/unternehmen") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
                                                 {header.overview}
                                             </Link>
-                                            <Link href="/unternehmen/nachhaltigkeit" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/unternehmen/nachhaltigkeit") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
+                                            <Link href="/unternehmen/nachhaltigkeit" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/unternehmen/nachhaltigkeit") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
                                                 {header.sustainability}
                                             </Link>
-                                            <Link href="/unternehmen/karriere" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/unternehmen/karriere") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
+                                            <Link href="/unternehmen/karriere" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/unternehmen/karriere") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
                                                 {header.careers}
                                             </Link>
-                                            <Link href="/unternehmen/ansprechpartner" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/unternehmen/ansprechpartner") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
+                                            <Link href="/unternehmen/ansprechpartner" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/unternehmen/ansprechpartner") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
                                                 {header.contacts}
                                             </Link>
-                                            <Link href="/unternehmen/kontakt" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/unternehmen/kontakt") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
+                                            <Link href="/unternehmen/kontakt" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/unternehmen/kontakt") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
                                                 {header.contact}
                                             </Link>
                                         </div>
                                     </details>
-                                    <details className="group rounded-lg">
-                                        <summary className="flex items-center justify-between cursor-pointer py-3 px-2 -mx-1 rounded-md hover:bg-emerald-50">
-                                            <span className={isActive("/leistungen") ? "text-emerald-900 font-semibold" : undefined}>{header.services}</span>
-                                            <ChevronDown className="h-4 w-4 opacity-70 transition-transform group-open:rotate-180" />
+                                    <details className="group rounded-xl">
+                                        <summary className="flex items-center justify-between cursor-pointer py-4 px-4 -mx-1 rounded-xl hover:bg-gray-50 transition-colors">
+                                            <span className={isActive("/leistungen") ? "text-emerald-700 font-semibold" : "text-gray-800"}>{header.services}</span>
+                                            <ChevronDown className="h-4 w-4 text-gray-500 transition-transform group-open:rotate-180" />
                                         </summary>
-                                        <div className="pl-3 pb-2 ml-2 border-l border-primary/50 flex flex-col text-[14px]">
-                                            <Link href="/leistungen" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/leistungen") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
+                                        <div className="pl-6 pb-2 ml-2 border-l-2 border-gray-200 flex flex-col text-[14px] space-y-1">
+                                            <Link href="/leistungen" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/leistungen") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
                                                 {header.overview}
                                             </Link>
-                                            <Link href="/leistungen/verpackungen" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/leistungen/verpackungen") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
+                                            <Link href="/leistungen/verpackungen" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/leistungen/verpackungen") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
                                                 {header.packaging}
                                             </Link>
-                                            <Link href="/leistungen/verpackungsentwicklung" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/leistungen/verpackungsentwicklung") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
+                                            <Link href="/leistungen/verpackungsentwicklung" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/leistungen/verpackungsentwicklung") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
                                                 {header.packagingDevelopment}
                                             </Link>
-                                            <Link href="/leistungen/verpackungsdesign" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/leistungen/verpackungsdesign") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
+                                            <Link href="/leistungen/verpackungsdesign" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/leistungen/verpackungsdesign") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
                                                 {header.packagingDesign}
                                             </Link>
-                                            <Link href="/leistungen/dropshipping" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/leistungen/dropshipping") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
+                                            <Link href="/leistungen/dropshipping" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/leistungen/dropshipping") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
                                                 {header.dropshipping}
                                             </Link>
                                         </div>
                                     </details>
-                                    <details className="group rounded-lg">
-                                        <summary className="flex items-center justify-between cursor-pointer py-3 px-2 -mx-1 rounded-md hover:bg-emerald-50">
-                                            <span className={isActive("/produktkategorien") ? "text-emerald-900 font-semibold" : undefined}>{header.products}</span>
-                                            <ChevronDown className="h-4 w-4 opacity-70 transition-transform group-open:rotate-180" />
+                                    <details className="group rounded-xl">
+                                        <summary className="flex items-center justify-between cursor-pointer py-4 px-4 -mx-1 rounded-xl hover:bg-gray-50 transition-colors">
+                                            <span className={isActive("/produktkategorien") ? "text-emerald-700 font-semibold" : "text-gray-800"}>{header.products}</span>
+                                            <ChevronDown className="h-4 w-4 text-gray-500 transition-transform group-open:rotate-180" />
                                         </summary>
-                                        <div className="pl-3 pb-2 ml-2 border-l border-primary/50 flex flex-col text-[14px]">
-                                            <Link href="/produktkategorien" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/produktkategorien") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
+                                        <div className="pl-6 pb-2 ml-2 border-l-2 border-gray-200 flex flex-col text-[14px] space-y-1">
+                                            <Link href="/produktkategorien" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/produktkategorien") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
                                                 {header.allProducts}
                                             </Link>
                                             {categories.map((category) => (
                                                 <Link 
                                                     key={category.id}
                                                     href={`/produktkategorien/${category.id}`} 
-                                                    className={`py-2 px-3 rounded-md hover:bg-emerald-50 flex items-center gap-2 ${isActive(`/produktkategorien/${category.id}`) ? "text-emerald-900 font-semibold" : ""}`} 
+                                                    className={`py-2.5 px-4 rounded-lg transition-colors flex items-center gap-3 ${isActive(`/produktkategorien/${category.id}`) ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} 
                                                     onClick={() => setMobileOpen(false)}
                                                 >
                                                     <div 
-                                                        className="w-2 h-2 rounded-full flex-shrink-0"
+                                                        className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                                                         style={{ backgroundColor: category.color }}
                                                     />
                                                     {category.name}
@@ -401,19 +407,19 @@ export default function Header() {
                                             ))}
                                         </div>
                                     </details>
-                                    <details className="group rounded-lg">
-                                        <summary className="flex items-center justify-between cursor-pointer py-3 px-2 -mx-1 rounded-md hover:bg-emerald-50">
-                                            <span className={isActive("/katalog") ? "text-emerald-900 font-semibold" : undefined}>{header.catalog}</span>
-                                            <ChevronDown className="h-4 w-4 opacity-70 transition-transform group-open:rotate-180" />
+                                    <details className="group rounded-xl">
+                                        <summary className="flex items-center justify-between cursor-pointer py-4 px-4 -mx-1 rounded-xl hover:bg-gray-50 transition-colors">
+                                            <span className={isActive("/katalog") ? "text-emerald-700 font-semibold" : "text-gray-800"}>{header.catalog}</span>
+                                            <ChevronDown className="h-4 w-4 text-gray-500 transition-transform group-open:rotate-180" />
                                         </summary>
-                                        <div className="pl-3 pb-2 ml-2 border-l border-primary/50 flex flex-col text-[14px]">
-                                            <Link href="/katalog" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/katalog") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
+                                        <div className="pl-6 pb-2 ml-2 border-l-2 border-gray-200 flex flex-col text-[14px] space-y-1">
+                                            <Link href="/katalog" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/katalog") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
                                                 {header.overview}
                                             </Link>
-                                            <Link href="/produktgruppen" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/produktgruppen") || isActive("/produktgruppen/") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
+                                            <Link href="/produktgruppen" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/produktgruppen") || isActive("/produktgruppen/") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
                                                 {header.productGroups}
                                             </Link>
-                                            <Link href="/artikel" className={`py-2 px-3 rounded-md hover:bg-emerald-50 ${isExact("/artikel") || isActive("/artikel/") ? "text-emerald-900 font-semibold" : ""}`} onClick={() => setMobileOpen(false)}>
+                                            <Link href="/artikel" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/artikel") || isActive("/artikel/") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
                                                 {header.articles}
                                             </Link>
                                         </div>
