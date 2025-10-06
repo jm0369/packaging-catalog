@@ -156,7 +156,7 @@ export default function ProduktePage() {
                 return (
                   <Link
                     key={category.id}
-                    href={`/produkte/${category.id}`}
+                    href={`/produktkategorien/${encodeURIComponent(category.name)}`}
                     className="group"
                   >
                     <Card className="h-full overflow-hidden hover:shadow-xl transition-all duration-300 border-0">

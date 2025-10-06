@@ -28,37 +28,39 @@ type Category = {
 };
 
 type ProduktDetailPageProps = {
-  params: Promise<{ id: string }>;
+  params: Promise<{ name: string }>;
 };
 
 export default function ProduktDetailPage({ params }: ProduktDetailPageProps) {
   const [category, setCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(true);
-  const [categoryId, setCategoryId] = useState<string>("");
+  const [categoryName, setCategoryName] = useState<string>("");
 
   useEffect(() => {
-    params.then((p) => setCategoryId(p.id));
+    params.then((p) => setCategoryName(p.name));
   }, [params]);
 
   useEffect(() => {
-    if (!categoryId) return;
+    if (!categoryName) return;
 
     async function fetchCategory() {
       try {
-        const r = await fetch(`${API}/api/categories`);
+        const r = await fetch(`${API}/api/categories/by-name/${encodeURIComponent(categoryName)}`);
         if (r.ok) {
-          const categories = await r.json();
-          const found = categories.find((c: Category) => c.id === categoryId);
-          setCategory(found || null);
+          const data = await r.json();
+          setCategory(data.statusCode === 404 ? null : data);
+        } else {
+          setCategory(null);
         }
       } catch (error) {
         console.error('Failed to fetch category:', error);
+        setCategory(null);
       } finally {
         setLoading(false);
       }
     }
     fetchCategory();
-  }, [categoryId]);
+  }, [categoryName]);
 
   if (loading) {
     return (
@@ -111,7 +113,7 @@ export default function ProduktDetailPage({ params }: ProduktDetailPageProps) {
               )}
 
               <div className="flex flex-wrap gap-4">
-                <Link href={`/produktgruppen?category=${categoryId}`}>
+                <Link href={`/produktgruppen?category=${category.id}`}>
                   <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700">
                     Alle {category.name} anzeigen
                     <ArrowRight className="w-4 h-4 ml-2" />
@@ -303,7 +305,7 @@ export default function ProduktDetailPage({ params }: ProduktDetailPageProps) {
               finden Sie die perfekte Verpackungslösung für Ihre Anforderungen.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Link href={`/produktgruppen?category=${categoryId}`}>
+              <Link href={`/produktgruppen?category=${category.id}`}>
                 <Button size="lg" variant="secondary" className="bg-white text-emerald-600 hover:bg-gray-100">
                   Alle {category.name} anzeigen
                 </Button>

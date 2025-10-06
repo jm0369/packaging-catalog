@@ -278,9 +278,9 @@ export default function Header() {
                                 {categories.map((category) => (
                                     <Link 
                                         key={category.id}
-                                        href={`/produktkategorien/${category.id}`} 
+                                        href={`/produktkategorien/${encodeURIComponent(category.name)}`} 
                                         onClick={() => { blurActive(); forceCloseMenu("produkte"); }} 
-                                        className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-colors ${isActive(`/produktkategorien/${category.id}`) ? "bg-emerald-50 font-semibold text-emerald-700" : "text-gray-700 hover:bg-gray-50"}`}
+                                        className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-colors ${isActive(`/produktkategorien/${encodeURIComponent(category.name)}`) ? "bg-emerald-50 font-semibold text-emerald-700" : "text-gray-700 hover:bg-gray-50"}`}
                                     >
                                         <div 
                                             className="w-2.5 h-2.5 rounded-full flex-shrink-0"
@@ -384,8 +384,8 @@ export default function Header() {
                                             {categories.map((category) => (
                                                 <Link 
                                                     key={category.id}
-                                                    href={`/produktkategorien/${category.id}`} 
-                                                    className={`py-2.5 px-4 rounded-lg transition-colors flex items-center gap-3 ${isActive(`/produktkategorien/${category.id}`) ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} 
+                                                    href={`/produktkategorien/${encodeURIComponent(category.name)}`} 
+                                                    className={`py-2.5 px-4 rounded-lg transition-colors flex items-center gap-3 ${isActive(`/produktkategorien/${encodeURIComponent(category.name)}`) ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} 
                                                     onClick={() => setMobileOpen(false)}
                                                 >
                                                     <div 
