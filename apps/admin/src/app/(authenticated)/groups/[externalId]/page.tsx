@@ -36,7 +36,9 @@ async function getAllCategories(): Promise<Category[]> {
   const API = process.env.NEXT_PUBLIC_API_BASE!;
   const r = await fetch(`${API}/api/categories`, { cache: 'no-store' });
   if (!r.ok) return [];
-  return r.json();
+  const data = await r.json();
+  // Filter to only show Group type categories
+  return Array.isArray(data) ? data.filter((c: Category & { type: string }) => c.type === 'Group') : [];
 }
 
 export default async function AdminGroupDetail({ params }: Params) {
@@ -123,7 +125,7 @@ export default async function AdminGroupDetail({ params }: Params) {
             </button>
           </form>
         ) : allCategories.length === 0 ? (
-          <p className="text-xs text-gray-500">No categories available. Create categories first.</p>
+          <p className="text-xs text-gray-500">No Group categories available. Create Group type categories first.</p>
         ) : (
           <p className="text-xs text-gray-500">All available categories have been assigned.</p>
         )}
