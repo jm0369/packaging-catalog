@@ -17,6 +17,7 @@ type Category = {
   id: string;
   name: string;
   color: string;
+  type: string;
   description?: string;
   properties?: Array<{ name: string; description: string }>;
   applications?: string[];
@@ -25,7 +26,8 @@ type Category = {
   ordering?: Array<{ name: string; description: string }>;
   orderingNotes?: string[];
   media: string[];
-  groupCount: number;
+  groups: Array<{ id: string; externalId: string; name: string }>;
+  articles: Array<{ id: string; externalId: string; title: string }>;
 };
 
 type ProduktDetailPageProps = {
@@ -61,6 +63,7 @@ export default function ProduktDetailPage({ params }: ProduktDetailPageProps) {
         const r = await fetch(`${API}/api/categories/by-name/${encodeURIComponent(categoryName)}`);
         if (r.ok) {
           const data = await r.json();
+          console.log(data);
           setCategory(data.statusCode === 404 ? null : data);
         } else {
           setCategory(null);
@@ -111,7 +114,10 @@ export default function ProduktDetailPage({ params }: ProduktDetailPageProps) {
                   style={{ backgroundColor: category.color }}
                 />
                 <div className="text-sm font-semibold text-emerald-600">
-                  {category.groupCount} {category.groupCount === 1 ? 'Produkt' : 'Produkte'} verfügbar
+                  {category.type === 'Article' 
+                    ? `${category.articles.length} ${category.articles.length === 1 ? 'Artikel' : 'Artikel'} verfügbar`
+                    : `${category.groups.length} ${category.groups.length === 1 ? 'Produkt' : 'Produkte'} verfügbar`
+                  }
                 </div>
               </div>
               
@@ -126,7 +132,10 @@ export default function ProduktDetailPage({ params }: ProduktDetailPageProps) {
               )}
 
               <div className="flex flex-wrap gap-4">
-                <Link href={`/artikelgruppen?category=${encodeURIComponent(category.name)}`}>
+                <Link href={category.type === 'Article' 
+                  ? `/artikel?category=${encodeURIComponent(category.name)}` 
+                  : `/artikelgruppen?category=${encodeURIComponent(category.name)}`
+                }>
                   <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700">
                     Alle {category.name} anzeigen
                     <ArrowRight className="w-4 h-4 ml-2" />
@@ -377,7 +386,10 @@ export default function ProduktDetailPage({ params }: ProduktDetailPageProps) {
               finden Sie die perfekte Verpackungslösung für Ihre Anforderungen.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Link href={`/artikelgruppen?category=${encodeURIComponent(category.name)}`}>
+              <Link href={category.type === 'Article' 
+                ? `/artikel?category=${encodeURIComponent(category.name)}` 
+                : `/artikelgruppen?category=${encodeURIComponent(category.name)}`
+              }>
                 <Button size="lg" variant="secondary" className="bg-white text-emerald-600 hover:bg-gray-100">
                   Alle {category.name} anzeigen
                 </Button>
