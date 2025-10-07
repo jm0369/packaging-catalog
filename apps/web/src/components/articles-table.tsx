@@ -20,6 +20,10 @@ type Article = {
   sku?: string | null;
   media?: string[];
   categories?: Category[];
+  articleGroup?: {
+    externalId: string;
+    name?: string;
+  };
   attributes?: {
     _INNENLAENGE?: string;
     _INNENBREITE?: string;
@@ -57,6 +61,26 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
     setLightboxImages(null);
     setLightboxIndex(0);
   };
+
+  // Group articles by their article group
+  const groupedArticles = articles.reduce((groups, article) => {
+    const groupKey = article.articleGroup?.externalId || 'ungrouped';
+    const groupName = article.articleGroup?.name || article.articleGroup?.externalId || 'Ohne Gruppe';
+    
+    if (!groups[groupKey]) {
+      groups[groupKey] = {
+        name: groupName,
+        externalId: article.articleGroup?.externalId,
+        articles: []
+      };
+    }
+    groups[groupKey].articles.push(article);
+    return groups;
+  }, {} as Record<string, { name: string; externalId?: string; articles: Article[] }>);
+
+  const sortedGroups = Object.values(groupedArticles).sort((a, b) => 
+    a.name.localeCompare(b.name)
+  );
 
   if (articles.length === 0) {
     return (
@@ -100,7 +124,33 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {articles.map((article) => {
+              {sortedGroups.map((group) => (
+                <>
+                  {/* Group Header Row */}
+                  <tr key={`group-${group.externalId || 'ungrouped'}`} className="bg-gradient-to-r from-emerald-100 to-emerald-50">
+                    <td colSpan={12} className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <Package className="w-5 h-5 text-emerald-700" />
+                        {group.externalId ? (
+                          <Link
+                            href={`/artikelgruppen/${encodeURIComponent(group.externalId)}`}
+                            className="text-base font-bold text-emerald-800 hover:text-emerald-900 hover:underline inline-flex items-center gap-2"
+                          >
+                            {group.name}
+                            <ExternalLink className="w-4 h-4" />
+                          </Link>
+                        ) : (
+                          <span className="text-base font-bold text-emerald-800">{group.name}</span>
+                        )}
+                        <span className="text-sm text-emerald-600 ml-2">
+                          ({group.articles.length} {group.articles.length === 1 ? 'Artikel' : 'Artikel'})
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                  
+                  {/* Articles in this group */}
+                  {group.articles.map((article) => {
                 const allImages = article.media || [];
                 const imageUrl = allImages[0] || null;
                 
@@ -171,13 +221,19 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
                                 ? `/artikel?category=${encodeURIComponent(category.name)}`
                                 : `/artikelgruppen?category=${encodeURIComponent(category.name)}`
                               }
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-all hover:scale-105 hover:shadow-md"
+                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium shadow-sm transition-all hover:shadow-md"
                               style={{ 
-                                backgroundColor: category.color,
-                                color: 'white'
+                                backgroundColor: category.color + '20',
+                                borderColor: category.color,
+                                borderWidth: '1px',
+                                color: category.color 
                               }}
                               title={`Filter nach ${category.name}`}
                             >
+                              <span 
+                                className="w-2 h-2 rounded-full"
+                                style={{ backgroundColor: category.color }}
+                              />
                               {category.name}
                             </Link>
                           ))
@@ -189,14 +245,40 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
                   </tr>
                 );
               })}
+                </>
+              ))}
             </tbody>
           </table>
         </div>
       </div>
 
       {/* Mobile/Tablet View - Cards */}
-      <div className="lg:hidden space-y-4">
-        {articles.map((article) => {
+      <div className="lg:hidden space-y-6">
+        {sortedGroups.map((group) => (
+          <div key={`mobile-group-${group.externalId || 'ungrouped'}`} className="space-y-4">
+            {/* Group Header */}
+            <div className="bg-gradient-to-r from-emerald-100 to-emerald-50 rounded-lg p-4 shadow-md">
+              <div className="flex items-center gap-2">
+                <Package className="w-5 h-5 text-emerald-700" />
+                {group.externalId ? (
+                  <Link
+                    href={`/artikelgruppen/${encodeURIComponent(group.externalId)}`}
+                    className="text-lg font-bold text-emerald-800 hover:text-emerald-900 hover:underline inline-flex items-center gap-2"
+                  >
+                    {group.name}
+                    <ExternalLink className="w-4 h-4" />
+                  </Link>
+                ) : (
+                  <span className="text-lg font-bold text-emerald-800">{group.name}</span>
+                )}
+              </div>
+              <p className="text-sm text-emerald-600 mt-1">
+                {group.articles.length} {group.articles.length === 1 ? 'Artikel' : 'Artikel'}
+              </p>
+            </div>
+
+            {/* Articles in this group */}
+            {group.articles.map((article) => {
           const allImages = article.media || [];
           const imageUrl = allImages[0] || null;
           
@@ -264,13 +346,19 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
                                   ? `/artikel?category=${encodeURIComponent(category.name)}`
                                   : `/artikelgruppen?category=${encodeURIComponent(category.name)}`
                                 }
-                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-all hover:scale-105 hover:shadow-md"
+                                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium shadow-sm transition-all hover:shadow-md"
                                 style={{ 
-                                  backgroundColor: category.color,
-                                  color: 'white'
+                                  backgroundColor: category.color + '20',
+                                  borderColor: category.color,
+                                  borderWidth: '1px',
+                                  color: category.color 
                                 }}
                                 title={`Filter nach ${category.name}`}
                               >
+                                <span 
+                                  className="w-2 h-2 rounded-full"
+                                  style={{ backgroundColor: category.color }}
+                                />
                                 {category.name}
                               </Link>
                             ))}
@@ -357,6 +445,8 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
             </Card>
           );
         })}
+          </div>
+        ))}
       </div>
 
       {lightboxImages && (
