@@ -9,6 +9,7 @@ import Image from "next/image";
 import Container from "@/components/container";
 import SectionTitle from "@/components/section-title";
 import HeroSlider from "@/components/hero-slider";
+import { CategoryGrid } from "@/components/category-grid";
 import Link from "next/link";
 
 const API = process.env.NEXT_PUBLIC_API_BASE!;
@@ -17,6 +18,7 @@ type Category = {
   id: string;
   name: string;
   color: string;
+  type: string;
   description?: string;
   properties?: Array<{ name: string; description: string }>;
   applications?: string[];
@@ -26,6 +28,7 @@ type Category = {
   orderingNotes?: string[];
   media: string[];
   groupCount: number;
+  articleCount: number;
 };
 
 async function fetchCategories(): Promise<Category[]> {
@@ -185,31 +188,17 @@ export default function Page() {
             {/* PRODUCT CLUSTERS – big row */}
             <section id="produkte" className="py-10 md:py-16" style={{ backgroundColor: colors.lightCopper }}>
                 <Container>
-                    <h3 className="text-3xl md:text-4xl font-extrabold mb-20 text-center">
+                    <h3 className="text-3xl md:text-4xl font-extrabold mb-12 text-center">
                         Unser Standard.
                         <br />
                         <span style={{ color: colors.lightGreen }}>Ihre Produkte, unsere Lösungen.</span>
                     </h3>
-                    <div className="grid gap-6 md:grid-cols-3">
-                        {categories.slice(0, 6).map((c: Category) => (
-                            <div key={c.id}>
-                                <Link href={"/verpackungskategorien/" + encodeURIComponent(c.name)} aria-label={"what"} className="relative isolate overflow-hidden shadow block group">
-                                    <div
-                                        className="h-60 bg-cover bg-center"
-                                        style={{ backgroundImage: `url(${c.media[0]})` }}
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
-                                    <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white">
-                                        <div className="font-extrabold tracking-wide">{c.name}</div>
-                                        <span className="inline-flex items-center justify-center rounded-full bg-white/15 group-hover:bg-white/25 transition w-9 h-9">
-                                            <ChevronRight className="h-4 w-4" />
-                                        </span>
-                                    </div>
-                                </Link>
-                            </div>
-                        ))}
-                    </div>
-
+                    
+                    <CategoryGrid 
+                        categories={categories}
+                        maxItems={6}
+                        showMoreButton={true}
+                    />
                 </Container>
             </section>
 
