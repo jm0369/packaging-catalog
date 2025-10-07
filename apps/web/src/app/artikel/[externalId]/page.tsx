@@ -18,6 +18,7 @@ type Category = {
   id: string;
   name: string;
   color: string;
+  type: string;
 };
 
 type ArticleGroup = {
@@ -91,7 +92,17 @@ export default function ArticlePage({ params }: ArticlePageProps) {
           setArticle(null);
         } else if (r.ok) {
           const data = await r.json();
-          setArticle(data);
+          
+          // Merge article categories with group categories, removing duplicates
+          const articleCategoryIds = new Set(data.categories.map((c: Category) => c.id));
+          const groupCategories = data.group?.categories || [];
+          const uniqueGroupCategories = groupCategories.filter((c: Category) => !articleCategoryIds.has(c.id));
+          const allCategories = [...data.categories, ...uniqueGroupCategories];
+          
+          setArticle({
+            ...data,
+            categories: allCategories,
+          });
         }
       } catch (error) {
         console.error('Failed to fetch article:', error);
@@ -178,7 +189,7 @@ export default function ArticlePage({ params }: ArticlePageProps) {
                 </Link>
               </div>
 
-              {/* Categories */}
+              {/* Categories (merged article + group categories) */}
               {article.categories && article.categories.length > 0 && (
                 <div className="mb-6">
                   <div className="flex items-center gap-2 mb-3">
@@ -189,41 +200,14 @@ export default function ArticlePage({ params }: ArticlePageProps) {
                     {article.categories.map((category) => (
                       <Link
                         key={category.id}
-                        href={`/artikel?category=${encodeURIComponent(category.name)}`}
+                        href={category.type === 'Article' 
+                          ? `/artikel?category=${encodeURIComponent(category.name)}`
+                          : `/artikelgruppen?category=${encodeURIComponent(category.name)}`
+                        }
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border shadow-sm transition-all hover:shadow-md"
                         style={{ 
                           backgroundColor: category.color + '20',
                           borderColor: category.color,
-                          color: category.color 
-                        }}
-                      >
-                        <span 
-                          className="w-2 h-2 rounded-full"
-                          style={{ backgroundColor: category.color }}
-                        />
-                        {category.name}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Group Categories - Keep the existing one for backward compatibility */}
-              {article.group.categories && article.group.categories.length > 0 && (
-                <div className="mb-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Tag className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm font-semibold text-gray-500">Gruppenkategorien:</span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {article.group.categories.map((category) => (
-                      <Link
-                        key={category.id}
-                        href={`/artikelgruppen?category=${encodeURIComponent(category.name)}`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border shadow-sm transition-all hover:shadow-md opacity-75"
-                        style={{ 
-                          backgroundColor: category.color + '10',
-                          borderColor: category.color + '80',
                           color: category.color 
                         }}
                       >

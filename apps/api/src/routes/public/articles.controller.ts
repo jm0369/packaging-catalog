@@ -206,7 +206,20 @@ export class ArticlesPublicController {
       where: { externalId },
       select: {
         id: true, externalId: true, sku: true, ean: true, title: true, description: true, uom: true, updatedAt: true,
-        articleGroup: { select: { id: true, externalId: true, name: true } },
+        articleGroup: { 
+          select: { 
+            id: true, 
+            externalId: true, 
+            name: true,
+            categories: {
+              select: {
+                category: {
+                  select: { id: true, name: true, type: true, color: true }
+                }
+              }
+            }
+          } 
+        },
         media: { orderBy: { sortOrder: 'asc' }, select: { media: { select: { key: true } } } },
         categories: {
           select: {
@@ -227,6 +240,7 @@ export class ArticlesPublicController {
         id: a.articleGroup.id,
         externalId: a.articleGroup.externalId,
         name: a.articleGroup.name,
+        categories: a.articleGroup.categories.map(c => c.category),
       } : null,
       categories: a.categories.map(c => c.category),
       media: a.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
