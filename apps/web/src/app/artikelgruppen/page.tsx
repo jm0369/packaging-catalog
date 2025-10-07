@@ -15,6 +15,7 @@ const API = process.env.NEXT_PUBLIC_API_BASE!;
 type Category = {
   id: string;
   name: string;
+  type: string;
   color: string;
 };
 
@@ -66,7 +67,11 @@ export default function GroupsPage() {
 
         if (categoriesRes.ok) {
           const categoriesData = await categoriesRes.json();
-          setCategories(categoriesData);
+          // Filter to only show Group type categories
+          const groupCategories = Array.isArray(categoriesData) 
+            ? categoriesData.filter((c: Category) => c.type === 'Group') 
+            : [];
+          setCategories(groupCategories);
         }
       } catch (error) {
         console.error('Failed to fetch data:', error);

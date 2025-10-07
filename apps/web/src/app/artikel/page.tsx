@@ -6,11 +6,18 @@ import { ArticlesTable } from '@/components/articles-table';
 import Container from "@/components/container";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Search, Package, ArrowLeft, ArrowRight, X, Ruler } from "lucide-react";
+import { Search, Package, ArrowLeft, ArrowRight, X, Ruler, Filter } from "lucide-react";
 import { colors } from "@/lib/colors";
 import { useSearchParams } from "next/navigation";
 
 const API = process.env.NEXT_PUBLIC_API_BASE!;
+
+type Category = {
+  id: string;
+  name: string;
+  type: string;
+  color: string;
+};
 
 type Article = {
   id: string;
@@ -32,6 +39,7 @@ type Article = {
 export default function ArticlesPage() {
   const searchParams = useSearchParams();
   const [articles, setArticles] = useState<Article[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -40,6 +48,7 @@ export default function ArticlesPage() {
   const [height, setHeight] = useState("");
 
   const q = searchParams.get('q') || undefined;
+  const categoryName = searchParams.get('category') || undefined;
   const lengthParam = searchParams.get('length') || undefined;
   const widthParam = searchParams.get('width') || undefined;
   const heightParam = searchParams.get('height') || undefined;
@@ -54,38 +63,54 @@ export default function ArticlesPage() {
   }, [q, lengthParam, widthParam, heightParam]);
 
   useEffect(() => {
-    async function fetchArticles() {
+    async function fetchData() {
       setLoading(true);
       try {
         const sp = new URLSearchParams();
         if (q) sp.set('q', q);
+        if (categoryName) sp.set('category', categoryName);
         if (lengthParam) sp.set('length', lengthParam);
         if (widthParam) sp.set('width', widthParam);
         if (heightParam) sp.set('height', heightParam);
         sp.set('limit', String(limit));
         sp.set('offset', String(offset));
 
-        const r = await fetch(`${API}/api/articles?${sp}`);
-        if (r.ok) {
-          const data = await r.json();
+        const [articlesRes, categoriesRes] = await Promise.all([
+          fetch(`${API}/api/articles?${sp}`),
+          fetch(`${API}/api/categories`),
+        ]);
+
+        if (articlesRes.ok) {
+          const data = await articlesRes.json();
           setArticles(data.data || []);
           setTotal(data.total || 0);
         }
+
+        if (categoriesRes.ok) {
+          const categoriesData = await categoriesRes.json();
+          // Filter to only show Article type categories
+          const articleCategories = Array.isArray(categoriesData) 
+            ? categoriesData.filter((c: Category) => c.type === 'Article') 
+            : [];
+          setCategories(articleCategories);
+        }
       } catch (error) {
-        console.error('Failed to fetch articles:', error);
+        console.error('Failed to fetch data:', error);
       } finally {
         setLoading(false);
       }
     }
-    fetchArticles();
-  }, [q, lengthParam, widthParam, heightParam, limit, offset]);
+    fetchData();
+  }, [q, categoryName, lengthParam, widthParam, heightParam, limit, offset]);
 
   const prevOffset = Math.max(0, offset - limit);
   const nextOffset = offset + limit;
+  const selectedCategory = categories.find(c => c.name === categoryName);
 
-  const buildUrl = (params: { q?: string; length?: string; width?: string; height?: string; limit?: number; offset?: number }) => {
+  const buildUrl = (params: { q?: string; category?: string; length?: string; width?: string; height?: string; limit?: number; offset?: number }) => {
     const sp = new URLSearchParams();
     if (params.q) sp.set('q', params.q);
+    if (params.category) sp.set('category', params.category);
     if (params.length) sp.set('length', params.length);
     if (params.width) sp.set('width', params.width);
     if (params.height) sp.set('height', params.height);
@@ -95,7 +120,7 @@ export default function ArticlesPage() {
   };
 
   const hasDimensionFilter = lengthParam || widthParam || heightParam;
-  const hasAnyFilter = q || hasDimensionFilter;
+  const hasAnyFilter = q || categoryName || hasDimensionFilter;
 
   return (
     <>
@@ -205,8 +230,92 @@ export default function ArticlesPage() {
         </Container>
       </section>
 
-      {/* Active Search Display */}
-      {hasAnyFilter && (
+      {/* Filters Section */}
+      <section className="py-8 bg-white border-b">
+        <Container>
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Filter className="w-5 h-5 text-emerald-600" />
+              <h2 className="text-lg font-semibold">Filter nach Kategorie</h2>
+            </div>
+
+            {categories.length > 0 && (
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/artikel"
+                  className={`px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all ${
+                    !categoryName 
+                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg' 
+                      : 'border-gray-300 hover:border-emerald-600 hover:bg-emerald-50'
+                  }`}
+                >
+                  Alle Artikel
+                </Link>
+                {categories.map((category) => (
+                  <Link
+                    key={category.id}
+                    href={buildUrl({ q, category: category.name, length: lengthParam, width: widthParam, height: heightParam, limit })}
+                    className={`px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all flex items-center gap-2 ${
+                      categoryName === category.name
+                        ? 'text-white shadow-lg'
+                        : 'hover:shadow-md'
+                    }`}
+                    style={{
+                      backgroundColor: categoryName === category.name ? category.color : 'white',
+                      borderColor: category.color,
+                      color: categoryName === category.name ? 'white' : '#374151',
+                    }}
+                  >
+                    <div 
+                      className="w-2.5 h-2.5 rounded-full"
+                      style={{ backgroundColor: categoryName === category.name ? 'white' : category.color }}
+                    />
+                    {category.name}
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {/* Active Filter Display */}
+            {(selectedCategory || q || hasDimensionFilter) && (
+              <div className="flex items-center gap-3 pt-2">
+                <span className="text-sm text-gray-600">Aktive Filter:</span>
+                {selectedCategory && (
+                  <Link
+                    href={buildUrl({ q, length: lengthParam, width: widthParam, height: heightParam, limit })}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 hover:bg-gray-200 transition-colors"
+                  >
+                    Kategorie: {selectedCategory.name}
+                    <X className="w-4 h-4" />
+                  </Link>
+                )}
+                {q && (
+                  <Link
+                    href={buildUrl({ category: categoryName, length: lengthParam, width: widthParam, height: heightParam, limit })}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 hover:bg-gray-200 transition-colors"
+                  >
+                    Suche: &quot;{q}&quot;
+                    <X className="w-4 h-4" />
+                  </Link>
+                )}
+                {hasDimensionFilter && (
+                  <Link
+                    href={buildUrl({ q, category: categoryName, limit })}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-emerald-100 hover:bg-emerald-200 transition-colors"
+                  >
+                    <Ruler className="w-3 h-3" />
+                    Maße: {lengthParam || '?'} × {widthParam || '?'} × {heightParam || '?'} mm
+                    <X className="w-4 h-4" />
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+        </Container>
+      </section>
+
+      {/* Active Search Display - Remove this old section */}
+      {false && hasAnyFilter && (
         <section className="py-6 bg-white border-b">
           <Container>
             <div className="flex items-center gap-3 flex-wrap">
@@ -306,7 +415,7 @@ export default function ArticlesPage() {
                   </div>
                   <div className="flex gap-3">
                     <Link
-                      href={buildUrl({ q, length: lengthParam, width: widthParam, height: heightParam, limit, offset: prevOffset })}
+                      href={buildUrl({ q, category: categoryName, length: lengthParam, width: widthParam, height: heightParam, limit, offset: prevOffset })}
                       className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 font-medium transition-all ${
                         offset === 0 
                           ? 'pointer-events-none opacity-40 border-gray-300' 
@@ -317,7 +426,7 @@ export default function ArticlesPage() {
                       Zurück
                     </Link>
                     <Link
-                      href={buildUrl({ q, length: lengthParam, width: widthParam, height: heightParam, limit, offset: nextOffset })}
+                      href={buildUrl({ q, category: categoryName, length: lengthParam, width: widthParam, height: heightParam, limit, offset: nextOffset })}
                       className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 font-medium transition-all ${
                         nextOffset >= total 
                           ? 'pointer-events-none opacity-40 border-gray-300' 

@@ -33,6 +33,7 @@ type ArticleData = {
   description?: string | null;
   sku?: string | null;
   media: string[];
+  categories: Category[];
   attributes?: {
     _INNENLAENGE?: string;
     _INNENBREITE?: string;
@@ -170,7 +171,7 @@ export default function ArticlePage({ params }: ArticlePageProps) {
                   <span className="text-sm font-semibold text-gray-700">Produktgruppe:</span>
                 </div>
                 <Link 
-                  href={`/artikelgruppe/${encodeURIComponent(article.group.externalId)}`}
+                  href={`/artikelgruppen/${encodeURIComponent(article.group.externalId)}`}
                   className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors font-medium text-emerald-700"
                 >
                   {article.group.name || article.group.externalId}
@@ -178,21 +179,51 @@ export default function ArticlePage({ params }: ArticlePageProps) {
               </div>
 
               {/* Categories */}
-              {article.group.categories && article.group.categories.length > 0 && (
+              {article.categories && article.categories.length > 0 && (
                 <div className="mb-6">
                   <div className="flex items-center gap-2 mb-3">
                     <Tag className="w-4 h-4 text-emerald-600" />
                     <span className="text-sm font-semibold text-gray-700">Kategorien:</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {article.group.categories.map((category) => (
+                    {article.categories.map((category) => (
                       <Link
                         key={category.id}
-                        href={`/produkte/${category.id}`}
+                        href={`/artikel?category=${encodeURIComponent(category.name)}`}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border shadow-sm transition-all hover:shadow-md"
                         style={{ 
                           backgroundColor: category.color + '20',
                           borderColor: category.color,
+                          color: category.color 
+                        }}
+                      >
+                        <span 
+                          className="w-2 h-2 rounded-full"
+                          style={{ backgroundColor: category.color }}
+                        />
+                        {category.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Group Categories - Keep the existing one for backward compatibility */}
+              {article.group.categories && article.group.categories.length > 0 && (
+                <div className="mb-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Tag className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm font-semibold text-gray-500">Gruppenkategorien:</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {article.group.categories.map((category) => (
+                      <Link
+                        key={category.id}
+                        href={`/artikelgruppen?category=${encodeURIComponent(category.name)}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border shadow-sm transition-all hover:shadow-md opacity-75"
+                        style={{ 
+                          backgroundColor: category.color + '10',
+                          borderColor: category.color + '80',
                           color: category.color 
                         }}
                       >
