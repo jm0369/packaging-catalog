@@ -3,10 +3,11 @@
 import React, { useEffect, useState } from "react";
 import Link from 'next/link';
 import { ArticlesTable } from '@/components/articles-table';
+import { SearchFilters } from '@/components/search-filters';
 import Container from "@/components/container";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Search, Package, ArrowLeft, ArrowRight, X, Ruler, Filter } from "lucide-react";
+import { Package, ArrowLeft, ArrowRight } from "lucide-react";
 import { colors } from "@/lib/colors";
 import { useSearchParams } from "next/navigation";
 
@@ -128,213 +129,28 @@ export default function ArticlesPage() {
   return (
     <>
       {/* Search & Filters Section */}
-      <section className="relative bg-gradient-to-br from-emerald-50 to-white py-16 border-b">
-        <Container>
-          <div className="max-w-6xl mx-auto">
-            <div className="text-sm font-semibold tracking-widest uppercase mb-4" style={{ color: colors.lightGreen }}>
-              Artikel
-            </div>
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-6" style={{ color: colors.darkGreen }}>
-              Alle Artikel durchsuchen
-            </h1>
-            <p className="text-lg text-foreground/80 mb-8 leading-relaxed">
-              Durchsuchen Sie unser komplettes Sortiment. Finden Sie genau den Artikel, den Sie benötigen, 
-              mit unserer leistungsstarken Suchfunktion.
-            </p>
-
-            {/* Search Bar */}
-            <Card className="border-0 shadow-xl mb-8">
-              <CardContent className="p-6">
-                <form action="/artikel" method="get" className="space-y-4">
-                  {/* Text Search */}
-                  <div className="flex gap-3">
-                    <div className="relative flex-1">
-                      <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        name="q"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Nach Titel, SKU oder EAN suchen..."
-                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                      />
-                    </div>
-                    <input type="hidden" name="limit" value={String(limit)} />
-                    <Button type="submit" size="lg" className="bg-emerald-600 hover:bg-emerald-700 px-8">
-                      Suchen
-                    </Button>
-                  </div>
-
-                  {/* Dimension Filters */}
-                  <div className="border-t pt-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Ruler className="w-4 h-4 text-gray-600" />
-                      <span className="text-sm font-medium text-gray-700">
-                        Maßfilter (mm) - Findet Artikel, in die Ihr Produkt passt:
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <div>
-                        <label htmlFor="length" className="block text-xs text-gray-600 mb-1.5">
-                          Länge (mm)
-                        </label>
-                        <input
-                          id="length"
-                          name="length"
-                          type="number"
-                          min="0"
-                          step="1"
-                          value={length}
-                          onChange={(e) => setLength(e.target.value)}
-                          placeholder="z.B. 100"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="width" className="block text-xs text-gray-600 mb-1.5">
-                          Breite (mm)
-                        </label>
-                        <input
-                          id="width"
-                          name="width"
-                          type="number"
-                          min="0"
-                          step="1"
-                          value={width}
-                          onChange={(e) => setWidth(e.target.value)}
-                          placeholder="z.B. 50"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="height" className="block text-xs text-gray-600 mb-1.5">
-                          Höhe (mm)
-                        </label>
-                        <input
-                          id="height"
-                          name="height"
-                          type="number"
-                          min="0"
-                          step="1"
-                          value={height}
-                          onChange={(e) => setHeight(e.target.value)}
-                          placeholder="z.B. 30"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
-                        />
-                      </div>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-2">
-                      Hinweis: Die Reihenfolge der Maße spielt keine Rolle. Es werden alle passenden Orientierungen berücksichtigt.
-                    </p>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-
-            {/* Category Filters */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Filter className="w-5 h-5 text-emerald-600" />
-                <h2 className="text-lg font-semibold">Filter nach Kategorie</h2>
-              </div>
-
-              {/* Combined Categories Filter */}
-              <div className="flex flex-wrap gap-3">
-                <Link
-                  href="/artikel"
-                  className={`px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all ${
-                    !categoryName 
-                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg' 
-                      : 'border-gray-300 hover:border-emerald-600 hover:bg-emerald-50'
-                  }`}
-                >
-                  Alle Artikel
-                </Link>
-                
-                {/* Article Categories (current page) */}
-                {categories.map((category) => (
-                  <Link
-                    key={category.id}
-                    href={buildUrl({ q, category: category.name, length: lengthParam, width: widthParam, height: heightParam, limit })}
-                    className={`px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all flex items-center gap-2 ${
-                      categoryName === category.name
-                        ? 'text-white shadow-lg'
-                        : 'hover:shadow-md'
-                    }`}
-                    style={{
-                      backgroundColor: categoryName === category.name ? category.color : 'white',
-                      borderColor: category.color,
-                      color: categoryName === category.name ? 'white' : '#374151',
-                    }}
-                  >
-                    <div 
-                      className="w-2.5 h-2.5 rounded-full"
-                      style={{ backgroundColor: categoryName === category.name ? 'white' : category.color }}
-                    />
-                    {category.name}
-                  </Link>
-                ))}
-
-                {/* Group Categories (cross-link to groups page) */}
-                {allCategories
-                  .filter(c => c.type === 'Group')
-                  .map((category) => (
-                    <Link
-                      key={category.id}
-                      href={`/artikelgruppen?category=${encodeURIComponent(category.name)}`}
-                      className="px-5 py-2.5 rounded-full border-2 text-sm font-medium hover:shadow-md transition-all flex items-center gap-2 opacity-75 hover:opacity-100"
-                      style={{
-                        backgroundColor: 'white',
-                        borderColor: category.color,
-                        color: '#374151',
-                      }}
-                    >
-                      <div 
-                        className="w-2.5 h-2.5 rounded-full"
-                        style={{ backgroundColor: category.color }}
-                      />
-                      {category.name}
-                    </Link>
-                  ))}
-              </div>
-
-              {/* Active Filter Display */}
-              {(selectedCategory || q || hasDimensionFilter) && (
-                <div className="flex items-center gap-3 pt-2">
-                  <span className="text-sm text-gray-600">Aktive Filter:</span>
-                  {selectedCategory && (
-                    <Link
-                      href={buildUrl({ q, length: lengthParam, width: widthParam, height: heightParam, limit })}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 hover:bg-gray-200 transition-colors"
-                    >
-                      Kategorie: {selectedCategory.name}
-                      <X className="w-4 h-4" />
-                    </Link>
-                  )}
-                  {q && (
-                    <Link
-                      href={buildUrl({ category: categoryName, length: lengthParam, width: widthParam, height: heightParam, limit })}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 hover:bg-gray-200 transition-colors"
-                    >
-                      Suche: &quot;{q}&quot;
-                      <X className="w-4 h-4" />
-                    </Link>
-                  )}
-                  {hasDimensionFilter && (
-                    <Link
-                      href={buildUrl({ q, category: categoryName, limit })}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-emerald-100 hover:bg-emerald-200 transition-colors"
-                    >
-                      <Ruler className="w-3 h-3" />
-                      Maße: {lengthParam || '?'} × {widthParam || '?'} × {heightParam || '?'} mm
-                      <X className="w-4 h-4" />
-                    </Link>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        </Container>
-      </section>
+      <SearchFilters
+        pageType="articles"
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        categories={categories}
+        allCategories={allCategories}
+        selectedCategory={selectedCategory}
+        length={length}
+        setLength={setLength}
+        width={width}
+        setWidth={setWidth}
+        height={height}
+        setHeight={setHeight}
+        buildUrl={buildUrl}
+        q={q}
+        categoryName={categoryName}
+        lengthParam={lengthParam}
+        widthParam={widthParam}
+        heightParam={heightParam}
+        limit={limit}
+        showDimensionFilters={true}
+      />
 
       {/* Results Section */}
       <section className="py-12 bg-gray-50">

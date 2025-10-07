@@ -3,10 +3,11 @@
 import React, { useEffect, useState } from "react";
 import Link from 'next/link';
 import { GroupList } from '@/components/group-list';
+import { SearchFilters } from '@/components/search-filters';
 import Container from "@/components/container";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Search, Filter, Package, ArrowLeft, ArrowRight, X } from "lucide-react";
+import { Package, ArrowLeft, ArrowRight } from "lucide-react";
 import { colors } from "@/lib/colors";
 import { useSearchParams } from "next/navigation";
 
@@ -36,15 +37,24 @@ export default function GroupsPage() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [length, setLength] = useState("");
+  const [width, setWidth] = useState("");
+  const [height, setHeight] = useState("");
 
   const q = searchParams.get('q') || undefined;
   const categoryName = searchParams.get('category') || undefined;
+  const lengthParam = searchParams.get('length') || undefined;
+  const widthParam = searchParams.get('width') || undefined;
+  const heightParam = searchParams.get('height') || undefined;
   const limit = Math.min(100, Math.max(1, Number(searchParams.get('limit') ?? 24)));
   const offset = Math.max(0, Number(searchParams.get('offset') ?? 0));
 
   useEffect(() => {
     setSearchQuery(q || "");
-  }, [q]);
+    setLength(lengthParam || "");
+    setWidth(widthParam || "");
+    setHeight(heightParam || "");
+  }, [q, lengthParam, widthParam, heightParam]);
 
   useEffect(() => {
     async function fetchData() {
@@ -89,10 +99,13 @@ export default function GroupsPage() {
   const nextOffset = offset + limit;
   const selectedCategory = categories.find(c => c.name === categoryName);
 
-  const buildSearchUrl = (params: { q?: string; category?: string; limit?: number; offset?: number }) => {
+  const buildSearchUrl = (params: { q?: string; category?: string; length?: string; width?: string; height?: string; limit?: number; offset?: number }) => {
     const sp = new URLSearchParams();
     if (params.q) sp.set('q', params.q);
     if (params.category) sp.set('category', params.category);
+    if (params.length) sp.set('length', params.length);
+    if (params.width) sp.set('width', params.width);
+    if (params.height) sp.set('height', params.height);
     if (params.limit) sp.set('limit', String(params.limit));
     if (params.offset) sp.set('offset', String(params.offset));
     return `/artikelgruppen?${sp.toString()}`;
@@ -100,104 +113,29 @@ export default function GroupsPage() {
 
   return (
     <>
-     
-
-      {/* Filters Section */}
-      <section className="py-8 bg-white border-b">
-        <Container>
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Filter className="w-5 h-5 text-emerald-600" />
-              <h2 className="text-lg font-semibold">Filter nach Kategorie</h2>
-            </div>
-
-            {/* Combined Categories Filter */}
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href="/artikelgruppen"
-                className={`px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all ${
-                  !categoryName 
-                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg' 
-                    : 'border-gray-300 hover:border-emerald-600 hover:bg-emerald-50'
-                }`}
-              >
-                Alle Produkte
-              </Link>
-              
-              {/* Group Categories (current page) */}
-              {categories.map((category) => (
-                <Link
-                  key={category.id}
-                  href={buildSearchUrl({ q, category: category.name, limit })}
-                  className={`px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all flex items-center gap-2 ${
-                    categoryName === category.name
-                      ? 'text-white shadow-lg'
-                      : 'hover:shadow-md'
-                  }`}
-                  style={{
-                    backgroundColor: categoryName === category.name ? category.color : 'white',
-                    borderColor: category.color,
-                    color: categoryName === category.name ? 'white' : '#374151',
-                  }}
-                >
-                  <div 
-                    className="w-2.5 h-2.5 rounded-full"
-                    style={{ backgroundColor: categoryName === category.name ? 'white' : category.color }}
-                  />
-                  {category.name}
-                </Link>
-              ))}
-
-              {/* Article Categories (cross-link to articles page) */}
-              {allCategories
-                .filter(c => c.type === 'Article')
-                .map((category) => (
-                  <Link
-                    key={category.id}
-                    href={`/artikel?category=${encodeURIComponent(category.name)}`}
-                    className="px-5 py-2.5 rounded-full border-2 text-sm font-medium hover:shadow-md transition-all flex items-center gap-2 opacity-75 hover:opacity-100"
-                    style={{
-                      backgroundColor: 'white',
-                      borderColor: category.color,
-                      color: '#374151',
-                    }}
-                  >
-                    <div 
-                      className="w-2.5 h-2.5 rounded-full"
-                      style={{ backgroundColor: category.color }}
-                    />
-                    {category.name}
-                  </Link>
-                ))}
-            </div>
-
-            {/* Active Filter Display */}
-            {(selectedCategory || q) && (
-              <div className="flex items-center gap-3 pt-2">
-                <span className="text-sm text-gray-600">Aktive Filter:</span>
-                {selectedCategory && (
-                  <Link
-                    href={buildSearchUrl({ q, limit })}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 hover:bg-gray-200 transition-colors"
-                  >
-                    Kategorie: {selectedCategory.name}
-                    <X className="w-4 h-4" />
-                  </Link>
-                )}
-                {q && (
-                  <Link
-                    href={buildSearchUrl({ category: categoryName, limit })}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 hover:bg-gray-200 transition-colors"
-                  >
-                    Suche: &quot;{q}&quot;
-                    <X className="w-4 h-4" />
-                  </Link>
-                )}
-              </div>
-            )}
-          </div>
-        </Container>
-      </section>
+      {/* Search & Filters Section */}
+      <SearchFilters
+        pageType="groups"
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        categories={categories}
+        allCategories={allCategories}
+        selectedCategory={selectedCategory}
+        length={length}
+        setLength={setLength}
+        width={width}
+        setWidth={setWidth}
+        height={height}
+        setHeight={setHeight}
+        buildUrl={buildSearchUrl}
+        q={q}
+        categoryName={categoryName}
+        lengthParam={lengthParam}
+        widthParam={widthParam}
+        heightParam={heightParam}
+        limit={limit}
+        showDimensionFilters={true}
+      />
 
       {/* Results Section */}
       <section className="py-12 bg-gray-50">
