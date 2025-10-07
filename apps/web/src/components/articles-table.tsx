@@ -4,14 +4,22 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Lightbox } from './lightbox';
 import { Card, CardContent } from './ui/card';
-import { ExternalLink, Package, Ruler, Box, Layers } from 'lucide-react';
+import { ExternalLink, Package, Ruler, Box, Layers, Tag } from 'lucide-react';
 import Image from 'next/image';
+
+type Category = {
+  id: string;
+  name: string;
+  color: string;
+  type: string;
+};
 
 type Article = {
   externalId: string;
   title: string;
   sku?: string | null;
   media?: string[];
+  categories?: Category[];
   attributes?: {
     _INNENLAENGE?: string;
     _INNENBREITE?: string;
@@ -74,6 +82,7 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
                 <th className="px-4 py-3 text-left text-xs font-bold text-emerald-900 uppercase tracking-wider" colSpan={3}>Maße (mm)</th>
                 <th className="px-4 py-3 text-left text-xs font-bold text-emerald-900 uppercase tracking-wider" colSpan={3}>VPE</th>
                 <th className="px-4 py-3 text-left text-xs font-bold text-emerald-900 uppercase tracking-wider" colSpan={2}>Palette</th>
+                <th className="px-4 py-3 text-left text-xs font-bold text-emerald-900 uppercase tracking-wider">Kategorien</th>
               </tr>
               <tr className="bg-emerald-50/50">
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600"></th>
@@ -87,6 +96,7 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600">Maß</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600">Menge</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600">Außenmaß</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-600"></th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -151,6 +161,31 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
                     <td className="px-4 py-3 text-sm text-gray-600 font-mono whitespace-nowrap">
                       {article.attributes?._VE3PALETTENLAENGE || '—'} × {article.attributes?._VE3PALETTENBREITE || '—'} × {article.attributes?._VE3PALETTENHOEHE || '—'}
                     </td>
+                    <td className="px-4 py-3">
+                      <div className="flex flex-wrap gap-1.5">
+                        {article.categories && article.categories.length > 0 ? (
+                          article.categories.map((category) => (
+                            <Link
+                              key={category.id}
+                              href={category.type === 'Article' 
+                                ? `/artikel?category=${encodeURIComponent(category.name)}`
+                                : `/artikelgruppen?category=${encodeURIComponent(category.name)}`
+                              }
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-all hover:scale-105 hover:shadow-md"
+                              style={{ 
+                                backgroundColor: category.color,
+                                color: 'white'
+                              }}
+                              title={`Filter nach ${category.name}`}
+                            >
+                              {category.name}
+                            </Link>
+                          ))
+                        ) : (
+                          <span className="text-gray-400 text-xs">—</span>
+                        )}
+                      </div>
+                    </td>
                   </tr>
                 );
               })}
@@ -214,6 +249,35 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
                         </p>
                       )}
                     </div>
+
+                    {/* Categories */}
+                    {article.categories && article.categories.length > 0 && (
+                      <div className="flex items-start gap-2">
+                        <Tag className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
+                        <div className="text-sm flex-1">
+                          <span className="font-medium text-gray-700 block mb-1.5">Kategorien:</span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {article.categories.map((category) => (
+                              <Link
+                                key={category.id}
+                                href={category.type === 'Article' 
+                                  ? `/artikel?category=${encodeURIComponent(category.name)}`
+                                  : `/artikelgruppen?category=${encodeURIComponent(category.name)}`
+                                }
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-all hover:scale-105 hover:shadow-md"
+                                style={{ 
+                                  backgroundColor: category.color,
+                                  color: 'white'
+                                }}
+                                title={`Filter nach ${category.name}`}
+                              >
+                                {category.name}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Specifications */}
                     <div className="space-y-2">
