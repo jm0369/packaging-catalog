@@ -236,90 +236,71 @@ export default function ArticlesPage() {
       {/* Filters Section */}
       <section className="py-8 bg-white border-b">
         <Container>
-          <div className="space-y-6">
-            {/* Article Categories Filter */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Filter className="w-5 h-5 text-emerald-600" />
-                <h2 className="text-lg font-semibold">Filter nach Artikel-Kategorie</h2>
-              </div>
-
-              {categories.length > 0 && (
-                <div className="flex flex-wrap gap-3">
-                  <Link
-                    href="/artikel"
-                    className={`px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all ${
-                      !categoryName 
-                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg' 
-                        : 'border-gray-300 hover:border-emerald-600 hover:bg-emerald-50'
-                    }`}
-                  >
-                    Alle Artikel
-                  </Link>
-                  {categories.map((category) => (
-                    <Link
-                      key={category.id}
-                      href={buildUrl({ q, category: category.name, length: lengthParam, width: widthParam, height: heightParam, limit })}
-                      className={`px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all flex items-center gap-2 ${
-                        categoryName === category.name
-                          ? 'text-white shadow-lg'
-                          : 'hover:shadow-md'
-                      }`}
-                      style={{
-                        backgroundColor: categoryName === category.name ? category.color : 'white',
-                        borderColor: category.color,
-                        color: categoryName === category.name ? 'white' : '#374151',
-                      }}
-                    >
-                      <div 
-                        className="w-2.5 h-2.5 rounded-full"
-                        style={{ backgroundColor: categoryName === category.name ? 'white' : category.color }}
-                      />
-                      {category.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Filter className="w-5 h-5 text-emerald-600" />
+              <h2 className="text-lg font-semibold">Filter nach Kategorie</h2>
             </div>
 
-            {/* Group Categories Filter - Links to Groups Page */}
-            {allCategories.filter(c => c.type === 'Group').length > 0 && (
-              <div className="space-y-4 pt-6 border-t">
-                <div className="flex items-center gap-2">
-                  <Package className="w-5 h-5 text-blue-600" />
-                  <h2 className="text-lg font-semibold">Oder durchsuchen Sie Artikelgruppen nach Kategorie</h2>
-                </div>
+            {/* Combined Categories Filter */}
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/artikel"
+                className={`px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all ${
+                  !categoryName 
+                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg' 
+                    : 'border-gray-300 hover:border-emerald-600 hover:bg-emerald-50'
+                }`}
+              >
+                Alle Artikel
+              </Link>
+              
+              {/* Article Categories (current page) */}
+              {categories.map((category) => (
+                <Link
+                  key={category.id}
+                  href={buildUrl({ q, category: category.name, length: lengthParam, width: widthParam, height: heightParam, limit })}
+                  className={`px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all flex items-center gap-2 ${
+                    categoryName === category.name
+                      ? 'text-white shadow-lg'
+                      : 'hover:shadow-md'
+                  }`}
+                  style={{
+                    backgroundColor: categoryName === category.name ? category.color : 'white',
+                    borderColor: category.color,
+                    color: categoryName === category.name ? 'white' : '#374151',
+                  }}
+                >
+                  <div 
+                    className="w-2.5 h-2.5 rounded-full"
+                    style={{ backgroundColor: categoryName === category.name ? 'white' : category.color }}
+                  />
+                  {category.name}
+                </Link>
+              ))}
 
-                <div className="flex flex-wrap gap-3">
+              {/* Group Categories (cross-link to groups page) */}
+              {allCategories
+                .filter(c => c.type === 'Group')
+                .map((category) => (
                   <Link
-                    href="/artikelgruppen"
-                    className="px-5 py-2.5 rounded-full border-2 border-gray-300 text-sm font-medium hover:border-blue-600 hover:bg-blue-50 transition-all"
+                    key={category.id}
+                    href={`/artikelgruppen?category=${encodeURIComponent(category.name)}`}
+                    className="px-5 py-2.5 rounded-full border-2 text-sm font-medium hover:shadow-md transition-all flex items-center gap-2 opacity-75 hover:opacity-100"
+                    style={{
+                      backgroundColor: 'white',
+                      borderColor: category.color,
+                      color: '#374151',
+                    }}
                   >
-                    Alle Artikelgruppen
+                    <div 
+                      className="w-2.5 h-2.5 rounded-full"
+                      style={{ backgroundColor: category.color }}
+                    />
+                    {category.name}
                   </Link>
-                  {allCategories
-                    .filter(c => c.type === 'Group')
-                    .map((category) => (
-                      <Link
-                        key={category.id}
-                        href={`/artikelgruppen?category=${encodeURIComponent(category.name)}`}
-                        className="px-5 py-2.5 rounded-full border-2 text-sm font-medium hover:shadow-md transition-all flex items-center gap-2"
-                        style={{
-                          backgroundColor: 'white',
-                          borderColor: category.color,
-                          color: '#374151',
-                        }}
-                      >
-                        <div 
-                          className="w-2.5 h-2.5 rounded-full"
-                          style={{ backgroundColor: category.color }}
-                        />
-                        {category.name}
-                      </Link>
-                    ))}
-                </div>
-              </div>
-            )}
+                ))}
+            </div>
 
             {/* Active Filter Display */}
             {(selectedCategory || q || hasDimensionFilter) && (
