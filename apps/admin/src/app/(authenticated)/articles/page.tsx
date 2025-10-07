@@ -1,7 +1,16 @@
 export const revalidate = 0;
 
 type Search = Promise<{ q?: string; limit?: string; offset?: string }> | { q?: string; limit?: string; offset?: string };
-type ArticleRow = { id: string; externalId: string; title: string; ean: string | null; uom: string | null; media: string[]; articleGroup?: { externalId: string; name?: string } };
+type ArticleRow = { 
+  id: string; 
+  externalId: string; 
+  title: string; 
+  ean: string | null; 
+  uom: string | null; 
+  media: string[]; 
+  articleGroup?: { externalId: string; name?: string };
+  categories: Array<{ id: string; name: string; color: string }>;
+};
 
 async function getArticles(q?: string, limit = 25, offset = 0) {
   const sp = new URLSearchParams();
@@ -46,6 +55,7 @@ export default async function AdminArticles({ searchParams }: { searchParams: Se
               <th className="px-3 py-2 text-left">External ID</th>
               <th className="px-3 py-2 text-left">Title</th>
               <th className="px-3 py-2 text-left">Group</th>
+              <th className="px-3 py-2 text-left">Categories</th>
               <th className="px-3 py-2 text-left">EAN</th>
               <th className="px-3 py-2 text-right">Actions</th>
             </tr></thead>
@@ -68,6 +78,23 @@ export default async function AdminArticles({ searchParams }: { searchParams: Se
                         {a.articleGroup?.name ?? a.articleGroup.externalId}
                       </a>
                     ) : '—'}
+                  </td>
+                  <td className="px-3 py-2">
+                    <div className="flex flex-wrap gap-1">
+                      {a.categories?.map((c) => (
+                        <span
+                          key={c.id}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border"
+                          style={{ borderColor: c.color }}
+                        >
+                          <div
+                            className="w-2 h-2 rounded-full"
+                            style={{ backgroundColor: c.color }}
+                          />
+                          {c.name}
+                        </span>
+                      ))}
+                    </div>
                   </td>
                   <td className="px-3 py-2">{a.ean ?? '—'}</td>
                   <td className="px-3 py-2 text-right">
