@@ -431,7 +431,7 @@ export default function ArticlesPage() {
             </Card>
           ) : (
             <>
-              <ArticlesTable articles={articles} />
+              <ArticlesTable articles={articles} showGroupHeaders={true} />
 
               {/* Pagination */}
               {total > limit && (

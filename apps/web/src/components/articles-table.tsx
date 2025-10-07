@@ -46,9 +46,10 @@ type Article = {
 
 type ArticlesTableProps = {
   articles: Article[];
+  showGroupHeaders?: boolean;
 };
 
-export function ArticlesTable({ articles }: ArticlesTableProps) {
+export function ArticlesTable({ articles, showGroupHeaders = false }: ArticlesTableProps) {
   const [lightboxImages, setLightboxImages] = useState<string[] | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
@@ -126,28 +127,30 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
             <tbody className="bg-white divide-y divide-gray-200">
               {sortedGroups.map((group) => (
                 <>
-                  {/* Group Header Row */}
-                  <tr key={`group-${group.externalId || 'ungrouped'}`} className="bg-gradient-to-r from-emerald-100 to-emerald-50">
-                    <td colSpan={12} className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <Package className="w-5 h-5 text-emerald-700" />
-                        {group.externalId ? (
-                          <Link
-                            href={`/artikelgruppen/${encodeURIComponent(group.externalId)}`}
-                            className="text-base font-bold text-emerald-800 hover:text-emerald-900 hover:underline inline-flex items-center gap-2"
-                          >
-                            {group.name}
-                            <ExternalLink className="w-4 h-4" />
-                          </Link>
-                        ) : (
-                          <span className="text-base font-bold text-emerald-800">{group.name}</span>
-                        )}
-                        <span className="text-sm text-emerald-600 ml-2">
-                          ({group.articles.length} {group.articles.length === 1 ? 'Artikel' : 'Artikel'})
-                        </span>
-                      </div>
-                    </td>
-                  </tr>
+                  {/* Group Header Row - Only show if showGroupHeaders is true */}
+                  {showGroupHeaders && (
+                    <tr key={`group-${group.externalId || 'ungrouped'}`} className="bg-gradient-to-r from-emerald-100 to-emerald-50">
+                      <td colSpan={12} className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <Package className="w-5 h-5 text-emerald-700" />
+                          {group.externalId ? (
+                            <Link
+                              href={`/artikelgruppen/${encodeURIComponent(group.externalId)}`}
+                              className="text-base font-bold text-emerald-800 hover:text-emerald-900 hover:underline inline-flex items-center gap-2"
+                            >
+                              {group.name}
+                              <ExternalLink className="w-4 h-4" />
+                            </Link>
+                          ) : (
+                            <span className="text-base font-bold text-emerald-800">{group.name}</span>
+                          )}
+                          <span className="text-sm text-emerald-600 ml-2">
+                            ({group.articles.length} {group.articles.length === 1 ? 'Artikel' : 'Artikel'})
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
                   
                   {/* Articles in this group */}
                   {group.articles.map((article) => {
@@ -256,26 +259,28 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
       <div className="lg:hidden space-y-6">
         {sortedGroups.map((group) => (
           <div key={`mobile-group-${group.externalId || 'ungrouped'}`} className="space-y-4">
-            {/* Group Header */}
-            <div className="bg-gradient-to-r from-emerald-100 to-emerald-50 rounded-lg p-4 shadow-md">
-              <div className="flex items-center gap-2">
-                <Package className="w-5 h-5 text-emerald-700" />
-                {group.externalId ? (
-                  <Link
-                    href={`/artikelgruppen/${encodeURIComponent(group.externalId)}`}
-                    className="text-lg font-bold text-emerald-800 hover:text-emerald-900 hover:underline inline-flex items-center gap-2"
-                  >
-                    {group.name}
-                    <ExternalLink className="w-4 h-4" />
-                  </Link>
-                ) : (
-                  <span className="text-lg font-bold text-emerald-800">{group.name}</span>
-                )}
+            {/* Group Header - Only show if showGroupHeaders is true */}
+            {showGroupHeaders && (
+              <div className="bg-gradient-to-r from-emerald-100 to-emerald-50 rounded-lg p-4 shadow-md">
+                <div className="flex items-center gap-2">
+                  <Package className="w-5 h-5 text-emerald-700" />
+                  {group.externalId ? (
+                    <Link
+                      href={`/artikelgruppen/${encodeURIComponent(group.externalId)}`}
+                      className="text-lg font-bold text-emerald-800 hover:text-emerald-900 hover:underline inline-flex items-center gap-2"
+                    >
+                      {group.name}
+                      <ExternalLink className="w-4 h-4" />
+                    </Link>
+                  ) : (
+                    <span className="text-lg font-bold text-emerald-800">{group.name}</span>
+                  )}
+                </div>
+                <p className="text-sm text-emerald-600 mt-1">
+                  {group.articles.length} {group.articles.length === 1 ? 'Artikel' : 'Artikel'}
+                </p>
               </div>
-              <p className="text-sm text-emerald-600 mt-1">
-                {group.articles.length} {group.articles.length === 1 ? 'Artikel' : 'Artikel'}
-              </p>
-            </div>
+            )}
 
             {/* Articles in this group */}
             {group.articles.map((article) => {

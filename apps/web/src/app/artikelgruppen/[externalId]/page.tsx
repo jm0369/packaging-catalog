@@ -19,6 +19,7 @@ type Category = {
   id: string;
   name: string;
   color: string;
+  type: string;
 };
 
 type GroupData = {
@@ -35,6 +36,7 @@ type GroupData = {
     sku: string | null;
     attributes: Record<string, string> | null;
     media: string[];
+    categories: Category[];
   }>;
 };
 

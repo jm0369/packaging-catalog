@@ -77,6 +77,13 @@ export class ArticleGroupsPublicController {
                 orderBy: { sortOrder: 'asc' },
                 select: { media: { select: { key: true } } },
               },
+              categories: {
+                select: {
+                  category: {
+                    select: { id: true, name: true, color: true, type: true },
+                  },
+                },
+              },
             },
           },
         },
@@ -99,6 +106,7 @@ export class ArticleGroupsPublicController {
         sku: a.sku,
         attributes: a.attributes as Record<string, string> | null,
         media: a.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
+        categories: a.categories.map(c => c.category),
       })),
     }));
     return { total, limit, offset, data };
@@ -133,6 +141,13 @@ export class ArticleGroupsPublicController {
               orderBy: { sortOrder: 'asc' },
               select: { media: { select: { key: true } } },
             },
+            categories: {
+              select: {
+                category: {
+                  select: { id: true, name: true, color: true, type: true },
+                },
+              },
+            },
           },
         },
       },
@@ -154,6 +169,7 @@ export class ArticleGroupsPublicController {
         sku: a.sku,
         attributes: a.attributes as Record<string, string> | null,
         media: a.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
+        categories: a.categories.map(c => c.category),
       })),
     };
   }
