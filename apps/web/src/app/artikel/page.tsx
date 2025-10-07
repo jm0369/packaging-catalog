@@ -127,10 +127,10 @@ export default function ArticlesPage() {
 
   return (
     <>
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-emerald-50 to-white py-16">
+      {/* Search & Filters Section */}
+      <section className="relative bg-gradient-to-br from-emerald-50 to-white py-16 border-b">
         <Container>
-          <div className="max-w-4xl">
+          <div className="max-w-6xl mx-auto">
             <div className="text-sm font-semibold tracking-widest uppercase mb-4" style={{ color: colors.lightGreen }}>
               Artikel
             </div>
@@ -143,7 +143,7 @@ export default function ArticlesPage() {
             </p>
 
             {/* Search Bar */}
-            <Card className="border-0 shadow-xl">
+            <Card className="border-0 shadow-xl mb-8">
               <CardContent className="p-6">
                 <form action="/artikel" method="get" className="space-y-4">
                   {/* Text Search */}
@@ -229,154 +229,112 @@ export default function ArticlesPage() {
                 </form>
               </CardContent>
             </Card>
-          </div>
-        </Container>
-      </section>
 
-      {/* Filters Section */}
-      <section className="py-8 bg-white border-b">
-        <Container>
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Filter className="w-5 h-5 text-emerald-600" />
-              <h2 className="text-lg font-semibold">Filter nach Kategorie</h2>
-            </div>
+            {/* Category Filters */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Filter className="w-5 h-5 text-emerald-600" />
+                <h2 className="text-lg font-semibold">Filter nach Kategorie</h2>
+              </div>
 
-            {/* Combined Categories Filter */}
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href="/artikel"
-                className={`px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all ${
-                  !categoryName 
-                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg' 
-                    : 'border-gray-300 hover:border-emerald-600 hover:bg-emerald-50'
-                }`}
-              >
-                Alle Artikel
-              </Link>
-              
-              {/* Article Categories (current page) */}
-              {categories.map((category) => (
+              {/* Combined Categories Filter */}
+              <div className="flex flex-wrap gap-3">
                 <Link
-                  key={category.id}
-                  href={buildUrl({ q, category: category.name, length: lengthParam, width: widthParam, height: heightParam, limit })}
-                  className={`px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all flex items-center gap-2 ${
-                    categoryName === category.name
-                      ? 'text-white shadow-lg'
-                      : 'hover:shadow-md'
+                  href="/artikel"
+                  className={`px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all ${
+                    !categoryName 
+                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg' 
+                      : 'border-gray-300 hover:border-emerald-600 hover:bg-emerald-50'
                   }`}
-                  style={{
-                    backgroundColor: categoryName === category.name ? category.color : 'white',
-                    borderColor: category.color,
-                    color: categoryName === category.name ? 'white' : '#374151',
-                  }}
                 >
-                  <div 
-                    className="w-2.5 h-2.5 rounded-full"
-                    style={{ backgroundColor: categoryName === category.name ? 'white' : category.color }}
-                  />
-                  {category.name}
+                  Alle Artikel
                 </Link>
-              ))}
-
-              {/* Group Categories (cross-link to groups page) */}
-              {allCategories
-                .filter(c => c.type === 'Group')
-                .map((category) => (
+                
+                {/* Article Categories (current page) */}
+                {categories.map((category) => (
                   <Link
                     key={category.id}
-                    href={`/artikelgruppen?category=${encodeURIComponent(category.name)}`}
-                    className="px-5 py-2.5 rounded-full border-2 text-sm font-medium hover:shadow-md transition-all flex items-center gap-2 opacity-75 hover:opacity-100"
+                    href={buildUrl({ q, category: category.name, length: lengthParam, width: widthParam, height: heightParam, limit })}
+                    className={`px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all flex items-center gap-2 ${
+                      categoryName === category.name
+                        ? 'text-white shadow-lg'
+                        : 'hover:shadow-md'
+                    }`}
                     style={{
-                      backgroundColor: 'white',
+                      backgroundColor: categoryName === category.name ? category.color : 'white',
                       borderColor: category.color,
-                      color: '#374151',
+                      color: categoryName === category.name ? 'white' : '#374151',
                     }}
                   >
                     <div 
                       className="w-2.5 h-2.5 rounded-full"
-                      style={{ backgroundColor: category.color }}
+                      style={{ backgroundColor: categoryName === category.name ? 'white' : category.color }}
                     />
                     {category.name}
                   </Link>
                 ))}
-            </div>
 
-            {/* Active Filter Display */}
-            {(selectedCategory || q || hasDimensionFilter) && (
-              <div className="flex items-center gap-3 pt-2">
-                <span className="text-sm text-gray-600">Aktive Filter:</span>
-                {selectedCategory && (
-                  <Link
-                    href={buildUrl({ q, length: lengthParam, width: widthParam, height: heightParam, limit })}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 hover:bg-gray-200 transition-colors"
-                  >
-                    Kategorie: {selectedCategory.name}
-                    <X className="w-4 h-4" />
-                  </Link>
-                )}
-                {q && (
-                  <Link
-                    href={buildUrl({ category: categoryName, length: lengthParam, width: widthParam, height: heightParam, limit })}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 hover:bg-gray-200 transition-colors"
-                  >
-                    Suche: &quot;{q}&quot;
-                    <X className="w-4 h-4" />
-                  </Link>
-                )}
-                {hasDimensionFilter && (
-                  <Link
-                    href={buildUrl({ q, category: categoryName, limit })}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-emerald-100 hover:bg-emerald-200 transition-colors"
-                  >
-                    <Ruler className="w-3 h-3" />
-                    Maße: {lengthParam || '?'} × {widthParam || '?'} × {heightParam || '?'} mm
-                    <X className="w-4 h-4" />
-                  </Link>
-                )}
+                {/* Group Categories (cross-link to groups page) */}
+                {allCategories
+                  .filter(c => c.type === 'Group')
+                  .map((category) => (
+                    <Link
+                      key={category.id}
+                      href={`/artikelgruppen?category=${encodeURIComponent(category.name)}`}
+                      className="px-5 py-2.5 rounded-full border-2 text-sm font-medium hover:shadow-md transition-all flex items-center gap-2 opacity-75 hover:opacity-100"
+                      style={{
+                        backgroundColor: 'white',
+                        borderColor: category.color,
+                        color: '#374151',
+                      }}
+                    >
+                      <div 
+                        className="w-2.5 h-2.5 rounded-full"
+                        style={{ backgroundColor: category.color }}
+                      />
+                      {category.name}
+                    </Link>
+                  ))}
               </div>
-            )}
+
+              {/* Active Filter Display */}
+              {(selectedCategory || q || hasDimensionFilter) && (
+                <div className="flex items-center gap-3 pt-2">
+                  <span className="text-sm text-gray-600">Aktive Filter:</span>
+                  {selectedCategory && (
+                    <Link
+                      href={buildUrl({ q, length: lengthParam, width: widthParam, height: heightParam, limit })}
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 hover:bg-gray-200 transition-colors"
+                    >
+                      Kategorie: {selectedCategory.name}
+                      <X className="w-4 h-4" />
+                    </Link>
+                  )}
+                  {q && (
+                    <Link
+                      href={buildUrl({ category: categoryName, length: lengthParam, width: widthParam, height: heightParam, limit })}
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 hover:bg-gray-200 transition-colors"
+                    >
+                      Suche: &quot;{q}&quot;
+                      <X className="w-4 h-4" />
+                    </Link>
+                  )}
+                  {hasDimensionFilter && (
+                    <Link
+                      href={buildUrl({ q, category: categoryName, limit })}
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-emerald-100 hover:bg-emerald-200 transition-colors"
+                    >
+                      <Ruler className="w-3 h-3" />
+                      Maße: {lengthParam || '?'} × {widthParam || '?'} × {heightParam || '?'} mm
+                      <X className="w-4 h-4" />
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </Container>
       </section>
-
-      {/* Active Search Display - Remove this old section */}
-      {false && hasAnyFilter && (
-        <section className="py-6 bg-white border-b">
-          <Container>
-            <div className="flex items-center gap-3 flex-wrap">
-              <span className="text-sm text-gray-600">Aktive Filter:</span>
-              {q && (
-                <Link
-                  href={buildUrl({ length: lengthParam, width: widthParam, height: heightParam, limit, offset: 0 })}
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 hover:bg-gray-200 transition-colors"
-                >
-                  Suche: &quot;{q}&quot;
-                  <X className="w-4 h-4" />
-                </Link>
-              )}
-              {hasDimensionFilter && (
-                <Link
-                  href={buildUrl({ q, limit, offset: 0 })}
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-emerald-100 hover:bg-emerald-200 transition-colors"
-                >
-                  <Ruler className="w-3 h-3" />
-                  Maße: {lengthParam || '?'} × {widthParam || '?'} × {heightParam || '?'} mm
-                  <X className="w-4 h-4" />
-                </Link>
-              )}
-              {hasAnyFilter && (
-                <Link
-                  href="/artikel"
-                  className="text-sm text-gray-500 hover:text-gray-700 underline"
-                >
-                  Alle Filter zurücksetzen
-                </Link>
-              )}
-            </div>
-          </Container>
-        </section>
-      )}
 
       {/* Results Section */}
       <section className="py-12 bg-gray-50">
