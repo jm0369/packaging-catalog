@@ -32,6 +32,7 @@ export default function GroupsPage() {
   const searchParams = useSearchParams();
   const [groups, setGroups] = useState<GroupData[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [allCategories, setAllCategories] = useState<Category[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -67,7 +68,9 @@ export default function GroupsPage() {
 
         if (categoriesRes.ok) {
           const categoriesData = await categoriesRes.json();
-          // Filter to only show Group type categories
+          // Store all categories
+          setAllCategories(Array.isArray(categoriesData) ? categoriesData : []);
+          // Filter to only show Group type categories for this page
           const groupCategories = Array.isArray(categoriesData) 
             ? categoriesData.filter((c: Category) => c.type === 'Group') 
             : [];
@@ -102,46 +105,88 @@ export default function GroupsPage() {
       {/* Filters Section */}
       <section className="py-8 bg-white border-b">
         <Container>
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Filter className="w-5 h-5 text-emerald-600" />
-              <h2 className="text-lg font-semibold">Filter nach Kategorie</h2>
+          <div className="space-y-6">
+            {/* Group Categories Filter */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Filter className="w-5 h-5 text-emerald-600" />
+                <h2 className="text-lg font-semibold">Filter nach Gruppe-Kategorie</h2>
+              </div>
+
+              {categories.length > 0 && (
+                <div className="flex flex-wrap gap-3">
+                  <Link
+                    href="/artikelgruppen"
+                    className={`px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all ${
+                      !categoryName 
+                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg' 
+                        : 'border-gray-300 hover:border-emerald-600 hover:bg-emerald-50'
+                    }`}
+                  >
+                    Alle Produkte
+                  </Link>
+                  {categories.map((category) => (
+                    <Link
+                      key={category.id}
+                      href={buildSearchUrl({ q, category: category.name, limit })}
+                      className={`px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all flex items-center gap-2 ${
+                        categoryName === category.name
+                          ? 'text-white shadow-lg'
+                          : 'hover:shadow-md'
+                      }`}
+                      style={{
+                        backgroundColor: categoryName === category.name ? category.color : 'white',
+                        borderColor: category.color,
+                        color: categoryName === category.name ? 'white' : '#374151',
+                      }}
+                    >
+                      <div 
+                        className="w-2.5 h-2.5 rounded-full"
+                        style={{ backgroundColor: categoryName === category.name ? 'white' : category.color }}
+                      />
+                      {category.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {categories.length > 0 && (
-              <div className="flex flex-wrap gap-3">
-                <Link
-                  href="/artikelgruppen"
-                  className={`px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all ${
-                    !categoryName 
-                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg' 
-                      : 'border-gray-300 hover:border-emerald-600 hover:bg-emerald-50'
-                  }`}
-                >
-                  Alle Produkte
-                </Link>
-                {categories.map((category) => (
+            {/* Article Categories Filter - Links to Articles Page */}
+            {allCategories.filter(c => c.type === 'Article').length > 0 && (
+              <div className="space-y-4 pt-6 border-t">
+                <div className="flex items-center gap-2">
+                  <Package className="w-5 h-5 text-blue-600" />
+                  <h2 className="text-lg font-semibold">Oder durchsuchen Sie Artikel nach Kategorie</h2>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
                   <Link
-                    key={category.id}
-                    href={buildSearchUrl({ q, category: category.name, limit })}
-                    className={`px-5 py-2.5 rounded-full border-2 text-sm font-medium transition-all flex items-center gap-2 ${
-                      categoryName === category.name
-                        ? 'text-white shadow-lg'
-                        : 'hover:shadow-md'
-                    }`}
-                    style={{
-                      backgroundColor: categoryName === category.name ? category.color : 'white',
-                      borderColor: category.color,
-                      color: categoryName === category.name ? 'white' : '#374151',
-                    }}
+                    href="/artikel"
+                    className="px-5 py-2.5 rounded-full border-2 border-gray-300 text-sm font-medium hover:border-blue-600 hover:bg-blue-50 transition-all"
                   >
-                    <div 
-                      className="w-2.5 h-2.5 rounded-full"
-                      style={{ backgroundColor: categoryName === category.name ? 'white' : category.color }}
-                    />
-                    {category.name}
+                    Alle Artikel
                   </Link>
-                ))}
+                  {allCategories
+                    .filter(c => c.type === 'Article')
+                    .map((category) => (
+                      <Link
+                        key={category.id}
+                        href={`/artikel?category=${encodeURIComponent(category.name)}`}
+                        className="px-5 py-2.5 rounded-full border-2 text-sm font-medium hover:shadow-md transition-all flex items-center gap-2"
+                        style={{
+                          backgroundColor: 'white',
+                          borderColor: category.color,
+                          color: '#374151',
+                        }}
+                      >
+                        <div 
+                          className="w-2.5 h-2.5 rounded-full"
+                          style={{ backgroundColor: category.color }}
+                        />
+                        {category.name}
+                      </Link>
+                    ))}
+                </div>
               </div>
             )}
 

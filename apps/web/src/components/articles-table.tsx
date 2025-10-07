@@ -104,9 +104,9 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
                 <th className="px-4 py-3 text-left text-xs font-bold text-emerald-900 uppercase tracking-wider">Bild</th>
                 <th className="px-4 py-3 text-left text-xs font-bold text-emerald-900 uppercase tracking-wider" colSpan={2}>Artikel</th>
                 <th className="px-4 py-3 text-left text-xs font-bold text-emerald-900 uppercase tracking-wider" colSpan={3}>Maße (mm)</th>
+                <th className="px-4 py-3 text-left text-xs font-bold text-emerald-900 uppercase tracking-wider">Kategorien</th>
                 <th className="px-4 py-3 text-left text-xs font-bold text-emerald-900 uppercase tracking-wider" colSpan={3}>VPE</th>
                 <th className="px-4 py-3 text-left text-xs font-bold text-emerald-900 uppercase tracking-wider" colSpan={2}>Palette</th>
-                <th className="px-4 py-3 text-left text-xs font-bold text-emerald-900 uppercase tracking-wider">Kategorien</th>
               </tr>
               <tr className="bg-emerald-50/50">
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600"></th>
@@ -115,12 +115,12 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600">Innen</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600">Außen</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600">Gewicht</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-600"></th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600">Menge</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600">Art</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600">Maß</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600">Menge</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600">Außenmaß</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-600"></th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -202,15 +202,6 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
                       {article.attributes?._AUSSENLAENGE || '—'} × {article.attributes?._AUSSENBREITE || '—'} × {article.attributes?._AUSSENHOEHE || '—'}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600">{article.attributes?.Gewicht || '—'}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{article.attributes?._VE2UEBERVERMENGE || '—'}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{article.attributes?._VE2UEBERVERPART || '—'}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600 font-mono whitespace-nowrap">
-                      {article.attributes?._VE2UEBERVERPLAENGE || '—'} × {article.attributes?._VE2UEBERVERPBREITE || '—'} × {article.attributes?._VE2UEBERVERPHOEHE || '—'}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{article.attributes?._VE3VERPACKUNGMENGE || '—'}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600 font-mono whitespace-nowrap">
-                      {article.attributes?._VE3PALETTENLAENGE || '—'} × {article.attributes?._VE3PALETTENBREITE || '—'} × {article.attributes?._VE3PALETTENHOEHE || '—'}
-                    </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1.5">
                         {article.categories && article.categories.length > 0 ? (
@@ -241,6 +232,15 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
                           <span className="text-gray-400 text-xs">—</span>
                         )}
                       </div>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{article.attributes?._VE2UEBERVERMENGE || '—'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{article.attributes?._VE2UEBERVERPART || '—'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 font-mono whitespace-nowrap">
+                      {article.attributes?._VE2UEBERVERPLAENGE || '—'} × {article.attributes?._VE2UEBERVERPBREITE || '—'} × {article.attributes?._VE2UEBERVERPHOEHE || '—'}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{article.attributes?._VE3VERPACKUNGMENGE || '—'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 font-mono whitespace-nowrap">
+                      {article.attributes?._VE3PALETTENLAENGE || '—'} × {article.attributes?._VE3PALETTENBREITE || '—'} × {article.attributes?._VE3PALETTENHOEHE || '—'}
                     </td>
                   </tr>
                 );
