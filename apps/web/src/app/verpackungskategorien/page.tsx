@@ -15,8 +15,10 @@ type Category = {
   id: string;
   name: string;
   color: string;
+  type: string;
   description?: string;
   groupCount: number;
+  articleCount: number;
   media: string[];
 };
 
@@ -136,7 +138,10 @@ export default function ProduktePage() {
                         
                         <div className="flex items-center justify-between">
                           <div className="text-sm font-semibold text-emerald-600">
-                            {category.groupCount} {category.groupCount === 1 ? 'Produkt' : 'Produkte'}
+                            {category.type === 'Article' 
+                              ? `${category.articleCount} ${category.articleCount === 1 ? 'Artikel' : 'Artikel'}`
+                              : `${category.groupCount} ${category.groupCount === 1 ? 'Produkt' : 'Produkte'}`
+                            }
                           </div>
                           <ArrowRight className="w-5 h-5 text-emerald-600 group-hover:translate-x-2 transition-transform" />
                         </div>

@@ -26,7 +26,10 @@ export class CategoriesPublicController {
                 ordering: true,
                 orderingNotes: true,
                 _count: {
-                    select: { groups: true },
+                    select: { 
+                        groups: true,
+                        articles: true,
+                    },
                 },
                 media: {
                     select: {
@@ -64,6 +67,7 @@ export class CategoriesPublicController {
             ordering: c.ordering,
             orderingNotes: c.orderingNotes,
             groupCount: c._count.groups,
+            articleCount: c._count.articles,
             media: c.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
         }));
     }
