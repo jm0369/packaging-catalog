@@ -33,6 +33,24 @@ export default function NewCategoryPage() {
           </div>
 
           <div>
+            <label htmlFor="type" className="block text-sm font-medium mb-1">
+              Type *
+            </label>
+            <select
+              id="type"
+              name="type"
+              required
+              className="border rounded px-3 py-2 w-full"
+            >
+              <option value="">Select type...</option>
+              <option value="Article">Article</option>
+              <option value="Group">Group</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
             <label htmlFor="color" className="block text-sm font-medium mb-1">
               Color *
             </label>

@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 
 export async function createCategory(formData: FormData): Promise<{ ok: boolean; error?: string; id?: string }> {
   const name = formData.get('name') as string;
+  const type = formData.get('type') as 'Article' | 'Group';
   const color = formData.get('color') as string;
   const description = formData.get('description') as string;
   
@@ -37,12 +38,13 @@ export async function createCategory(formData: FormData): Promise<{ ok: boolean;
     return items.length > 0 ? items : undefined;
   };
 
-  if (!name || !color) {
-    return { ok: false, error: 'Name and color are required' };
+  if (!name || !type || !color) {
+    return { ok: false, error: 'Name, type, and color are required' };
   }
 
   const body: {
     name: string;
+    type: 'Article' | 'Group';
     color: string;
     description?: string;
     properties?: unknown;
@@ -51,7 +53,7 @@ export async function createCategory(formData: FormData): Promise<{ ok: boolean;
     keyFigures?: unknown;
     ordering?: unknown;
     orderingNotes?: unknown;
-  } = { name, color };
+  } = { name, type, color };
   if (description) body.description = description;
   
   const properties = parseObjectArrayField('properties');
@@ -93,6 +95,7 @@ export async function updateCategory(
   formData: FormData
 ): Promise<{ ok: boolean; error?: string }> {
   const name = formData.get('name') as string;
+  const type = formData.get('type') as 'Article' | 'Group' | null;
   const color = formData.get('color') as string;
   const description = formData.get('description') as string;
   
@@ -130,6 +133,7 @@ export async function updateCategory(
 
   const body: {
     name: string;
+    type?: 'Article' | 'Group';
     color: string;
     description?: string;
     properties?: unknown;
@@ -139,6 +143,7 @@ export async function updateCategory(
     ordering?: unknown;
     orderingNotes?: unknown;
   } = { name, color };
+  if (type) body.type = type;
   if (description) body.description = description;
   
   const properties = parseObjectArrayField('properties');
@@ -211,6 +216,23 @@ export async function removeCategoryFromGroup(
   groupId: string
 ): Promise<{ ok: boolean; error?: string }> {
   const res = await adminFetch(`/admin/categories/${categoryId}/groups/${groupId}`, {
+    method: 'DELETE',
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    return { ok: false, error: `Failed: ${res.status} ${text}` };
+  }
+
+  revalidatePath(`/categories/${categoryId}`);
+  return { ok: true };
+}
+
+export async function removeCategoryFromArticle(
+  categoryId: string,
+  articleExternalId: string
+): Promise<{ ok: boolean; error?: string }> {
+  const res = await adminFetch(`/admin/articles/${articleExternalId}/categories/${categoryId}`, {
     method: 'DELETE',
   });
 

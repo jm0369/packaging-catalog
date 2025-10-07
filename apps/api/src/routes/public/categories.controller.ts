@@ -16,6 +16,7 @@ export class CategoriesPublicController {
             select: {
                 id: true,
                 name: true,
+                type: true,
                 color: true,
                 description: true,
                 properties: true,
@@ -53,6 +54,7 @@ export class CategoriesPublicController {
         return categories.map(c => ({
             id: c.id,
             name: c.name,
+            type: c.type,
             color: c.color,
             description: c.description,
             properties: c.properties,
@@ -75,6 +77,7 @@ export class CategoriesPublicController {
             select: {
                 id: true,
                 name: true,
+                type: true,
                 color: true,
                 description: true,
                 properties: true,
@@ -90,6 +93,17 @@ export class CategoriesPublicController {
                                 id: true,
                                 externalId: true,
                                 name: true,
+                            },
+                        },
+                    },
+                },
+                articles: {
+                    select: {
+                        article: {
+                            select: {
+                                id: true,
+                                externalId: true,
+                                title: true,
                             },
                         },
                     },
@@ -122,6 +136,7 @@ export class CategoriesPublicController {
         return {
             ...category,
             groups: category.groups.map(g => g.group),
+            articles: category.articles.map(a => a.article),
             media: category.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
         };
     }
@@ -139,6 +154,7 @@ export class CategoriesPublicController {
             select: {
                 id: true,
                 name: true,
+                type: true,
                 color: true,
                 description: true,
                 properties: true,
@@ -154,6 +170,17 @@ export class CategoriesPublicController {
                                 id: true,
                                 externalId: true,
                                 name: true,
+                            },
+                        },
+                    },
+                },
+                articles: {
+                    select: {
+                        article: {
+                            select: {
+                                id: true,
+                                externalId: true,
+                                title: true,
                             },
                         },
                     },
@@ -186,6 +213,7 @@ export class CategoriesPublicController {
         return {
             ...category,
             groups: category.groups.map(g => g.group),
+            articles: category.articles.map(a => a.article),
             media: category.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
         };
     }

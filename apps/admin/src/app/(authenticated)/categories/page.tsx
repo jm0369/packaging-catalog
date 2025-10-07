@@ -5,6 +5,7 @@ import Link from 'next/link';
 type Category = {
   id: string;
   name: string;
+  type: 'Article' | 'Group';
   color: string;
   description?: string;
   groupCount: number;
@@ -36,6 +37,7 @@ export default async function CategoriesPage() {
             <tr className="border-b">
               <th className="px-3 py-2 text-left">Color</th>
               <th className="px-3 py-2 text-left">Name</th>
+              <th className="px-3 py-2 text-left">Type</th>
               <th className="px-3 py-2 text-left">Description</th>
               <th className="px-3 py-2 text-left">Groups</th>
               <th className="px-3 py-2 text-right">Actions</th>
@@ -44,7 +46,7 @@ export default async function CategoriesPage() {
           <tbody>
             {categories.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-3 py-8 text-center text-gray-500">
+                <td colSpan={6} className="px-3 py-8 text-center text-gray-500">
                   No categories yet.
                 </td>
               </tr>
@@ -62,6 +64,13 @@ export default async function CategoriesPage() {
                   </td>
                   <td className="px-3 py-2">
                     <div className="font-medium">{c.name}</div>
+                  </td>
+                  <td className="px-3 py-2">
+                    <span className={`px-2 py-1 rounded text-xs ${
+                      c.type === 'Article' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                    }`}>
+                      {c.type}
+                    </span>
                   </td>
                   <td className="px-3 py-2 max-w-md">
                     <div className="text-sm text-gray-600 truncate">

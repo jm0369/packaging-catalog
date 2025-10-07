@@ -6,6 +6,7 @@ interface CategoryFormProps {
   category: {
     id: string;
     name: string;
+    type: 'Article' | 'Group';
     color: string;
     description?: string;
     properties?: Array<{ name: string; description: string }>;
@@ -37,20 +38,36 @@ export function CategoryForm({ category, onSubmit }: CategoryFormProps) {
         </div>
 
         <div>
-          <label htmlFor="color" className="block text-sm font-medium mb-1">
-            Color *
+          <label htmlFor="type" className="block text-sm font-medium mb-1">
+            Type *
           </label>
-          <div className="flex gap-2 items-center">
-            <input
-              type="color"
-              id="color"
-              name="color"
-              required
-              defaultValue={category.color}
-              className="border rounded h-10 w-20"
-            />
-            <span className="text-sm text-gray-600">{category.color}</span>
-          </div>
+          <select
+            id="type"
+            name="type"
+            required
+            defaultValue={category.type}
+            className="border rounded px-3 py-2 w-full"
+          >
+            <option value="Article">Article</option>
+            <option value="Group">Group</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label htmlFor="color" className="block text-sm font-medium mb-1">
+          Color *
+        </label>
+        <div className="flex gap-2 items-center">
+          <input
+            type="color"
+            id="color"
+            name="color"
+            required
+            defaultValue={category.color}
+            className="border rounded h-10 w-20"
+          />
+          <span className="text-sm text-gray-600">{category.color}</span>
         </div>
       </div>
 

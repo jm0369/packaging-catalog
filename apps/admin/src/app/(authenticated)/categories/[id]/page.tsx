@@ -1,6 +1,6 @@
 export const revalidate = 0;
 
-import { updateCategory, deleteCategory, removeCategoryFromGroup } from '../actions';
+import { updateCategory, deleteCategory, removeCategoryFromGroup, removeCategoryFromArticle } from '../actions';
 import Link from 'next/link';
 import { DeleteCategoryButton, RemoveGroupButton } from './delete-buttons';
 import { CategoryForm } from './category-form';
@@ -107,6 +107,37 @@ export default async function CategoryDetailPage({ params }: { params: Promise<{
                   </div>
                   <RemoveGroupButton
                     groupName={group.name}
+                    onRemove={boundRemove}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+
+      <div className="space-y-3 p-6 border rounded bg-white">
+        <h2 className="text-lg font-semibold">Assigned Articles ({category.articles?.length || 0})</h2>
+        {!category.articles || category.articles.length === 0 ? (
+          <p className="text-gray-500">This category is not assigned to any articles yet.</p>
+        ) : (
+          <ul className="space-y-2">
+            {category.articles.map((article: { id: string; externalId: string; title: string }) => {
+              const boundRemove = async () => {
+                'use server';
+                await removeCategoryFromArticle(id, article.externalId);
+              };
+              
+              return (
+                <li key={article.id} className="flex items-center justify-between p-3 border rounded">
+                  <div>
+                    <Link href={`/articles/${article.externalId}`} className="font-medium underline">
+                      {article.title}
+                    </Link>
+                    <div className="text-xs text-gray-500">{article.externalId}</div>
+                  </div>
+                  <RemoveGroupButton
+                    groupName={article.title}
                     onRemove={boundRemove}
                   />
                 </li>
