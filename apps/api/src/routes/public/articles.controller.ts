@@ -15,6 +15,7 @@ export class ArticlesPublicController {
     @Query('offset') offsetQ?: string,
     @Query('q') q?: string,
     @Query('group') groupExt?: string,
+    @Query('category') categoryName?: string,
     @Query('length') lengthQ?: string,
     @Query('width') widthQ?: string,
     @Query('height') heightQ?: string,
@@ -39,6 +40,7 @@ export class ArticlesPublicController {
           ],
         } : {},
         groupExt ? { articleGroup: { externalId: groupExt } } : {},
+        categoryName ? { categories: { some: { category: { name: categoryName } } } } : {},
       ],
     };
 
@@ -52,6 +54,13 @@ export class ArticlesPublicController {
             media: {
               orderBy: { sortOrder: 'asc' },
               select: { media: { select: { key: true } } },
+            },
+            categories: {
+              select: {
+                category: {
+                  select: { id: true, name: true, type: true, color: true }
+                }
+              }
             },
             attributes: true,
           },
@@ -67,6 +76,13 @@ export class ArticlesPublicController {
             media: {
               orderBy: { sortOrder: 'asc' },
               select: { media: { select: { key: true } } },
+            },
+            categories: {
+              select: {
+                category: {
+                  select: { id: true, name: true, type: true, color: true }
+                }
+              }
             },
             attributes: true,
           },
@@ -154,6 +170,7 @@ export class ArticlesPublicController {
           externalId: a.articleGroup.externalId,
           name: a.articleGroup.name,
         } : null,
+        categories: a.categories.map(c => c.category),
         media: a.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
       }));
 
@@ -175,6 +192,7 @@ export class ArticlesPublicController {
         externalId: a.articleGroup.externalId,
         name: a.articleGroup.name,
       } : null,
+      categories: a.categories.map(c => c.category),
       media: a.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
     }));
 
@@ -190,6 +208,13 @@ export class ArticlesPublicController {
         id: true, externalId: true, sku: true, ean: true, title: true, description: true, uom: true, updatedAt: true,
         articleGroup: { select: { id: true, externalId: true, name: true } },
         media: { orderBy: { sortOrder: 'asc' }, select: { media: { select: { key: true } } } },
+        categories: {
+          select: {
+            category: {
+              select: { id: true, name: true, type: true, color: true }
+            }
+          }
+        },
         attributes: true
       },
     });
@@ -203,6 +228,7 @@ export class ArticlesPublicController {
         externalId: a.articleGroup.externalId,
         name: a.articleGroup.name,
       } : null,
+      categories: a.categories.map(c => c.category),
       media: a.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
     };
   }

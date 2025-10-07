@@ -11,9 +11,10 @@ export class CategoriesController {
   constructor(private prisma: PrismaService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create a category. Body: { name, color, description?, properties?, applications?, formatsSpecifications?, keyFigures?, ordering?, orderingNotes? }' })
+  @ApiOperation({ summary: 'Create a category. Body: { name, type, color, description?, properties?, applications?, formatsSpecifications?, keyFigures?, ordering?, orderingNotes? }' })
   async create(@Body() body: {
     name: string;
+    type: 'Article' | 'Group';
     color: string;
     description?: string;
     properties?: Array<{ name: string; description: string }>;
@@ -26,6 +27,7 @@ export class CategoriesController {
     return this.prisma.category.create({
       data: {
         name: body.name,
+        type: body.type,
         color: body.color,
         description: body.description,
         properties: body.properties as any,
@@ -39,9 +41,10 @@ export class CategoriesController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update a category. All fields optional: { name?, color?, description?, properties?, applications?, formatsSpecifications?, keyFigures?, ordering?, orderingNotes? }' })
+  @ApiOperation({ summary: 'Update a category. All fields optional: { name?, type?, color?, description?, properties?, applications?, formatsSpecifications?, keyFigures?, ordering?, orderingNotes? }' })
   async update(@Param('id') id: string, @Body() body: {
     name?: string;
+    type?: 'Article' | 'Group';
     color?: string;
     description?: string;
     properties?: Array<{ name: string; description: string }>;
@@ -53,6 +56,7 @@ export class CategoriesController {
   }) {
     const data: any = {};
     if (body.name !== undefined) data.name = body.name;
+    if (body.type !== undefined) data.type = body.type;
     if (body.color !== undefined) data.color = body.color;
     if (body.description !== undefined) data.description = body.description;
     if (body.properties !== undefined) data.properties = body.properties;
