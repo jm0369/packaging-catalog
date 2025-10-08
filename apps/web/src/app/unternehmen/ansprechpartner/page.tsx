@@ -35,7 +35,7 @@ export default function AnsprechpartnerPage() {
       position: "Key-Account-Manager",
       image: "/team/mario.JPG",
       email: "m.deilen@packchampion.com",
-      phone: "+49 941 945892-80",
+      phone: "+49 941 945892 80",
       mobile: "+49 170 1232627",
       bio: "Mario ist Ihr Experte für alle Fragen rund um den Einkauf und die Beschaffung von Verpackungslösungen.",
     },
