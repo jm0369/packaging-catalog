@@ -71,8 +71,8 @@ export default function KontaktPage() {
     {
       icon: MapPin,
       title: "Adresse",
-      content: "Verpackungsstraße 123, 80331 München",
-      link: "https://maps.google.com/?q=München",
+      content: "Merianweg 3, 93051 Regensburg",
+      link: "https://maps.google.com/?q=Merianweg+3,+93051+Regensburg",
     },
   ];
 
