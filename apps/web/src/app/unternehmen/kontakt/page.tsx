@@ -293,13 +293,16 @@ export default function KontaktPage() {
             center
           />
           <div className="rounded-2xl overflow-hidden shadow-xl">
-            <div className="bg-gray-200 h-[400px] flex items-center justify-center">
-              <div className="text-center text-foreground/50">
-                <MapPin className="w-16 h-16 mx-auto mb-4" />
-                <p className="text-lg">Google Maps Integration</p>
-                <p className="text-sm">Verpackungsstraße 123, 80331 München</p>
-              </div>
-            </div>
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2659.5!2d12.0962!3d49.0134!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x479fc2b3b3b3b3b3%3A0x1!2sMerianweg%203%2C%2093051%20Regensburg!5e0!3m2!1sen!2sde!4v1234567890"
+              width="100%"
+              height="400"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="PackChampion Standort"
+            />
           </div>
         </Container>
       </section>
