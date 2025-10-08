@@ -117,7 +117,7 @@ export function SearchFilters({
                         <CardContent className="p-6">
                             <form action={baseUrl} method="get" className="space-y-6">
                                 {/* Search and Dimension Filters Row */}
-                                <div className={`grid grid-cols-1 ${showDimensionFilters ? 'lg:grid-cols-3' : ''} gap-6`}>
+                                <div className={`items-end grid grid-cols-1 ${showDimensionFilters ? 'lg:grid-cols-3' : ''} gap-6`}>
                                     {/* Text Search */}
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
@@ -163,7 +163,7 @@ export function SearchFilters({
                                                     value={length}
                                                     onChange={(e) => setLength(e.target.value)}
                                                     placeholder="Länge"
-                                                    className="flex-1 px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                                                    className="min-w-0 flex-1 px-2 sm:px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
                                                 />
                                                 <input
                                                     id="width"
@@ -174,7 +174,7 @@ export function SearchFilters({
                                                     value={width}
                                                     onChange={(e) => setWidth(e.target.value)}
                                                     placeholder="Breite"
-                                                    className="flex-1 px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                                                    className="min-w-0 flex-1 px-2 sm:px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
                                                 />
                                                 <input
                                                     id="height"
@@ -185,14 +185,15 @@ export function SearchFilters({
                                                     value={height}
                                                     onChange={(e) => setHeight(e.target.value)}
                                                     placeholder="Höhe"
-                                                    className="flex-1 px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                                                    className="min-w-0 flex-1 px-2 sm:px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
                                                 />
-                                                <Button type="submit" size="default" className="bg-emerald-600 hover:bg-emerald-700">
-                                                    Suchen
-                                                </Button>
+
                                             </div>
                                         </div>
                                     )}
+                                    <Button type="submit" size="default" className="bg-emerald-600 hover:bg-emerald-700">
+                                        Suchen
+                                    </Button>
                                 </div>
 
                                 {/* Category Filters */}
@@ -205,8 +206,8 @@ export function SearchFilters({
                                         <Link
                                             href={baseUrl}
                                             className={`px-4 py-1.5 rounded-full border text-xs font-medium transition-all ${!categoryName
-                                                    ? 'bg-emerald-600 text-white border-emerald-600'
-                                                    : 'border-gray-300 hover:border-emerald-600 hover:bg-emerald-50'
+                                                ? 'bg-emerald-600 text-white border-emerald-600'
+                                                : 'border-gray-300 hover:border-emerald-600 hover:bg-emerald-50'
                                                 }`}
                                         >
                                             {allButtonText}

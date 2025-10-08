@@ -296,11 +296,11 @@ export default function Header() {
                     </nav>
                     <Link
                         href="/unternehmen/kontakt"
-                        className="ml-auto inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-emerald-600 text-white font-semibold shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+                        className="ml-auto hidden lg:inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-emerald-600 text-white font-semibold shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
                     >
                         <span>Kontakt</span>
                     </Link>
-                    <div className="flex items-center gap-3">
+                    <div className="ml-auto flex items-center gap-3">
 
                         {/* Mobile hamburger (moved to the right) */}
                         <button
@@ -321,7 +321,7 @@ export default function Header() {
                     <>
                         <div
                             id="mobile-menu"
-                            className="lg:hidden fixed left-0 right-0 top-20 z-[60] max-h-[calc(100vh-5rem)] overflow-y-auto rounded-b-3xl border-b border-gray-200 bg-white/98 backdrop-blur-sm shadow-2xl"
+                            className="lg:hidden fixed left-0 right-0 top-20 z-[60] max-h-[calc(100vh-5rem)] overflow-y-auto rounded-b-3xl border-b border-gray-200 bg-white/95 backdrop-blur-sm shadow-2xl"
                         >
                             <Container className="py-6">
                                 <nav className="flex flex-col gap-2 text-[15px] font-medium">
@@ -378,8 +378,14 @@ export default function Header() {
                                             <ChevronDown className="h-4 w-4 text-gray-500 transition-transform group-open:rotate-180" />
                                         </summary>
                                         <div className="pl-6 pb-2 ml-2 border-l-2 border-gray-200 flex flex-col text-[14px] space-y-1">
-                                            <Link href="/verpackungskategorien" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/verpackungskategorien") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
-                                                {header.allProducts}
+                                            <Link href="/artikelgruppen" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/artikelgruppen") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
+                                                Verpackungskategorien
+                                            </Link>
+                                            <Link href="/artikelgruppen" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/artikelgruppen") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
+                                                Artikelgruppen
+                                            </Link>
+                                            <Link href="/artikel" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/artikelxx") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
+                                                Artikel
                                             </Link>
                                             {categories.map((category) => (
                                                 <Link 
@@ -397,24 +403,17 @@ export default function Header() {
                                             ))}
                                         </div>
                                     </details>
-                                    <details className="group rounded-xl">
-                                        <summary className="flex items-center justify-between cursor-pointer py-4 px-4 -mx-1 rounded-xl hover:bg-gray-50 transition-colors">
-                                            <span className={isActive("/katalog") ? "text-emerald-700 font-semibold" : "text-gray-800"}>{header.catalog}</span>
-                                            <ChevronDown className="h-4 w-4 text-gray-500 transition-transform group-open:rotate-180" />
-                                        </summary>
-                                        <div className="pl-6 pb-2 ml-2 border-l-2 border-gray-200 flex flex-col text-[14px] space-y-1">
-                                            <Link href="/katalog" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/katalog") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
-                                                {header.overview}
-                                            </Link>
-                                            <Link href="/artikelgruppen" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/artikelgruppen") || isActive("/artikelgruppen/") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
-                                                {header.productGroups}
-                                            </Link>
-                                            <Link href="/artikel" className={`py-2.5 px-4 rounded-lg transition-colors ${isExact("/artikel") || isActive("/artikel/") ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} onClick={() => setMobileOpen(false)}>
-                                                {header.articles}
-                                            </Link>
-                                        </div>
-                                    </details>
-
+                                    
+                                    {/* Mobile Kontakt Button */}
+                                    <div className="pt-4 mt-4 border-t border-gray-200">
+                                        <Link
+                                            href="/unternehmen/kontakt"
+                                            className="flex items-center justify-center gap-2 w-full px-6 py-3 rounded-full bg-emerald-600 text-white font-semibold shadow-lg hover:bg-emerald-700 transition-all duration-200"
+                                            onClick={() => setMobileOpen(false)}
+                                        >
+                                            <span>Kontakt</span>
+                                        </Link>
+                                    </div>
 
                                 </nav>
                             </Container>

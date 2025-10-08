@@ -9,6 +9,7 @@ const schema = z.object({
 });
 
 export const authConfig: AuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt" },
   pages: { signIn: "/login" },
   providers: [

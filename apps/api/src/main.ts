@@ -17,9 +17,32 @@ async function bootstrap() {
     logger: ['log', 'error', 'warn'],
   });
 
+  /*
   app.enableCors({
     origin: env.CORS_ORIGIN ?? true,
     credentials: false,
+  });
+  */
+
+  // Allow multiple origins
+  const allowedOrigins = [
+    'https://packaging-catalog-web.vercel.app',
+    'https://packaging-catalog-admin.vercel.app',
+    'http://localhost:3000', // for local development
+  ];
+
+  app.enableCors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or Postman)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
   });
 
   app.useGlobalPipes(

@@ -41,7 +41,7 @@ export function Lightbox({ images, initialIndex = 0, onClose }: LightboxProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-90"
       onClick={onClose}
     >
       <button

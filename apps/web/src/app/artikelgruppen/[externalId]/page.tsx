@@ -153,12 +153,12 @@ function GroupPageContent({ params }: GroupPageProps) {
           </div>
 
           <div className="grid md:grid-cols-2 gap-12 items-start">
-            <div>
+            <div className="min-w-0">
               <div className="text-sm font-semibold tracking-widest uppercase mb-4" style={{ color: colors.lightGreen }}>
                 Produktgruppe
               </div>
               
-              <h1 className="text-4xl md:text-5xl font-extrabold mb-4" style={{ color: colors.darkGreen }}>
+              <h1 className="text-4xl md:text-5xl font-extrabold mb-4 break-words hyphens-auto" style={{ color: colors.darkGreen, wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                 {group.name}
               </h1>
 

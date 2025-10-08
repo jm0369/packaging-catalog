@@ -144,7 +144,7 @@ function GroupsPageContent() {
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-3">
               <Package className="w-6 h-6 text-emerald-600" />
-              <h2 className="text-2xl font-bold" style={{ color: colors.darkGreen }}>
+              <h2 className="text-2xl font-bold break-words hyphens-auto" style={{ color: colors.darkGreen, wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                 {selectedCategory ? selectedCategory.name : 'Alle Artikelgruppen'}
               </h2>
             </div>

@@ -181,7 +181,7 @@ export default function HeroSlider() {
 
   return (
     <section
-      className="relative isolate overflow-hidden focus:outline-none"
+      className="relative isolate overflow-hidden focus:outline-none min-h-[80vh]"
       role="region"
       aria-roledescription="Karussell"
       aria-label="Hero-Slider"

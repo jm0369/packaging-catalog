@@ -93,11 +93,11 @@ export default function ProduktDetailPage({ params }: ProduktDetailPageProps) {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-emerald-50 to-white py-16">
-        <Container>
+      <section className="relative bg-gradient-to-br from-emerald-50 to-white py-16 overflow-hidden">
+        <Container className="overflow-hidden">
           {/* Breadcrumb */}
           <div className="mb-8">
-            <Link 
+            <Link
               href="/verpackungskategorien"
               className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-medium"
             >
@@ -107,24 +107,24 @@ export default function ProduktDetailPage({ params }: ProduktDetailPageProps) {
           </div>
 
           <div className="grid md:grid-cols-2 gap-12 items-start">
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-4 mb-4">
-                <div 
-                  className="w-16 h-16 rounded-xl shadow-lg"
+                <div
+                  className="w-16 h-16 rounded-xl shadow-lg flex-shrink-0"
                   style={{ backgroundColor: category.color }}
                 />
-                <div className="text-sm font-semibold text-emerald-600">
-                  {category.type === 'Article' 
+                <div className="text-sm font-semibold text-emerald-600 break-words">
+                  {category.type === 'Article'
                     ? `${category.articles.length} ${category.articles.length === 1 ? 'Artikel' : 'Artikel'} verfügbar`
                     : `${category.groups.length} ${category.groups.length === 1 ? 'Produkt' : 'Produkte'} verfügbar`
                   }
                 </div>
               </div>
-              
-              <h1 className="text-4xl md:text-5xl font-extrabold mb-6" style={{ color: colors.darkGreen }}>
+
+              <h1 className="text-4xl md:text-5xl font-extrabold mb-6 break-words hyphens-auto" style={{ color: colors.darkGreen, wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                 {category.name}
               </h1>
-              
+
               {category.description && (
                 <p className="text-lg text-foreground/80 mb-8 leading-relaxed">
                   {category.description}
@@ -132,8 +132,8 @@ export default function ProduktDetailPage({ params }: ProduktDetailPageProps) {
               )}
 
               <div className="flex flex-wrap gap-4">
-                <Link href={category.type === 'Article' 
-                  ? `/artikel?category=${encodeURIComponent(category.name)}` 
+                <Link href={category.type === 'Article'
+                  ? `/artikel?category=${encodeURIComponent(category.name)}`
                   : `/artikelgruppen?category=${encodeURIComponent(category.name)}`
                 }>
                   <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700">
@@ -158,8 +158,8 @@ export default function ProduktDetailPage({ params }: ProduktDetailPageProps) {
                   className="relative w-full aspect-video rounded-2xl overflow-hidden cursor-pointer group bg-gray-100 shadow-2xl"
                   aria-label="Bilder anzeigen"
                 >
-                  <Image 
-                    src={category.media[0]} 
+                  <Image
+                    src={category.media[0]}
                     alt={category.name}
                     fill
                     sizes="(max-width: 768px) 100vw, 50vw"
@@ -187,8 +187,8 @@ export default function ProduktDetailPage({ params }: ProduktDetailPageProps) {
                         className="relative aspect-square rounded-xl overflow-hidden cursor-pointer group bg-gray-100 shadow-md hover:shadow-xl transition-all"
                         aria-label={`Bild ${idx + 2} anzeigen`}
                       >
-                        <Image 
-                          src={image} 
+                        <Image
+                          src={image}
                           alt={`${category.name} - Bild ${idx + 2}`}
                           fill
                           sizes="150px"
@@ -375,19 +375,19 @@ export default function ProduktDetailPage({ params }: ProduktDetailPageProps) {
       )}
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-emerald-600 to-emerald-700 text-white">
-        <Container>
-          <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+      <section className="py-20 bg-gradient-to-br from-emerald-600 to-emerald-700 text-white overflow-hidden">
+        <Container className="overflow-hidden">
+          <div className="text-center max-w-3xl mx-auto min-w-0">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 break-words hyphens-auto" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
               Interessiert an {category.name}?
             </h2>
             <p className="text-lg text-emerald-50 mb-8">
-              Kontaktieren Sie unser Expertenteam für eine individuelle Beratung und 
+              Kontaktieren Sie unser Expertenteam für eine individuelle Beratung und
               finden Sie die perfekte Verpackungslösung für Ihre Anforderungen.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Link href={category.type === 'Article' 
-                ? `/artikel?category=${encodeURIComponent(category.name)}` 
+              <Link href={category.type === 'Article'
+                ? `/artikel?category=${encodeURIComponent(category.name)}`
                 : `/artikelgruppen?category=${encodeURIComponent(category.name)}`
               }>
                 <Button size="lg" variant="secondary" className="bg-white text-emerald-600 hover:bg-gray-100">

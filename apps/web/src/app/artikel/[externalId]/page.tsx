@@ -133,16 +133,6 @@ export default function ArticlePage({ params }: ArticlePageProps) {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-emerald-50 to-white py-16">
         <Container>
-          {/* Breadcrumb */}
-          <div className="mb-8">
-            <Link 
-              href={`/artikelgruppen/${encodeURIComponent(article.group.externalId)}`}
-              className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-medium"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Zurück zu {article.group.name || article.group.externalId}
-            </Link>
-          </div>
 
           <div className="grid md:grid-cols-2 gap-12 items-start">
             <div>

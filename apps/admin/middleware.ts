@@ -1,38 +1,35 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { auth } from "@/auth";
 
-export default async function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
+export function middleware(request: NextRequest) {
+  // Get the pathname
+  const pathname = request.nextUrl.pathname;
 
-  // Allow public files (_next, assets)
+  // Allow public routes
   if (
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/api/auth") ||
     pathname.startsWith("/_next") ||
-    pathname.startsWith("/static") ||
-    pathname.startsWith("/favicon") ||
-    pathname.match(/\.(png|jpg|jpeg|gif|svg|ico|css|js|map)$/)
+    pathname.startsWith("/favicon.ico")
   ) {
     return NextResponse.next();
   }
 
-  // Allow public paths
-  if (pathname === "/login" || pathname.startsWith("/api/auth")) {
-    return NextResponse.next();
-  }
+  // Check for session token in cookies
+  const token = request.cookies.get("next-auth.session-token") || 
+                request.cookies.get("__Secure-next-auth.session-token");
 
-  // Check session
-  const session = await auth();
-  if (!session) {
-    const url = req.nextUrl.clone();
-    url.pathname = "/login";
-    url.searchParams.set("next", pathname);
+  // If no token, redirect to login
+  if (!token) {
+    const url = new URL("/login", request.url);
+    url.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(url);
   }
 
+  // Allow the request to continue
   return NextResponse.next();
 }
 
 export const config = {
-  // Protect all routes
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api/auth|_next/static|_next/image|favicon.ico|login).*)"],
 };

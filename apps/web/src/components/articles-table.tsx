@@ -324,7 +324,7 @@ export function ArticlesTable({ articles, showGroupHeaders = false }: ArticlesTa
                   <div className="flex-grow space-y-3">
                     <div>
                       <Link 
-                        href={`/articles/${encodeURIComponent(article.externalId)}`}
+                        href={`/artikel/${encodeURIComponent(article.externalId)}`}
                         className="text-lg font-bold text-emerald-600 hover:text-emerald-700 hover:underline inline-flex items-center gap-2 group"
                       >
                         {article.title}
