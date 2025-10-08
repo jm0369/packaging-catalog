@@ -7,6 +7,7 @@ const nextConfig = {
       // { protocol: 'https', hostname: 'cdn.example.com' },
     ],
   },
+    output: 'standalone',
 };
 
 module.exports = nextConfig;

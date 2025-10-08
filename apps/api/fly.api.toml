@@ -1,0 +1,28 @@
+app = "packaging-catalog-api"
+primary_region = "fra"
+
+[build]
+  dockerfile = "Dockerfile"
+  target = "runtime-api"
+
+[build.args]
+  APP_NAME = "api"
+
+[deploy]
+  release_command = "sh -c 'cd apps/api && npx prisma migrate deploy'"
+
+[env]
+  PORT = "3001"
+  NODE_ENV = "production"
+
+[http_service]
+  internal_port = 3001
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1

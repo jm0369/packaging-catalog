@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import Link from 'next/link';
 import { GroupList } from '@/components/group-list';
 import { SearchFilters } from '@/components/search-filters';
@@ -29,7 +29,7 @@ type GroupData = {
   categories: Category[];
 };
 
-export default function GroupsPage() {
+function GroupsPageContent() {
   const searchParams = useSearchParams();
   const [groups, setGroups] = useState<GroupData[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -248,7 +248,19 @@ export default function GroupsPage() {
             </div>
           </div>
         </Container>
-      </section>
+            </section>
     </>
+  );
+}
+
+export default function GroupsPage() {
+  return (
+    <Suspense fallback={
+      <Container>
+        <div className="py-8">Loading...</div>
+      </Container>
+    }>
+      <GroupsPageContent />
+    </Suspense>
   );
 }

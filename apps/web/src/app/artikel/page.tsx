@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import Link from 'next/link';
 import { ArticlesTable } from '@/components/articles-table';
 import { SearchFilters } from '@/components/search-filters';
@@ -37,7 +37,7 @@ type Article = {
   };
 };
 
-export default function ArticlesPage() {
+function ArticlesPageContent() {
   const searchParams = useSearchParams();
   const [articles, setArticles] = useState<Article[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -271,5 +271,17 @@ export default function ArticlesPage() {
         </Container>
       </section>
     </>
+  );
+}
+
+export default function ArticlesPage() {
+  return (
+    <Suspense fallback={
+      <Container>
+        <div className="py-8">Loading...</div>
+      </Container>
+    }>
+      <ArticlesPageContent />
+    </Suspense>
   );
 }

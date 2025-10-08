@@ -2,8 +2,8 @@
 import { NextResponse } from 'next/server';
 import { adminFetch } from '@/lib/admin-client';
 
-export async function POST(req: Request, { params }: { params: { externalId: string; linkId: string } }) {
-  const { externalId, linkId } = params;
+export async function POST(req: Request, { params }: { params: Promise<{ externalId: string; linkId: string }> }) {
+  const { externalId, linkId } = await params;
   const form = await req.formData();
   const isDelete = form.get('_method') === 'DELETE';
   if (isDelete) {

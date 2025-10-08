@@ -1,4 +1,4 @@
-import type { NextAuthConfig } from "next-auth";
+import type { AuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
@@ -8,8 +8,7 @@ const schema = z.object({
   password: z.string().min(1),
 });
 
-export const authConfig: NextAuthConfig = {
-  trustHost: true,
+export const authConfig: AuthOptions = {
   session: { strategy: "jwt" },
   pages: { signIn: "/login" },
   providers: [

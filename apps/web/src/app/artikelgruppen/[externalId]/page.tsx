@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -44,7 +44,7 @@ type GroupPageProps = {
   params: Promise<{ externalId: string }>;
 };
 
-export default function GroupPage({ params }: GroupPageProps) {
+function GroupPageContent({ params }: GroupPageProps) {
   const searchParams = useSearchParams();
   const [group, setGroup] = useState<GroupData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -383,7 +383,19 @@ export default function GroupPage({ params }: GroupPageProps) {
             </div>
           </div>
         </Container>
-      </section>
+            </section>
     </>
+  );
+}
+
+export default function GroupPage({ params }: GroupPageProps) {
+  return (
+    <Suspense fallback={
+      <Container>
+        <div className="py-8">Loading...</div>
+      </Container>
+    }>
+      <GroupPageContent params={params} />
+    </Suspense>
   );
 }
