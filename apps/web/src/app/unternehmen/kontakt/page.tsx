@@ -53,8 +53,8 @@ export default function KontaktPage() {
     {
       icon: Mail,
       title: "E-Mail",
-      content: "info@packchampion.de",
-      link: "mailto:info@packchampion.de",
+      content: "info@packchampion.com",
+      link: "mailto:info@packchampion.com",
     },
     {
       icon: Phone,

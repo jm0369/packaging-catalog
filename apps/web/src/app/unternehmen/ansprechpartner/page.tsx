@@ -4,7 +4,7 @@ import React from "react";
 import Container from "@/components/container";
 import SectionTitle from "@/components/section-title";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mail, Phone, Linkedin } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import { colors } from "@/lib/colors";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,57 +14,57 @@ export default function AnsprechpartnerPage() {
   const team = [
     {
       name: "Werner Fink",
-      position: "Geschäftsführer",
+      position: "Geschäftsleitung",
       image: "/team/werner.JPG",
-      email: "m.schmidt@packchampion.de",
-      phone: "+49 89 123456-10",
-      linkedin: "#",
-      bio: "Mit über 20 Jahren Erfahrung in der Verpackungsindustrie leitet Dr. Schmidt unser Unternehmen mit Vision und Leidenschaft für Nachhaltigkeit.",
+      email: "w.fink@packchampion.com",
+      phone: "+49 941 94589270 90",
+      mobile: "+49 176 11909030",
+      bio: "Werner ist Gründer von PackChampion. Mit über 20 Jahren Erfahrung in der Verpackungsindustrie leitet er unser Team mit Vision und Leidenschaft.",
     },
     {
       name: "Korbinian Fink",
-      position: "Vertrieb & Marketing",
+      position: "Marketing & Sales / Prokurist",
       image: "/team/korbinian.JPG",
-      email: "s.mueller@packchampion.de",
-      phone: "+49 89 123456-20",
-      linkedin: "#",
-      bio: "Sarah ist Ihre erste Ansprechpartnerin für alle Vertriebs- und Kundenanfragen. Mit ihrer Expertise berät sie Sie umfassend.",
+      email: "k.fink@packchampion.com",
+      phone: "+49 941 94589270 92",
+      mobile: "+49 170 82115221",
+      bio: "Korbinian ist verantwortlich für Marketing und Vertrieb bei PackChampion. Er entwickelt innovative Strategien, um unsere Kunden bestmöglich zu betreuen.",
     },
     {
       name: "Mario Deilen",
-      position: "Vertrieb & Einkauf",
+      position: "Key-Account-Manager",
       image: "/team/mario.JPG",
-      email: "t.wagner@packchampion.de",
-      phone: "+49 89 123456-30",
-      linkedin: "#",
-      bio: "Thomas und sein Team entwickeln innovative Verpackungslösungen, die sowohl funktional als auch nachhaltig sind.",
+      email: "m.deilen@packchampion.com",
+      phone: "+49 941 945892-80",
+      mobile: "+49 170 1232627",
+      bio: "Mario ist Ihr Experte für alle Fragen rund um den Einkauf und die Beschaffung von Verpackungslösungen.",
     },
     {
       name: "Sieglinde Fink",
       position: "Buchhaltung & Verwaltung",
       image: "/team/sieglinde.JPG",
-      email: "l.becker@packchampion.de",
+      email: "s.fink@packchampion.com",
       phone: "+49 89 123456-40",
-      linkedin: "#",
-      bio: "Lisa verantwortet alle Nachhaltigkeitsinitiativen und stellt sicher, dass wir unsere Umweltziele erreichen.",
+      mobile: "+49 171 1234567",
+      bio: "Sieglinde kümmert sich um die Finanzen und sorgt dafür, dass bei PackChampion alles reibungslos läuft.",
     },
     {
       name: "Jennifer Koval",
       position: "Vertrieb Innendienst",
       image: "/team/jennifer.JPG",
-      email: "a.richter@packchampion.de",
+      email: "j.koval@packchampion.com",
       phone: "+49 89 123456-60",
-      linkedin: "#",
-      bio: "Anna steht Ihnen bei allen Fragen rund um Ihre Bestellung und bestehende Projekte zur Verfügung.",
+      mobile: "+49 171 1234567",
+      bio: "Jennifer ist Ihre Ansprechpartnerin im Innendienst und unterstützt Sie bei allen Fragen zu unseren Produkten und Dienstleistungen.",
     },
     {
       name: "Benedikt Imhofer",
       position: "Leiter Design",
       image: "/team/benedikt.JPG",
-      email: "m.schulz@packchampion.de",
+      email: "b.imhofer@packchampion.de",
       phone: "+49 89 123456-50",
-      linkedin: "#",
-      bio: "Marc und sein kreatives Team gestalten einzigartige Verpackungsdesigns, die Ihre Marke perfekt in Szene setzen.",
+      mobile: "+49 171 1234567",
+      bio: "Benedikt leitet unser Design-Team und sorgt dafür, dass Ihre Verpackungen nicht nur funktional, sondern auch optisch ansprechend sind.",
     },
   ];
 
@@ -161,13 +161,11 @@ export default function AnsprechpartnerPage() {
                       {member.phone}
                     </a>
                     <a 
-                      href={member.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href={`tel:${member.mobile}`}
                       className="flex items-center gap-2 text-foreground/70 hover:text-emerald-600 transition-colors"
                     >
-                      <Linkedin className="w-4 h-4" />
-                      LinkedIn
+                      <Phone className="w-4 h-4" />
+                      {member.phone}
                     </a>
                   </div>
                 </CardContent>

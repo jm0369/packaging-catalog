@@ -42,8 +42,8 @@ export default function Impressum() {
                     <div className="space-y-4">
                       <div>
                         <p className="text-xl font-bold text-gray-900">packCHAMPION GmbH</p>
-                        <p className="text-gray-600 mt-2">Musterstraße 123</p>
-                        <p className="text-gray-600">12345 Musterstadt</p>
+                        <p className="text-gray-600 mt-2">Merianweg 3</p>
+                        <p className="text-gray-600">93051 Regensburg</p>
                         <p className="text-gray-600">Deutschland</p>
                       </div>
 
@@ -60,7 +60,7 @@ export default function Impressum() {
                           <div>
                             <p className="text-sm text-gray-500">E-Mail</p>
                             <a href="mailto:info@packchampion.de" className="text-emerald-600 hover:underline font-medium">
-                              info@packchampion.de
+                              info@packchampion.com
                             </a>
                           </div>
                         </div>
