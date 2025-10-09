@@ -7,6 +7,7 @@ import { AddArticleLink } from '@/components/media/add-article-link';
 import { AddCategoryLink } from '@/components/media/add-category-link';
 import { RemoveLinkButton } from '@/components/media/remove-link-button';
 import { SetPrimaryButton } from '@/components/media/set-primary-button';
+import { DeleteMediaButton } from '@/components/media/delete-media-button';
 
 type MediaAssetDetail = {
   id: string;
@@ -96,6 +97,7 @@ export function MediaAssetDetailClient({
           </div>
           <h1 className="text-2xl font-semibold">Media Asset Detail</h1>
         </div>
+        <DeleteMediaButton mediaId={asset.id} usageCount={totalUsage} />
       </div>
 
       {/* Main Content Grid */}
