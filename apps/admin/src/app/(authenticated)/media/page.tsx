@@ -9,6 +9,11 @@ type MediaAsset = {
   width?: number | null;
   height?: number | null;
   sizeBytes?: number | null;
+  driveSync?: {
+    driveFileId: string;
+    driveFileName: string;
+    lastSyncedAt: string;
+  } | null;
   usedInGroups: Array<{ name: string; externalId: string }>;
   usedInArticles: Array<{ title: string; externalId: string }>;
   usedInCategories: Array<{ name: string; color: string }>;
@@ -108,8 +113,8 @@ export default async function MediaAssetsPage({
                 </div>
                 
                 <div className="space-y-2">
-                  <div className="text-xs text-gray-500 truncate" title={asset.key}>
-                    {asset.key.split('/').pop()}
+                  <div className="text-xs text-gray-500 truncate" title={asset.driveSync?.driveFileName || asset.key}>
+                    {asset.driveSync?.driveFileName || asset.key.split('/').pop()}
                   </div>
                   
                   <div className="flex items-center justify-between text-xs text-gray-600">
