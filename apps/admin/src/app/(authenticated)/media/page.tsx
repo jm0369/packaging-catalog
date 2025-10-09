@@ -139,6 +139,36 @@ export default async function MediaAssetsPage({
                       </span>
                     )}
                   </div>
+
+                  {/* Connected Objects */}
+                  {totalUsage > 0 && (
+                    <div className="space-y-1 pt-1 border-t">
+                      {asset.usedInGroups.length > 0 && (
+                        <div className="text-xs text-gray-600">
+                          <span className="font-medium">Groups:</span>{' '}
+                          <span className="text-gray-500">
+                            {asset.usedInGroups.map(g => g.externalId).join(', ')}
+                          </span>
+                        </div>
+                      )}
+                      {asset.usedInArticles.length > 0 && (
+                        <div className="text-xs text-gray-600">
+                          <span className="font-medium">Articles:</span>{' '}
+                          <span className="text-gray-500">
+                            {asset.usedInArticles.map(a => a.title).join(', ')}
+                          </span>
+                        </div>
+                      )}
+                      {asset.usedInCategories.length > 0 && (
+                        <div className="text-xs text-gray-600">
+                          <span className="font-medium">Categories:</span>{' '}
+                          <span className="text-gray-500">
+                            {asset.usedInCategories.map(c => c.name).join(', ')}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </Link>
             );
