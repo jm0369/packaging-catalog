@@ -84,22 +84,43 @@ export class GroupsMediaController {
     return this.prisma.$transaction(async (tx) => {
       const link = await tx.groupMediaLink.findUniqueOrThrow({
         where: { id: linkId },
-        select: { id: true, groupId: true },
+        select: { id: true, groupId: true, sortOrder: true },
       });
 
-      await tx.groupMediaLink.update({
+      // Get all links for this group, ordered by sortOrder
+      const allLinks = await tx.groupMediaLink.findMany({
+        where: { groupId: link.groupId },
+        orderBy: { sortOrder: 'asc' },
+        select: { id: true, sortOrder: true },
+      });
+
+      // Phase 1: Move all to temporary negative range to avoid conflicts
+      for (let i = 0; i < allLinks.length; i++) {
+        await tx.groupMediaLink.update({
+          where: { id: allLinks[i].id },
+          data: { sortOrder: -1000 - i },
+        });
+      }
+
+      // Phase 2: Set final sortOrders - target at 0, others sequentially
+      let newSortOrder = 0;
+      for (const l of allLinks) {
+        if (l.id === linkId) {
+          await tx.groupMediaLink.update({
+            where: { id: l.id },
+            data: { sortOrder: 0 },
+          });
+        } else {
+          newSortOrder++;
+          await tx.groupMediaLink.update({
+            where: { id: l.id },
+            data: { sortOrder: newSortOrder },
+          });
+        }
+      }
+
+      const updated = await tx.groupMediaLink.findUniqueOrThrow({
         where: { id: linkId },
-        data: { sortOrder: -1 },
-      });
-
-      await tx.groupMediaLink.updateMany({
-        where: { groupId: link.groupId, id: { not: linkId } },
-        data: { sortOrder: { increment: 1 } },
-      });
-
-      const updated = await tx.groupMediaLink.update({
-        where: { id: linkId },
-        data: { sortOrder: 0 },
         include: { media: true },
       });
 

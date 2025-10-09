@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server';
 import { adminFetch } from '@/lib/admin-client';
+
 export async function POST(req: Request, { params }: { params: Promise<{ externalId: string; linkId: string }> }) {
   const { externalId, linkId } = await params;
   const res = await adminFetch(`/admin/article-groups/${encodeURIComponent(externalId)}/media/${linkId}/primary`, { method: 'POST' });
-  if (!res.ok) return NextResponse.json({ ok: false }, { status: res.status });
-  // refresh by redirecting back
-  const url = new URL(req.url);
-  const redirectTo = new URL(`/groups/${encodeURIComponent(externalId)}`, url.origin);
+  
+  if (!res.ok) {
+    return NextResponse.json({ ok: false, error: 'Failed to set primary' }, { status: res.status });
+  }
 
-  return NextResponse.redirect(redirectTo, 303);
+  const data = await res.json();
+  return NextResponse.json({ ok: true, data });
 }

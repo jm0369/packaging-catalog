@@ -24,160 +24,6 @@ interface SyncStats {
   updated: number;
   deleted: number;
   failed: number;
-  skipped: number;
-}
-
-function normalizeForMatching(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, '')
-    .trim();
-}
-
-function parseTargetFromName(
-  name: string,
-  articles: Array<{ externalId: string; title: string; sku: string | null }>,
-  groups: Array<{ externalId: string; name: string }>
-): { type: 'article' | 'group'; id: string; matched: string; sortOrder: number } | null {
-  const baseName = name.replace(/\.[a-z0-9]+$/i, '');
-  const normalizedFileName = normalizeForMatching(baseName);
-  
-  // Check if filename contains "E" followed by digits (article image indicator)
-  // Extract sort order: "E 01", "E01", "E 14-2", "E00", "E 00-2" etc.
-  const eMatch = baseName.match(/\bE\s*(\d+(?:-\d+)?)\b/i);
-  
-  if (eMatch) {
-    // This is an article image
-    const sortOrderStr = eMatch[1].replace(/-/g, '');
-    const sortOrder = parseInt(sortOrderStr, 10);
-    
-    // Try to find any article whose externalId, title, or SKU appears in the filename
-    // Sort by normalized length (longest first) to prefer more specific matches
-    const sortedArticles = [...articles].sort((a, b) => {
-      const aNormLen = Math.max(
-        normalizeForMatching(a.externalId).length,
-        normalizeForMatching(a.title).length,
-        a.sku ? normalizeForMatching(a.sku).length : 0
-      );
-      const bNormLen = Math.max(
-        normalizeForMatching(b.externalId).length,
-        normalizeForMatching(b.title).length,
-        b.sku ? normalizeForMatching(b.sku).length : 0
-      );
-      return bNormLen - aNormLen;
-    });
-    
-    for (const article of sortedArticles) {
-      const normalized = normalizeForMatching(article.externalId);
-      const normalizedTitle = normalizeForMatching(article.title);
-      const normalizedSku = article.sku ? normalizeForMatching(article.sku) : '';
-      
-      // Check if any identifier appears in the filename
-      // Use minimum length of 5 to avoid false positives with short codes
-      if (
-        (normalized.length >= 4 && normalizedFileName.includes(normalized)) ||
-        (normalizedTitle.length >= 4 && normalizedFileName.includes(normalizedTitle)) ||
-        (normalizedSku.length >= 4 && normalizedFileName.includes(normalizedSku))
-      ) {
-        return { type: 'article', id: article.externalId, matched: article.title, sortOrder };
-      }
-    }
-    
-    // If no match found with strict criteria, try fuzzy matching
-    // Extract the main part before "E" and try partial matching
-    const beforeE = baseName.substring(0, eMatch.index).trim();
-    const normalizedBeforeE = normalizeForMatching(beforeE);
-    
-    for (const article of sortedArticles) {
-      const normalized = normalizeForMatching(article.externalId);
-      const normalizedTitle = normalizeForMatching(article.title);
-      const normalizedSku = article.sku ? normalizeForMatching(article.sku) : '';
-      
-      // Calculate match score based on how much of the identifier matches
-      const calcMatchScore = (identifier: string) => {
-        if (identifier.length < 3) return 0;
-        // Check if identifier is contained in filename
-        if (normalizedBeforeE.includes(identifier)) return identifier.length;
-        // Check if filename starts with identifier
-        if (normalizedBeforeE.startsWith(identifier.substring(0, Math.min(identifier.length, 6)))) {
-          return identifier.length * 0.8;
-        }
-        return 0;
-      };
-      
-      const scoreId = calcMatchScore(normalized);
-      const scoreTitle = calcMatchScore(normalizedTitle);
-      const scoreSku = calcMatchScore(normalizedSku);
-      const maxScore = Math.max(scoreId, scoreTitle, scoreSku);
-      
-      if (maxScore >= 3) {
-        return { type: 'article', id: article.externalId, matched: article.title, sortOrder };
-      }
-    }
-  } else {
-    // No "E" marker, so this is likely a group image
-    // Extract sort order from trailing number: "PC P FBS 14", "PC P B 02 14-2", "PC P LB 10 00_"
-    const groupMatch = baseName.match(/\s+(\d+(?:-\d+)?)\s*_?\s*$/);
-    if (groupMatch) {
-      const sortOrderStr = groupMatch[1].replace(/-/g, '');
-      const sortOrder = parseInt(sortOrderStr, 10);
-      
-      // Try to find any group whose externalId or name appears in the filename
-      // Sort by normalized length (longest first) to prefer more specific matches
-      const sortedGroups = [...groups].sort((a, b) => {
-        const aNormLen = Math.max(
-          normalizeForMatching(a.externalId).length,
-          normalizeForMatching(a.name).length
-        );
-        const bNormLen = Math.max(
-          normalizeForMatching(b.externalId).length,
-          normalizeForMatching(b.name).length
-        );
-        return bNormLen - aNormLen;
-      });
-      
-      for (const group of sortedGroups) {
-        const normalized = normalizeForMatching(group.externalId);
-        const normalizedName = normalizeForMatching(group.name);
-        
-        // Check if any identifier appears in the filename
-        if (
-          (normalized.length >= 4 && normalizedFileName.includes(normalized)) ||
-          (normalizedName.length >= 4 && normalizedFileName.includes(normalizedName))
-        ) {
-          return { type: 'group', id: group.externalId, matched: group.name, sortOrder };
-        }
-      }
-      
-      // Fuzzy matching for groups
-      const beforeNumber = baseName.substring(0, groupMatch.index).trim();
-      const normalizedBeforeNumber = normalizeForMatching(beforeNumber);
-      
-      for (const group of sortedGroups) {
-        const normalized = normalizeForMatching(group.externalId);
-        const normalizedName = normalizeForMatching(group.name);
-        
-        const calcMatchScore = (identifier: string) => {
-          if (identifier.length < 3) return 0;
-          if (normalizedBeforeNumber.includes(identifier)) return identifier.length;
-          if (normalizedBeforeNumber.startsWith(identifier.substring(0, Math.min(identifier.length, 6)))) {
-            return identifier.length * 0.8;
-          }
-          return 0;
-        };
-        
-        const scoreId = calcMatchScore(normalized);
-        const scoreName = calcMatchScore(normalizedName);
-        const maxScore = Math.max(scoreId, scoreName);
-        
-        if (maxScore >= 3) {
-          return { type: 'group', id: group.externalId, matched: group.name, sortOrder };
-        }
-      }
-    }
-  }
-  
-  return null;
 }
 
 async function downloadFile(drive: any, fileId: string, fileName: string): Promise<Buffer | null> {
@@ -242,80 +88,12 @@ async function uploadMedia(
   return null;
 }
 
-async function linkMedia(
-  targetType: 'article' | 'group',
-  targetId: string,
-  mediaId: string,
-  sortOrder: number
-): Promise<boolean> {
-  const linkPath =
-    targetType === 'article'
-      ? `/admin/articles/${encodeURIComponent(targetId)}/media`
-      : `/admin/article-groups/${encodeURIComponent(targetId)}/media`;
-
-  let attempt = 0;
-  while (attempt < 3) {
-    try {
-      const resp = await fetch(`${ADMIN_BASE}${linkPath}`, {
-        method: 'POST',
-        headers: {
-          'x-admin-secret': ADMIN_SECRET,
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({ mediaId, sortOrder }),
-      });
-
-      if (resp.ok) {
-        return true;
-      }
-
-      const errorText = await resp.text().catch(() => '');
-      
-      // Check for duplicate sortOrder error
-      if (resp.status === 500 && errorText.includes('Unique constraint failed')) {
-        console.warn(`   ⚠️  Duplicate sortOrder ${sortOrder}, retrying with next available...`);
-        // Increment sortOrder and retry
-        sortOrder = sortOrder + 1;
-        attempt++;
-        continue;
-      }
-
-      // Check if it's routing to wrong endpoint
-      if (errorText.includes('groupMediaLink') && targetType === 'article') {
-        console.error(`   ✗ API routing error: article route calling groupMediaLink.create()`);
-        return false;
-      }
-
-      console.error(`Link failed (${resp.status}): ${errorText}`);
-      return false;
-      
-    } catch (e: any) {
-      console.error(`   ✗ Link error: ${e?.message}`);
-      return false;
-    }
-  }
-  
-  return false;
-}
-
 async function main() {
   const prisma = new PrismaClient();
   
   try {
     await prisma.$connect();
     console.log('🔄 Starting Drive sync...\n');
-    
-    // Load articles and groups
-    const [articles, groups] = await Promise.all([
-      prisma.articleMirror.findMany({
-        select: { externalId: true, title: true, sku: true },
-      }),
-      prisma.articleGroupMirror.findMany({
-        select: { externalId: true, name: true },
-      }),
-    ]);
-    
-    console.log(`📚 Loaded ${articles.length} articles and ${groups.length} groups`);
     
     // Initialize Drive API
     const jwt = new google.auth.JWT({
@@ -386,7 +164,6 @@ async function main() {
       updated: 0,
       deleted: 0,
       failed: 0,
-      skipped: 0,
     };
 
     // 1. Delete removed files
@@ -422,18 +199,11 @@ async function main() {
       await Promise.all(
         toProcess.map((file, idx) =>
           limit(async () => {
-            const target = parseTargetFromName(file.name, articles, groups);
-            if (!target) {
-              stats.skipped++;
-              console.log(`[${idx + 1}/${toProcess.length}] SKIP  ${file.name} (no match)`);
-              return;
-            }
-
             const existing = syncMap.get(file.id);
             const isUpdate = !!existing;
 
             console.log(
-              `[${idx + 1}/${toProcess.length}] ${isUpdate ? 'UPDATE' : 'ADD'}  ${file.name} → ${target.type}:${target.id}`
+              `[${idx + 1}/${toProcess.length}] ${isUpdate ? 'UPDATE' : 'ADD'}  ${file.name}`
             );
 
             // Download file
@@ -454,15 +224,7 @@ async function main() {
               return;
             }
 
-            // Link to target
-            const linked = await linkMedia(target.type, target.id, mediaId, target.sortOrder);
-            if (!linked) {
-              stats.failed++;
-              console.error(`   ✗ Link failed`);
-              return;
-            }
-
-            // Update sync state
+            // Update sync state (no automatic linking - done manually via admin UI)
             await prisma.driveSyncState.upsert({
               where: { driveFileId: file.id },
               create: {
@@ -470,9 +232,9 @@ async function main() {
                 driveFileName: file.name,
                 driveChecksum: file.md5Checksum,
                 mediaAssetId: mediaId,
-                targetType: target.type,
-                targetId: target.id,
-                sortOrder: target.sortOrder,
+                targetType: 'article', // placeholder, not used for linking anymore
+                targetId: '',
+                sortOrder: 0,
               },
               update: {
                 driveFileName: file.name,
@@ -494,7 +256,8 @@ async function main() {
               stats.added++;
             }
 
-            console.log(`   ✓ Success (mediaId=${mediaId}, sha256=${checksum.slice(0, 8)}…)`);
+            console.log(`   ✓ Uploaded (mediaId=${mediaId}, sha256=${checksum.slice(0, 8)}…)`);
+            console.log(`   ℹ️  Link manually via admin UI at /media/${mediaId}`);
           })
         )
       );
@@ -505,8 +268,8 @@ async function main() {
     console.log(`   Added:     ${stats.added}`);
     console.log(`   Updated:   ${stats.updated}`);
     console.log(`   Deleted:   ${stats.deleted}`);
-    console.log(`   Skipped:   ${stats.skipped}`);
     console.log(`   Failed:    ${stats.failed}`);
+    console.log(`\n💡 New/updated media assets can be linked via admin UI: ${ADMIN_BASE.replace(/:\d+$/, ':3001')}/media`);
     
   } finally {
     await prisma.$disconnect();

@@ -6,6 +6,7 @@ import { AddGroupLink } from '@/components/media/add-group-link';
 import { AddArticleLink } from '@/components/media/add-article-link';
 import { AddCategoryLink } from '@/components/media/add-category-link';
 import { RemoveLinkButton } from '@/components/media/remove-link-button';
+import { SetPrimaryButton } from '@/components/media/set-primary-button';
 
 type MediaAssetDetail = {
   id: string;
@@ -230,8 +231,17 @@ export function MediaAssetDetailClient({
                           Alt text: {link.altText}
                         </div>
                       )}
-                      <div className="text-xs text-gray-500">
-                        Sort order: {link.sortOrder}
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-500">
+                          Sort order: {link.sortOrder}
+                        </span>
+                        <SetPrimaryButton
+                          linkId={link.linkId}
+                          linkType="group"
+                          entityId={link.group.externalId}
+                          isPrimary={link.sortOrder === 0}
+                          onSuccess={handleRefresh}
+                        />
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -282,8 +292,17 @@ export function MediaAssetDetailClient({
                           Alt text: {link.altText}
                         </div>
                       )}
-                      <div className="text-xs text-gray-500">
-                        Sort order: {link.sortOrder}
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-500">
+                          Sort order: {link.sortOrder}
+                        </span>
+                        <SetPrimaryButton
+                          linkId={link.linkId}
+                          linkType="article"
+                          entityId={link.article.externalId}
+                          isPrimary={link.sortOrder === 0}
+                          onSuccess={handleRefresh}
+                        />
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -340,8 +359,17 @@ export function MediaAssetDetailClient({
                           Alt text: {link.altText}
                         </div>
                       )}
-                      <div className="text-xs text-gray-500">
-                        Sort order: {link.sortOrder}
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-500">
+                          Sort order: {link.sortOrder}
+                        </span>
+                        <SetPrimaryButton
+                          linkId={link.linkId}
+                          linkType="category"
+                          entityId={link.category.id}
+                          isPrimary={link.sortOrder === 0}
+                          onSuccess={handleRefresh}
+                        />
                       </div>
                     </div>
                     <div className="flex items-center gap-3">

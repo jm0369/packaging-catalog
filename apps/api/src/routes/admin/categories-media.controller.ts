@@ -76,33 +76,48 @@ export class CategoriesMediaController {
     @Param('linkId') linkId: string,
   ) {
     return this.prisma.$transaction(async (tx) => {
-      // Load the link to get the owning articleId
       const link = await tx.categoryMediaLink.findUniqueOrThrow({
         where: { id: linkId },
-        select: { id: true, categoryId: true },
+        select: { id: true, categoryId: true, sortOrder: true },
       });
-  
-      // 1) Park the target at a sentinel to avoid unique collisions
-      await tx.categoryMediaLink.update({
+
+      // Get all links for this category, ordered by sortOrder
+      const allLinks = await tx.categoryMediaLink.findMany({
+        where: { categoryId: link.categoryId },
+        orderBy: { sortOrder: 'asc' },
+        select: { id: true, sortOrder: true },
+      });
+
+      // Phase 1: Move all to temporary negative range to avoid conflicts
+      for (let i = 0; i < allLinks.length; i++) {
+        await tx.categoryMediaLink.update({
+          where: { id: allLinks[i].id },
+          data: { sortOrder: -1000 - i },
+        });
+      }
+
+      // Phase 2: Set final sortOrders - target at 0, others sequentially
+      let newSortOrder = 0;
+      for (const l of allLinks) {
+        if (l.id === linkId) {
+          await tx.categoryMediaLink.update({
+            where: { id: l.id },
+            data: { sortOrder: 0 },
+          });
+        } else {
+          newSortOrder++;
+          await tx.categoryMediaLink.update({
+            where: { id: l.id },
+            data: { sortOrder: newSortOrder },
+          });
+        }
+      }
+
+      const updated = await tx.categoryMediaLink.findUniqueOrThrow({
         where: { id: linkId },
-        data: { sortOrder: -1 },
+        include: { media: true },
       });
-  
-      // 2) Shift everyone else up by 1 (unique constraint remains valid)
-      await tx.categoryMediaLink.updateMany({
-        where: { categoryId: link.categoryId, id: { not: linkId } },
-        data: { sortOrder: { increment: 1 } },
-      });
-  
-      // 3) Put the target at zero (now unique again)
-      const updated = await tx.categoryMediaLink.update({
-        where: { id: linkId },
-        data: { sortOrder: 0 },
-        include: {
-          media: true,
-        },
-      });
-  
+
       return updated;
     });
   }
