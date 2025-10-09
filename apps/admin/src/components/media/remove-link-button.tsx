@@ -5,7 +5,7 @@ import { useState } from 'react';
 type RemoveLinkButtonProps = {
   mediaId: string;
   linkId: string;
-  linkType: 'group' | 'article';
+  linkType: 'group' | 'article' | 'category';
   entityName: string;
   onSuccess: () => void;
 };
@@ -31,7 +31,9 @@ export function RemoveLinkButton({
     try {
       const endpoint = linkType === 'group' 
         ? `/api/media/${mediaId}/unlink-from-group/${linkId}`
-        : `/api/media/${mediaId}/unlink-from-article/${linkId}`;
+        : linkType === 'article'
+        ? `/api/media/${mediaId}/unlink-from-article/${linkId}`
+        : `/api/media/${mediaId}/unlink-from-category/${linkId}`;
 
       const res = await fetch(endpoint, { method: 'DELETE' });
       const data = await res.json();

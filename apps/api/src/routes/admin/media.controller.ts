@@ -420,4 +420,103 @@ export class MediaAssetsController {
 
     return { ok: true, message: 'Link removed successfully' };
   }
+
+  @Post(':id/link-to-category')
+  @ApiOperation({ summary: 'Link this media asset to a category. Body: { categoryId, altText?, sortOrder? }' })
+  async linkToCategory(
+    @Param('id') id: string,
+    @Body() body: { categoryId: string; altText?: string | null; sortOrder?: number }
+  ) {
+    // Check if asset exists
+    const asset = await this.prisma.mediaAsset.findUnique({ where: { id } });
+    if (!asset) {
+      throw new NotFoundException(`Media asset with ID ${id} not found`);
+    }
+
+    // Find the category
+    const category = await this.prisma.category.findUnique({
+      where: { id: body.categoryId },
+    });
+    if (!category) {
+      throw new NotFoundException(`Category with ID ${body.categoryId} not found`);
+    }
+
+    // Check if link already exists
+    const existingLink = await this.prisma.categoryMediaLink.findFirst({
+      where: {
+        categoryId: body.categoryId,
+        mediaId: id,
+      },
+    });
+
+    if (existingLink) {
+      throw new BadRequestException('This media asset is already linked to this category');
+    }
+
+    // Determine sort order
+    let sortOrder = body.sortOrder ?? null;
+    if (sortOrder === null) {
+      const max = await this.prisma.categoryMediaLink.aggregate({
+        where: { categoryId: body.categoryId },
+        _max: { sortOrder: true },
+      });
+      sortOrder = typeof max._max.sortOrder === 'number' ? max._max.sortOrder + 1 : 0;
+    }
+
+    // Create the link
+    const link = await this.prisma.categoryMediaLink.create({
+      data: {
+        categoryId: body.categoryId,
+        mediaId: id,
+        altText: body.altText ?? null,
+        sortOrder,
+      },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            type: true,
+            color: true,
+          },
+        },
+      },
+    });
+
+    return {
+      ok: true,
+      link: {
+        linkId: link.id,
+        category: link.category,
+        altText: link.altText,
+        sortOrder: link.sortOrder,
+      },
+    };
+  }
+
+  @Delete(':id/unlink-from-category/:linkId')
+  @ApiOperation({ summary: 'Remove link between this media asset and a category' })
+  async unlinkFromCategory(
+    @Param('id') id: string,
+    @Param('linkId') linkId: string
+  ) {
+    // Check if link exists and belongs to this media asset
+    const link = await this.prisma.categoryMediaLink.findUnique({
+      where: { id: linkId },
+    });
+
+    if (!link) {
+      throw new NotFoundException(`Link with ID ${linkId} not found`);
+    }
+
+    if (link.mediaId !== id) {
+      throw new BadRequestException('This link does not belong to this media asset');
+    }
+
+    await this.prisma.categoryMediaLink.delete({
+      where: { id: linkId },
+    });
+
+    return { ok: true, message: 'Link removed successfully' };
+  }
 }

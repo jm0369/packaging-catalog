@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AddGroupLink } from '@/components/media/add-group-link';
 import { AddArticleLink } from '@/components/media/add-article-link';
+import { AddCategoryLink } from '@/components/media/add-category-link';
 import { RemoveLinkButton } from '@/components/media/remove-link-button';
 
 type MediaAssetDetail = {
@@ -312,41 +313,70 @@ export function MediaAssetDetailClient({
         {/* Categories Section (Read-only) */}
         {asset.usedInCategories.length > 0 && (
           <div className="border rounded-lg p-4 bg-white">
-            <h2 className="font-semibold mb-3">Used in Categories ({asset.usedInCategories.length})</h2>
-            <div className="space-y-2">
-              {asset.usedInCategories.map((link) => (
-                <div
-                  key={link.linkId}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded border"
-                >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="w-4 h-4 rounded"
-                        style={{ backgroundColor: link.category.color }}
-                      />
-                      <span className="font-medium">{link.category.name}</span>
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      Type: {link.category.type}
-                    </div>
-                    {link.altText && (
-                      <div className="text-xs text-gray-500">
-                        Alt text: {link.altText}
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-semibold">Connected Categories ({asset.usedInCategories.length})</h2>
+            </div>
+            
+            <div className="space-y-3">
+              <div className="space-y-2">
+                {asset.usedInCategories.map((link) => (
+                  <div
+                    key={link.linkId}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded border"
+                  >
+                    <div className="space-y-1 flex-1">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-4 h-4 rounded"
+                          style={{ backgroundColor: link.category.color }}
+                        />
+                        <span className="font-medium">{link.category.name}</span>
                       </div>
-                    )}
-                    <div className="text-xs text-gray-500">
-                      Sort order: {link.sortOrder}
+                      <div className="text-sm text-gray-600">
+                        Type: {link.category.type}
+                      </div>
+                      {link.altText && (
+                        <div className="text-xs text-gray-500">
+                          Alt text: {link.altText}
+                        </div>
+                      )}
+                      <div className="text-xs text-gray-500">
+                        Sort order: {link.sortOrder}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Link
+                        href={`/categories/${link.category.id}`}
+                        className="text-sm text-blue-600 hover:underline"
+                      >
+                        View →
+                      </Link>
+                      <RemoveLinkButton
+                        mediaId={asset.id}
+                        linkId={link.linkId}
+                        linkType="category"
+                        entityName={link.category.name}
+                        onSuccess={handleRefresh}
+                      />
                     </div>
                   </div>
-                  <Link
-                    href={`/categories/${link.category.id}`}
-                    className="text-sm text-blue-600 hover:underline"
-                  >
-                    View Category →
-                  </Link>
-                </div>
-              ))}
+                ))}
+              </div>
+              
+              <AddCategoryLink mediaId={asset.id} onSuccess={handleRefresh} />
+            </div>
+          </div>
+        )}
+
+        {/* Add Category section if no categories exist */}
+        {asset.usedInCategories.length === 0 && (
+          <div className="border rounded-lg p-4 bg-white">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-semibold">Connected Categories (0)</h2>
+            </div>
+            
+            <div className="space-y-3">
+              <AddCategoryLink mediaId={asset.id} onSuccess={handleRefresh} />
             </div>
           </div>
         )}

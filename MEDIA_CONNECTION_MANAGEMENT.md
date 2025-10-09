@@ -1,7 +1,7 @@
 # Media Asset Connection Management - Implementation Summary
 
 ## Overview
-Extended the media asset management system to allow managing connections (links) between media assets and articles/groups directly from the media detail page.
+Extended the media asset management system to allow managing connections (links) between media assets and articles/groups/categories directly from the media detail page.
 
 ## New Features
 
@@ -10,7 +10,7 @@ Extended the media asset management system to allow managing connections (links)
 #### MediaAssetsController Extensions
 **File:** `apps/api/src/routes/admin/media.controller.ts`
 
-Added 4 new endpoints:
+Added 6 new endpoints:
 
 1. **POST `/admin/media-assets/:id/link-to-group`**
    - Links a media asset to a group
@@ -26,13 +26,25 @@ Added 4 new endpoints:
    - Prevents duplicate links
    - Returns the created link with article details
 
-3. **DELETE `/admin/media-assets/:id/unlink-from-group/:linkId`**
+3. **POST `/admin/media-assets/:id/link-to-category`**
+   - Links a media asset to a category
+   - Body: `{ categoryId: string, altText?: string, sortOrder?: number }`
+   - Auto-calculates sortOrder if not provided (appends to end)
+   - Prevents duplicate links
+   - Returns the created link with category details
+
+4. **DELETE `/admin/media-assets/:id/unlink-from-group/:linkId`**
    - Removes a link between media asset and group
    - Validates that the link belongs to the media asset
    - Returns success message
 
-4. **DELETE `/admin/media-assets/:id/unlink-from-article/:linkId`**
+5. **DELETE `/admin/media-assets/:id/unlink-from-article/:linkId`**
    - Removes a link between media asset and article
+   - Validates that the link belongs to the media asset
+   - Returns success message
+
+6. **DELETE `/admin/media-assets/:id/unlink-from-category/:linkId`**
+   - Removes a link between media asset and category
    - Validates that the link belongs to the media asset
    - Returns success message
 
@@ -46,11 +58,17 @@ Created proxy routes to handle authentication:
 2. **`apps/admin/src/app/api/media/[id]/link-to-article/route.ts`**
    - POST endpoint to link media to article
 
-3. **`apps/admin/src/app/api/media/[id]/unlink-from-group/[linkId]/route.ts`**
+3. **`apps/admin/src/app/api/media/[id]/link-to-category/route.ts`**
+   - POST endpoint to link media to category
+
+4. **`apps/admin/src/app/api/media/[id]/unlink-from-group/[linkId]/route.ts`**
    - DELETE endpoint to remove group link
 
-4. **`apps/admin/src/app/api/media/[id]/unlink-from-article/[linkId]/route.ts`**
+5. **`apps/admin/src/app/api/media/[id]/unlink-from-article/[linkId]/route.ts`**
    - DELETE endpoint to remove article link
+
+6. **`apps/admin/src/app/api/media/[id]/unlink-from-category/[linkId]/route.ts`**
+   - DELETE endpoint to remove category link
 
 All routes use `adminFetch` helper to include admin authentication.
 
@@ -78,17 +96,30 @@ Features:
 - Error handling
 - Refresh on success
 
-#### 3. RemoveLinkButton Component
+#### 3. AddCategoryLink Component
+**File:** `apps/admin/src/components/media/add-category-link.tsx`
+
+Features:
+- Toggle button to show/hide form
+- **Dropdown with all available categories** (loaded from API)
+- Shows category name and type in dropdown
+- Optional alt text input
+- Form validation
+- Error handling
+- Loading state while fetching categories
+- Refresh on success
+
+#### 4. RemoveLinkButton Component
 **File:** `apps/admin/src/components/media/remove-link-button.tsx`
 
 Features:
 - Confirmation dialog before deletion
-- Handles both group and article links
+- **Handles groups, articles, AND categories**
 - Error handling
 - Disabled state during operation
 - Refresh on success
 
-#### 4. MediaAssetDetailClient Component
+#### 5. MediaAssetDetailClient Component
 **File:** `apps/admin/src/components/media/media-asset-detail-client.tsx`
 
 Complete redesign of the detail page as a client component:
@@ -99,7 +130,7 @@ Complete redesign of the detail page as a client component:
   - Image preview and metadata (unchanged)
   - Connected Groups section (with add/remove)
   - Connected Articles section (with add/remove)
-  - Categories section (read-only)
+  - **Connected Categories section (with add/remove) - NOW EDITABLE!**
 
 ### Updated Pages
 
@@ -114,6 +145,7 @@ Simplified to:
 
 ### Adding a Connection
 
+#### Groups / Articles
 1. Navigate to media asset detail page (`/media/:id`)
 2. Scroll to "Connected Groups" or "Connected Articles" section
 3. Click "+ Add Group Connection" or "+ Add Article Connection"
@@ -122,9 +154,18 @@ Simplified to:
 6. Click "Add Connection"
 7. Page refreshes and new connection appears in the list
 
+#### Categories
+1. Navigate to media asset detail page (`/media/:id`)
+2. Scroll to "Connected Categories" section
+3. Click "+ Add Category Connection"
+4. **Select a category from the dropdown menu**
+5. Optionally add alt text
+6. Click "Add Connection"
+7. Page refreshes and new connection appears in the list
+
 ### Removing a Connection
 
-1. In the connections list, find the item to remove
+1. In any connections list (Groups/Articles/Categories), find the item to remove
 2. Click "Remove" button
 3. Confirm in the dialog
 4. Connection is removed and page refreshes
@@ -134,6 +175,7 @@ Simplified to:
 ### Backend Validations
 - ✅ Media asset must exist
 - ✅ Target group/article must exist (by external ID)
+- ✅ Target category must exist (by ID)
 - ✅ Prevents duplicate connections
 - ✅ Validates link ownership before deletion
 
@@ -142,6 +184,7 @@ Simplified to:
 - ✅ Disable buttons during operations
 - ✅ Confirmation dialogs for destructive actions
 - ✅ Network error handling
+- ✅ Loading states when fetching categories
 
 ## Technical Highlights
 
@@ -149,6 +192,12 @@ Simplified to:
 - Automatically appends new links to the end
 - Queries for current max sortOrder
 - Handles empty lists (starts at 0)
+
+### Category Selection
+- Fetches all categories from public API
+- Displays in user-friendly dropdown
+- Shows both name and type (Article/Group)
+- Caches categories after first load
 
 ### Type Safety
 - Full TypeScript typing across frontend and backend
@@ -167,6 +216,7 @@ Simplified to:
 - Clear visual hierarchy
 - Responsive layout
 - Confirmation dialogs for safety
+- Dropdown for category selection (better UX than text input)
 
 ## API Examples
 
@@ -190,30 +240,67 @@ Body: {
 }
 ```
 
+### Link to Category
+```bash
+POST /admin/media-assets/{mediaId}/link-to-category
+Headers: x-admin-secret: <secret>
+Body: {
+  "categoryId": "550e8400-e29b-41d4-a716-446655440000",
+  "altText": "Category hero image"
+}
+```
+
 ### Unlink from Group
 ```bash
 DELETE /admin/media-assets/{mediaId}/unlink-from-group/{linkId}
 Headers: x-admin-secret: <secret>
 ```
 
-## Categories Note
+### Unlink from Article
+```bash
+DELETE /admin/media-assets/{mediaId}/unlink-from-article/{linkId}
+Headers: x-admin-secret: <secret>
+```
 
-Categories are shown as read-only in the media detail page. Connection management for categories would need to be done from the category management pages (out of scope for this feature).
+### Unlink from Category
+```bash
+DELETE /admin/media-assets/{mediaId}/unlink-from-category/{linkId}
+Headers: x-admin-secret: <secret>
+```
 
 ## Testing Checklist
 
+### Groups
 - [ ] Add group connection with valid external ID
-- [ ] Add article connection with valid external ID
-- [ ] Try adding duplicate connection (should fail)
-- [ ] Add connection with invalid external ID (should fail)
+- [ ] Try adding duplicate group connection (should fail)
+- [ ] Add group connection with invalid external ID (should fail)
 - [ ] Remove group connection
+- [ ] Add group connection with alt text
+- [ ] Add group connection without alt text
+
+### Articles
+- [ ] Add article connection with valid external ID
+- [ ] Try adding duplicate article connection (should fail)
+- [ ] Add article connection with invalid external ID (should fail)
 - [ ] Remove article connection
-- [ ] Add connection with alt text
-- [ ] Add connection without alt text
-- [ ] Check that sortOrder increments correctly
-- [ ] Verify page refreshes after operations
+- [ ] Add article connection with alt text
+- [ ] Add article connection without alt text
+
+### Categories
+- [ ] Load category dropdown successfully
+- [ ] Add category connection by selecting from dropdown
+- [ ] Try adding duplicate category connection (should fail)
+- [ ] Remove category connection
+- [ ] Add category connection with alt text
+- [ ] Add category connection without alt text
+- [ ] Verify both Article and Group type categories appear in dropdown
+
+### General
+- [ ] Check that sortOrder increments correctly for all types
+- [ ] Verify page refreshes after all operations
 - [ ] Test error messages display correctly
-- [ ] Confirm deletion dialogs work
+- [ ] Confirm deletion dialogs work for all types
+- [ ] Verify "Remove" buttons appear for categories (not read-only)
 
 ## Future Enhancements (Not Implemented)
 
@@ -223,4 +310,5 @@ Categories are shown as read-only in the media detail page. Connection managemen
 - Set primary image from media detail page
 - Bulk operations
 - Connection history/audit log
-- Preview of how image appears in group/article
+- Preview of how image appears in group/article/category
+- Filter categories by type in dropdown
