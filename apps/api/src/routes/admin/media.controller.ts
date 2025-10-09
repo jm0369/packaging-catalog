@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards, NotFoundException, Delete, BadRequestException, Post, Body } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards, NotFoundException, Delete, BadRequestException, Post, Body, Query } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AdminGuard } from './admin.guard';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
@@ -12,90 +12,111 @@ export class MediaAssetsController {
 
   @Get()
   @ApiOperation({ summary: 'List all media assets with usage information' })
-  async list() {
-    const assets = await this.prisma.mediaAsset.findMany({
-      include: {
-        groupLinks: {
-          include: {
-            group: {
-              select: {
-                id: true,
-                externalId: true,
-                name: true,
-              },
-            },
-          },
-        },
-        articleLinks: {
-          include: {
-            article: {
-              select: {
-                id: true,
-                externalId: true,
-                title: true,
-              },
-            },
-          },
-        },
-        categoryLinks: {
-          include: {
-            category: {
-              select: {
-                id: true,
-                name: true,
-                color: true,
-              },
-            },
-          },
-        },
-        driveSync: {
-          select: {
-            driveFileId: true,
-            driveFileName: true,
-            lastSyncedAt: true,
-          },
-        },
-      },
-      orderBy: {
-        id: 'desc',
-      },
-    });
+  async list(@Query('page') pageParam?: string, @Query('limit') limitParam?: string) {
+    const page = Math.max(1, parseInt(pageParam || '1', 10));
+    const limit = Math.min(100, Math.max(1, parseInt(limitParam || '24', 10)));
+    const skip = (page - 1) * limit;
 
-    return assets.map((asset) => ({
-      id: asset.id,
-      key: asset.key,
-      mime: asset.mime,
-      width: asset.width,
-      height: asset.height,
-      sizeBytes: asset.sizeBytes,
-      checksum: asset.checksum,
-      variants: asset.variants,
-      driveSync: asset.driveSync,
-      usedInGroups: asset.groupLinks.map((link) => ({
-        linkId: link.id,
-        groupId: link.group.id,
-        externalId: link.group.externalId,
-        name: link.group.name,
-        altText: link.altText,
-        sortOrder: link.sortOrder,
+    const [assets, total] = await Promise.all([
+      this.prisma.mediaAsset.findMany({
+        skip,
+        take: limit,
+        include: {
+          groupLinks: {
+            include: {
+              group: {
+                select: {
+                  id: true,
+                  externalId: true,
+                  name: true,
+                },
+              },
+            },
+          },
+          articleLinks: {
+            include: {
+              article: {
+                select: {
+                  id: true,
+                  externalId: true,
+                  title: true,
+                },
+              },
+            },
+          },
+          categoryLinks: {
+            include: {
+              category: {
+                select: {
+                  id: true,
+                  name: true,
+                  color: true,
+                },
+              },
+            },
+          },
+          driveSync: {
+            select: {
+              driveFileId: true,
+              driveFileName: true,
+              lastSyncedAt: true,
+            },
+          },
+        },
+        orderBy: {
+          id: 'desc',
+        },
+      }),
+      this.prisma.mediaAsset.count(),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      assets: assets.map((asset) => ({
+        id: asset.id,
+        key: asset.key,
+        mime: asset.mime,
+        width: asset.width,
+        height: asset.height,
+        sizeBytes: asset.sizeBytes,
+        checksum: asset.checksum,
+        variants: asset.variants,
+        driveSync: asset.driveSync,
+        usedInGroups: asset.groupLinks.map((link) => ({
+          linkId: link.id,
+          groupId: link.group.id,
+          externalId: link.group.externalId,
+          name: link.group.name,
+          altText: link.altText,
+          sortOrder: link.sortOrder,
+        })),
+        usedInArticles: asset.articleLinks.map((link) => ({
+          linkId: link.id,
+          articleId: link.article.id,
+          externalId: link.article.externalId,
+          title: link.article.title,
+          altText: link.altText,
+          sortOrder: link.sortOrder,
+        })),
+        usedInCategories: asset.categoryLinks.map((link) => ({
+          linkId: link.id,
+          categoryId: link.category.id,
+          name: link.category.name,
+          color: link.category.color,
+          altText: link.altText,
+          sortOrder: link.sortOrder,
+        })),
       })),
-      usedInArticles: asset.articleLinks.map((link) => ({
-        linkId: link.id,
-        articleId: link.article.id,
-        externalId: link.article.externalId,
-        title: link.article.title,
-        altText: link.altText,
-        sortOrder: link.sortOrder,
-      })),
-      usedInCategories: asset.categoryLinks.map((link) => ({
-        linkId: link.id,
-        categoryId: link.category.id,
-        name: link.category.name,
-        color: link.category.color,
-        altText: link.altText,
-        sortOrder: link.sortOrder,
-      })),
-    }));
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
+      },
+    };
   }
 
   @Get(':id')
