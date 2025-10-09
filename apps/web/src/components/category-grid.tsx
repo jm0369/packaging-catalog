@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { slugifyCategory } from "@/lib/slugify";
 
 type Category = {
     id: string;
@@ -58,7 +59,7 @@ export function CategoryGrid({
                     return (
                         <Link
                             key={category.id}
-                            href={`/verpackungskategorien/${encodeURIComponent(category.name)}`}
+                            href={`/verpackungskategorien/${slugifyCategory(category.name)}`}
                             className="group"
                         >
                             <Card className="h-full overflow-hidden hover:shadow-xl transition-all duration-300 border-0">

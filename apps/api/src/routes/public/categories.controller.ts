@@ -1,6 +1,7 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { slugifyCategory } from '../../utils/slugify';
 
 @ApiTags('public:categories')
 @Controller('api/categories')
@@ -146,15 +147,53 @@ export class CategoriesPublicController {
     }
 
     @Get('by-name/:name')
-    @ApiOperation({ summary: 'Get a single category by name' })
+    @ApiOperation({ summary: 'Get a single category by name or slug' })
     async getByName(@Param('name') name: string) {
-        const category = await this.prisma.category.findFirst({
+        // First, try to find all categories and match by slug
+        const allCategories = await this.prisma.category.findMany({
+            select: {
+                id: true,
+                name: true,
+            },
+        });
+
+        // Find the category whose slugified name matches the input slug
+        const matchedCategory = allCategories.find(c => slugifyCategory(c.name) === name.toLowerCase());
+
+        if (!matchedCategory) {
+            // Fallback: try exact name match (case-insensitive)
+            const categoryByName = await this.prisma.category.findFirst({
+                where: { 
+                    name: {
+                        equals: name,
+                        mode: 'insensitive',
+                    }
+                },
+                select: { id: true },
+            });
+
+            if (!categoryByName) {
+                return { statusCode: 404, message: 'Category not found' };
+            }
+        }
+
+        // Now fetch the full category details
+        const categoryId = matchedCategory?.id || (await this.prisma.category.findFirst({
             where: { 
                 name: {
                     equals: name,
                     mode: 'insensitive',
                 }
             },
+            select: { id: true },
+        }))?.id;
+
+        if (!categoryId) {
+            return { statusCode: 404, message: 'Category not found' };
+        }
+
+        const category = await this.prisma.category.findUnique({
+            where: { id: categoryId },
             select: {
                 id: true,
                 name: true,

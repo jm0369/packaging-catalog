@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Menu, X, ChevronDown, Mail, MessageCircle } from "lucide-react";
 import Container from "./container";
 import Link from "next/link";
+import { slugifyCategory } from "@/lib/slugify";
 
 const header = {
     company: "UNTERNEHMEN",
@@ -278,9 +279,9 @@ export default function Header() {
                                 {categories.map((category) => (
                                     <Link 
                                         key={category.id}
-                                        href={`/verpackungskategorien/${encodeURIComponent(category.name)}`} 
+                                        href={`/verpackungskategorien/${slugifyCategory(category.name)}`} 
                                         onClick={() => { blurActive(); forceCloseMenu("produkte"); }} 
-                                        className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-colors ${isActive(`/verpackungskategorien/${encodeURIComponent(category.name)}`) ? "bg-emerald-50 font-semibold text-emerald-700" : "text-gray-700 hover:bg-gray-50"}`}
+                                        className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-colors ${isActive(`/verpackungskategorien/${slugifyCategory(category.name)}`) ? "bg-emerald-50 font-semibold text-emerald-700" : "text-gray-700 hover:bg-gray-50"}`}
                                     >
                                         <div 
                                             className="w-2.5 h-2.5 rounded-full flex-shrink-0"
@@ -390,8 +391,8 @@ export default function Header() {
                                             {categories.map((category) => (
                                                 <Link 
                                                     key={category.id}
-                                                    href={`/verpackungskategorien/${encodeURIComponent(category.name)}`} 
-                                                    className={`py-2.5 px-4 rounded-lg transition-colors flex items-center gap-3 ${isActive(`/verpackungskategorien/${encodeURIComponent(category.name)}`) ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} 
+                                                    href={`/verpackungskategorien/${slugifyCategory(category.name)}`} 
+                                                    className={`py-2.5 px-4 rounded-lg transition-colors flex items-center gap-3 ${isActive(`/verpackungskategorien/${slugifyCategory(category.name)}`) ? "text-emerald-700 font-semibold bg-emerald-50" : "text-gray-700 hover:bg-gray-50"}`} 
                                                     onClick={() => setMobileOpen(false)}
                                                 >
                                                     <div 
