@@ -15,87 +15,134 @@ export class MediaAssetsController {
   async list(
     @Query('page') pageParam?: string,
     @Query('limit') limitParam?: string,
-    @Query('search') search?: string
+    @Query('search') search?: string,
+    @Query('filter') filter?: string
   ) {
     const page = Math.max(1, parseInt(pageParam || '1', 10));
     const limit = Math.min(100, Math.max(1, parseInt(limitParam || '24', 10)));
     const skip = (page - 1) * limit;
 
+    // Build filter conditions
+    const filterConditions: any[] = [];
+
+    // Apply connection filter
+    if (filter) {
+      switch (filter) {
+        case 'unused':
+          // No connections at all
+          filterConditions.push({
+            AND: [
+              { groupLinks: { none: {} } },
+              { articleLinks: { none: {} } },
+              { categoryLinks: { none: {} } },
+            ],
+          });
+          break;
+        case 'groups':
+          // Has group connections
+          filterConditions.push({
+            groupLinks: { some: {} },
+          });
+          break;
+        case 'articles':
+          // Has article connections
+          filterConditions.push({
+            articleLinks: { some: {} },
+          });
+          break;
+        case 'categories':
+          // Has category connections
+          filterConditions.push({
+            categoryLinks: { some: {} },
+          });
+          break;
+      }
+    }
+
     // Build search filter if search term provided
-    const whereClause = search
-      ? {
-          OR: [
-            // Search in drive sync filename
-            {
-              driveSync: {
-                driveFileName: {
-                  contains: search,
-                  mode: 'insensitive' as const,
-                },
+    const searchConditions = search
+      ? [
+          // Search in drive sync filename
+          {
+            driveSync: {
+              driveFileName: {
+                contains: search,
+                mode: 'insensitive' as const,
               },
             },
-            // Search in linked groups (externalId or name)
-            {
-              groupLinks: {
-                some: {
-                  group: {
-                    OR: [
-                      {
-                        externalId: {
-                          contains: search,
-                          mode: 'insensitive' as const,
-                        },
+          },
+          // Search in linked groups (externalId or name)
+          {
+            groupLinks: {
+              some: {
+                group: {
+                  OR: [
+                    {
+                      externalId: {
+                        contains: search,
+                        mode: 'insensitive' as const,
                       },
-                      {
-                        name: {
-                          contains: search,
-                          mode: 'insensitive' as const,
-                        },
-                      },
-                    ],
-                  },
-                },
-              },
-            },
-            // Search in linked articles (externalId or title)
-            {
-              articleLinks: {
-                some: {
-                  article: {
-                    OR: [
-                      {
-                        externalId: {
-                          contains: search,
-                          mode: 'insensitive' as const,
-                        },
-                      },
-                      {
-                        title: {
-                          contains: search,
-                          mode: 'insensitive' as const,
-                        },
-                      },
-                    ],
-                  },
-                },
-              },
-            },
-            // Search in linked categories (name)
-            {
-              categoryLinks: {
-                some: {
-                  category: {
-                    name: {
-                      contains: search,
-                      mode: 'insensitive' as const,
                     },
+                    {
+                      name: {
+                        contains: search,
+                        mode: 'insensitive' as const,
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+          // Search in linked articles (externalId or title)
+          {
+            articleLinks: {
+              some: {
+                article: {
+                  OR: [
+                    {
+                      externalId: {
+                        contains: search,
+                        mode: 'insensitive' as const,
+                      },
+                    },
+                    {
+                      title: {
+                        contains: search,
+                        mode: 'insensitive' as const,
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+          // Search in linked categories (name)
+          {
+            categoryLinks: {
+              some: {
+                category: {
+                  name: {
+                    contains: search,
+                    mode: 'insensitive' as const,
                   },
                 },
               },
             },
-          ],
-        }
-      : {};
+          },
+        ]
+      : [];
+
+    // Combine filter and search conditions
+    const whereClause: any =
+      filterConditions.length > 0 || searchConditions.length > 0
+        ? {
+            AND: [
+              ...(filterConditions.length > 0 ? filterConditions : [{}]),
+              ...(searchConditions.length > 0 ? [{ OR: searchConditions }] : []),
+            ].filter((c) => Object.keys(c).length > 0),
+          }
+        : {};
 
     const [assets, total] = await Promise.all([
       this.prisma.mediaAsset.findMany({

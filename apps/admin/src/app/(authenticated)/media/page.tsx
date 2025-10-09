@@ -2,6 +2,7 @@ export const revalidate = 0;
 
 import Link from 'next/link';
 import { MediaSearch } from '@/components/media/media-search';
+import { MediaFilter } from '@/components/media/media-filter';
 
 type MediaAsset = {
   id: string;
@@ -32,7 +33,7 @@ type MediaResponse = {
   };
 };
 
-async function fetchMediaAssets(page: number, limit: number, search?: string): Promise<MediaResponse> {
+async function fetchMediaAssets(page: number, limit: number, search?: string, filter?: string): Promise<MediaResponse> {
   const API = process.env.NEXT_PUBLIC_API_BASE!;
   const ADMIN = process.env.ADMIN_SHARED_SECRET!;
   
@@ -41,6 +42,9 @@ async function fetchMediaAssets(page: number, limit: number, search?: string): P
   url.searchParams.set('limit', limit.toString());
   if (search) {
     url.searchParams.set('search', search);
+  }
+  if (filter) {
+    url.searchParams.set('filter', filter);
   }
   
   const r = await fetch(url.toString(), {
@@ -64,14 +68,15 @@ function formatBytes(bytes?: number | null): string {
 export default async function MediaAssetsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; search?: string }>;
+  searchParams: Promise<{ page?: string; search?: string; filter?: string }>;
 }) {
   const params = await searchParams;
   const currentPage = Math.max(1, parseInt(params.page || '1', 10));
   const searchQuery = params.search || '';
+  const filterValue = params.filter || '';
   const limit = 24;
   
-  const { assets, pagination } = await fetchMediaAssets(currentPage, limit, searchQuery);
+  const { assets, pagination } = await fetchMediaAssets(currentPage, limit, searchQuery, filterValue);
   const CDN_BASE = process.env.NEXT_PUBLIC_CDN_BASE || '';
 
   return (
@@ -90,6 +95,9 @@ export default async function MediaAssetsPage({
 
       {/* Search Bar */}
       <MediaSearch />
+
+      {/* Filter Buttons */}
+      <MediaFilter />
 
       {/* Grid View */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -190,13 +198,13 @@ export default async function MediaAssetsPage({
           {pagination.hasPrev && (
             <>
               <Link
-                href={`/media?page=1${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`}
+                href={`/media?page=1${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}${filterValue ? `&filter=${filterValue}` : ''}`}
                 className="px-3 py-2 rounded border bg-white hover:bg-gray-50 text-sm"
               >
                 First
               </Link>
               <Link
-                href={`/media?page=${pagination.page - 1}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`}
+                href={`/media?page=${pagination.page - 1}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}${filterValue ? `&filter=${filterValue}` : ''}`}
                 className="px-3 py-2 rounded border bg-white hover:bg-gray-50 text-sm"
               >
                 Previous
@@ -211,13 +219,13 @@ export default async function MediaAssetsPage({
           {pagination.hasNext && (
             <>
               <Link
-                href={`/media?page=${pagination.page + 1}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`}
+                href={`/media?page=${pagination.page + 1}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}${filterValue ? `&filter=${filterValue}` : ''}`}
                 className="px-3 py-2 rounded border bg-white hover:bg-gray-50 text-sm"
               >
                 Next
               </Link>
               <Link
-                href={`/media?page=${pagination.totalPages}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`}
+                href={`/media?page=${pagination.totalPages}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}${filterValue ? `&filter=${filterValue}` : ''}`}
                 className="px-3 py-2 rounded border bg-white hover:bg-gray-50 text-sm"
               >
                 Last
