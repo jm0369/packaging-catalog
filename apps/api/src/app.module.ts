@@ -15,6 +15,7 @@ import { CategoriesController } from './routes/admin/categories.controller';
 import { CategoriesMediaController } from './routes/admin/categories-media.controller';
 import { GroupsCategoriesController } from './routes/admin/groups-categories.controller';
 import { ArticlesCategoriesController } from './routes/admin/articles-categories.controller';
+import { MediaAssetsController } from './routes/admin/media.controller';
 import { S3Service } from './media/s3.service';
 import { AdminGuard } from './routes/admin/admin.guard';
 
@@ -36,6 +37,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     ArticlesPublicController,
     CategoriesPublicController,
     MediaController,
+    MediaAssetsController,
     GroupsMediaController,
     ArticlesMediaController,
     CategoriesController,

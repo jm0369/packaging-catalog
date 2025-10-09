@@ -10,6 +10,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <Link href="/groups" className="underline">Groups</Link>
           <Link href="/articles" className="underline">Articles</Link>
           <Link href="/categories" className="underline">Categories</Link>
+          <Link href="/media" className="underline">Media</Link>
           <div className="ml-auto">
             <SignOutButton />
           </div>
