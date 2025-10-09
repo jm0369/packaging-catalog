@@ -165,10 +165,10 @@ export default function VerpackungsentwicklungPage() {
             </div>
             <div className="relative h-[400px] rounded-2xl overflow-hidden shadow-2xl">
               <Image
-                src="/hero-4.png"
+                src="/verpackungsentwicklung.jpeg"
                 alt="Verpackungsentwicklung"
                 fill
-                className="object-cover"
+                className="object-contain"
               />
             </div>
           </div>

@@ -16,29 +16,30 @@ export default function VerpackungenPage() {
       icon: Package,
       title: "Versandtaschen",
       description: "Leichte und robuste Versandtaschen für sichere Zustellung.",
-      link: "/produkte/versandtaschen",
-      image: "/selbstklebeverschluss.png"
+      link: "/verpackungskategorien/versandtaschen",
+      image: "/kategorien/versandtaschen.jpg"
     },
     {
       icon: Box,
       title: "Versandkartons",
       description: "Stabile Kartons in verschiedenen Größen für jeden Bedarf.",
-      link: "/produkte/versandkartons",
-      image: "/hero-4.png"
+      link: "/verpackungskategorien/versandkartons",
+      image: "/kategorien/versandkartons.jpg"
+
     },
     {
       icon: FileText,
       title: "Versandhülsen",
       description: "Idealer Schutz für Dokumente, Poster und empfindliche Waren.",
-      link: "/produkte/versandhuelsen",
-      image: "/hero-4.png"
+      link: "/verpackungskategorien/versandhuelsen",
+      image: "/kategorien/versandhuelsen.jpg"
     },
     {
       icon: Layers,
       title: "Universalverpackungen",
       description: "Flexible Verpackungen für unterschiedlichste Produkte.",
-      link: "/produkte/universalverpackungen",
-      image: "/hero-4.png"
+      link: "/verpackungskategorien/universalverpackungen",
+      image: "/kategorien/universalverpackungen.jpg"
     },
   ];
 
@@ -75,11 +76,6 @@ export default function VerpackungenPage() {
       name: "Kraftpapier",
       description: "Natürlich braunes Papier mit hoher Festigkeit.",
       properties: ["Reißfest", "Umweltfreundlich", "Bedruckbar"]
-    },
-    {
-      name: "Graspapier",
-      description: "Innovative Alternative mit bis zu 50% Grasanteil.",
-      properties: ["CO₂-reduziert", "Nachhaltig", "Robust"]
     },
     {
       name: "Recyclingpapier",
@@ -120,8 +116,8 @@ export default function VerpackungenPage() {
                 Hochwertige Verpackungslösungen
               </h1>
               <p className="text-lg text-foreground/80 mb-8 leading-relaxed">
-                Entdecken Sie unser umfangreiches Sortiment an Verpackungslösungen. Von Versandtaschen 
-                über Kartons bis hin zu spezialisierten Verpackungen – bei uns finden Sie die perfekte 
+                Entdecken Sie unser umfangreiches Sortiment an Verpackungslösungen. Von Versandtaschen
+                über Kartons bis hin zu spezialisierten Verpackungen – bei uns finden Sie die perfekte
                 Lösung für Ihre Produkte. Nachhaltig, sicher und in höchster Qualität.
               </p>
               <div className="flex flex-wrap gap-4">
@@ -285,7 +281,7 @@ export default function VerpackungenPage() {
               Finden Sie die perfekte Verpackung
             </h2>
             <p className="text-lg text-foreground/70 mb-8">
-              Stöbern Sie durch unser umfangreiches Produktsortiment oder lassen Sie sich von 
+              Stöbern Sie durch unser umfangreiches Produktsortiment oder lassen Sie sich von
               unseren Experten beraten. Wir helfen Ihnen, die optimale Verpackungslösung zu finden.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
