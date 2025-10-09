@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Package, Tag, Clock, Ruler, Box, Layers, Info, ExternalLink, ImageIcon } from "lucide-react";
 import { colors } from "@/lib/colors";
+import { slugifyCategory } from "@/lib/slugify";
 
 const API = process.env.NEXT_PUBLIC_API_BASE!;
 
@@ -190,10 +191,7 @@ export default function ArticlePage({ params }: ArticlePageProps) {
                     {article.categories.map((category) => (
                       <Link
                         key={category.id}
-                        href={category.type === 'Article' 
-                          ? `/artikel?category=${encodeURIComponent(category.name)}`
-                          : `/artikelgruppen?category=${encodeURIComponent(category.name)}`
-                        }
+                        href={`/verpackungskategorien/${slugifyCategory(category.name)}`}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border shadow-sm transition-all hover:shadow-md"
                         style={{ 
                           backgroundColor: category.color + '20',

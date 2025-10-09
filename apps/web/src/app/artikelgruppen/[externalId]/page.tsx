@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Package, Tag, ExternalLink, ImageIcon } from "lucide-react";
 import { colors } from "@/lib/colors";
 import { useSearchParams } from "next/navigation";
+import { slugifyCategory } from "@/lib/slugify";
 
 const API = process.env.NEXT_PUBLIC_API_BASE!;
 
@@ -183,7 +184,7 @@ function GroupPageContent({ params }: GroupPageProps) {
                     {group.categories.map((category) => (
                       <Link
                         key={category.id}
-                        href={`/verpackungskategorien/${encodeURI(category.name)}`}
+                        href={`/verpackungskategorien/${slugifyCategory(category.name)}`}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border shadow-sm transition-all hover:shadow-md"
                         style={{ 
                           backgroundColor: category.color + '20',
