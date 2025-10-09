@@ -1,6 +1,7 @@
 export const revalidate = 0;
 
 import Link from 'next/link';
+import { MediaSearch } from '@/components/media/media-search';
 
 type MediaAsset = {
   id: string;
@@ -31,13 +32,16 @@ type MediaResponse = {
   };
 };
 
-async function fetchMediaAssets(page: number, limit: number): Promise<MediaResponse> {
+async function fetchMediaAssets(page: number, limit: number, search?: string): Promise<MediaResponse> {
   const API = process.env.NEXT_PUBLIC_API_BASE!;
   const ADMIN = process.env.ADMIN_SHARED_SECRET!;
   
   const url = new URL(`${API}/admin/media-assets`);
   url.searchParams.set('page', page.toString());
   url.searchParams.set('limit', limit.toString());
+  if (search) {
+    url.searchParams.set('search', search);
+  }
   
   const r = await fetch(url.toString(), {
     cache: 'no-store',
@@ -60,13 +64,14 @@ function formatBytes(bytes?: number | null): string {
 export default async function MediaAssetsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; search?: string }>;
 }) {
   const params = await searchParams;
   const currentPage = Math.max(1, parseInt(params.page || '1', 10));
+  const searchQuery = params.search || '';
   const limit = 24;
   
-  const { assets, pagination } = await fetchMediaAssets(currentPage, limit);
+  const { assets, pagination } = await fetchMediaAssets(currentPage, limit, searchQuery);
   const CDN_BASE = process.env.NEXT_PUBLIC_CDN_BASE || '';
 
   return (
@@ -82,6 +87,9 @@ export default async function MediaAssetsPage({
           )}
         </div>
       </div>
+
+      {/* Search Bar */}
+      <MediaSearch />
 
       {/* Grid View */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -182,13 +190,13 @@ export default async function MediaAssetsPage({
           {pagination.hasPrev && (
             <>
               <Link
-                href={`/media?page=1`}
+                href={`/media?page=1${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`}
                 className="px-3 py-2 rounded border bg-white hover:bg-gray-50 text-sm"
               >
                 First
               </Link>
               <Link
-                href={`/media?page=${pagination.page - 1}`}
+                href={`/media?page=${pagination.page - 1}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`}
                 className="px-3 py-2 rounded border bg-white hover:bg-gray-50 text-sm"
               >
                 Previous
@@ -203,13 +211,13 @@ export default async function MediaAssetsPage({
           {pagination.hasNext && (
             <>
               <Link
-                href={`/media?page=${pagination.page + 1}`}
+                href={`/media?page=${pagination.page + 1}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`}
                 className="px-3 py-2 rounded border bg-white hover:bg-gray-50 text-sm"
               >
                 Next
               </Link>
               <Link
-                href={`/media?page=${pagination.totalPages}`}
+                href={`/media?page=${pagination.totalPages}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`}
                 className="px-3 py-2 rounded border bg-white hover:bg-gray-50 text-sm"
               >
                 Last

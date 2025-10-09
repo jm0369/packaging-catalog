@@ -12,13 +12,94 @@ export class MediaAssetsController {
 
   @Get()
   @ApiOperation({ summary: 'List all media assets with usage information' })
-  async list(@Query('page') pageParam?: string, @Query('limit') limitParam?: string) {
+  async list(
+    @Query('page') pageParam?: string,
+    @Query('limit') limitParam?: string,
+    @Query('search') search?: string
+  ) {
     const page = Math.max(1, parseInt(pageParam || '1', 10));
     const limit = Math.min(100, Math.max(1, parseInt(limitParam || '24', 10)));
     const skip = (page - 1) * limit;
 
+    // Build search filter if search term provided
+    const whereClause = search
+      ? {
+          OR: [
+            // Search in drive sync filename
+            {
+              driveSync: {
+                driveFileName: {
+                  contains: search,
+                  mode: 'insensitive' as const,
+                },
+              },
+            },
+            // Search in linked groups (externalId or name)
+            {
+              groupLinks: {
+                some: {
+                  group: {
+                    OR: [
+                      {
+                        externalId: {
+                          contains: search,
+                          mode: 'insensitive' as const,
+                        },
+                      },
+                      {
+                        name: {
+                          contains: search,
+                          mode: 'insensitive' as const,
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+            // Search in linked articles (externalId or title)
+            {
+              articleLinks: {
+                some: {
+                  article: {
+                    OR: [
+                      {
+                        externalId: {
+                          contains: search,
+                          mode: 'insensitive' as const,
+                        },
+                      },
+                      {
+                        title: {
+                          contains: search,
+                          mode: 'insensitive' as const,
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+            // Search in linked categories (name)
+            {
+              categoryLinks: {
+                some: {
+                  category: {
+                    name: {
+                      contains: search,
+                      mode: 'insensitive' as const,
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        }
+      : {};
+
     const [assets, total] = await Promise.all([
       this.prisma.mediaAsset.findMany({
+        where: whereClause,
         skip,
         take: limit,
         include: {
@@ -67,7 +148,7 @@ export class MediaAssetsController {
           id: 'desc',
         },
       }),
-      this.prisma.mediaAsset.count(),
+      this.prisma.mediaAsset.count({ where: whereClause }),
     ]);
 
     const totalPages = Math.ceil(total / limit);
