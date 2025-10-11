@@ -55,8 +55,6 @@ export class SyncService {
           sortOrder: g.sortOrder,
         },
         update: {
-          name: g.name,
-          description: g.description,
           parentExternalId: g.parentId,
           sortOrder: g.sortOrder,
         },
