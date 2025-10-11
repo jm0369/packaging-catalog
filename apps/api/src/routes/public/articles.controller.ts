@@ -31,6 +31,7 @@ export class ArticlesPublicController {
 
     const where = {
       AND: [
+        { isVisible: true },
         q ? {
           OR: [
             { title: { contains: q, mode: 'insensitive' as const } },
@@ -202,8 +203,8 @@ export class ArticlesPublicController {
   @Get(':externalId')
   @ApiOperation({ summary: 'Get single article' })
   async byId(@Param('externalId') externalId: string) {
-    const a = await this.prisma.articleMirror.findUnique({
-      where: { externalId },
+    const a = await this.prisma.articleMirror.findFirst({
+      where: { externalId, isVisible: true },
       select: {
         id: true, externalId: true, sku: true, ean: true, title: true, description: true, uom: true, updatedAt: true,
         articleGroup: { 

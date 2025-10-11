@@ -1,14 +1,17 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AdminGuard } from './admin.guard';
+import { ApiOkResponse, ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('public:groups')
-@Controller('api/article-groups')
-export class ArticleGroupsPublicController {
+@ApiTags('admin:groups')
+@ApiSecurity('admin')
+@UseGuards(AdminGuard)
+@Controller('admin/article-groups')
+export class ArticleGroupsAdminController {
   constructor(private prisma: PrismaService) {}
 
   @Get()
-  @ApiOperation({ summary: 'List article groups (only those with articles)' })
+  @ApiOperation({ summary: 'List all article groups (including hidden)' })
   @ApiOkResponse({ description: '{ total, limit, offset, data }' })
   async list(
     @Query('limit') limitQ?: string, 
@@ -36,10 +39,9 @@ export class ArticleGroupsPublicController {
 
     const where = {
       AND: [
-        { isVisible: true },
         q ? { name: { contains: q, mode: 'insensitive' as const } } : {},
-        // have visible articles
-        { articles: { some: { isVisible: true } } },
+        // have articles
+        { articles: { some: {} } },
         // filter by category if provided
         categoryId ? { categories: { some: { categoryId } } } : {},
       ],
@@ -51,7 +53,7 @@ export class ArticleGroupsPublicController {
         orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
         skip: offset, take: limit,
         select: {
-          id: true, externalId: true, name: true, description: true,
+          id: true, externalId: true, name: true, description: true, isVisible: true,
           // primary image (lowest sortOrder)
           media: {
             orderBy: { sortOrder: 'asc' },
@@ -67,13 +69,13 @@ export class ArticleGroupsPublicController {
           },
           // include articles for each group
           articles: {
-            where: { isVisible: true },
             orderBy: { title: 'asc' },
             select: {
               id: true,
               externalId: true,
               title: true,
               sku: true,
+              isVisible: true,
               attributes: true,
               media: {
                 orderBy: { sortOrder: 'asc' },
@@ -99,6 +101,7 @@ export class ArticleGroupsPublicController {
       externalId: g.externalId,
       name: g.name,
       description: g.description,
+      isVisible: g.isVisible,
       media: g.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
       categories: g.categories.map(c => c.category),
       articles: g.articles.map(a => ({
@@ -106,6 +109,7 @@ export class ArticleGroupsPublicController {
         externalId: a.externalId,
         title: a.title,
         sku: a.sku,
+        isVisible: a.isVisible,
         attributes: a.attributes as Record<string, string> | null,
         media: a.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
         categories: a.categories.map(c => c.category),
@@ -115,12 +119,12 @@ export class ArticleGroupsPublicController {
   }
 
   @Get(':externalId')
-  @ApiOperation({ summary: 'Get a single group' })
+  @ApiOperation({ summary: 'Get a single group (including hidden)' })
   async byId(@Param('externalId') externalId: string) {
-    const g = await this.prisma.articleGroupMirror.findFirst({
-      where: { externalId, isVisible: true },
+    const g = await this.prisma.articleGroupMirror.findUnique({
+      where: { externalId },
       select: {
-        id: true, externalId: true, name: true, description: true,
+        id: true, externalId: true, name: true, description: true, isVisible: true,
         media: { orderBy: { sortOrder: 'asc' }, select: { media: { select: { key: true } } } },
         // include categories
         categories: {
@@ -132,13 +136,13 @@ export class ArticleGroupsPublicController {
         },
         // include articles for the group
         articles: {
-          where: { isVisible: true },
           orderBy: { title: 'asc' },
           select: {
             id: true,
             externalId: true,
             title: true,
             sku: true,
+            isVisible: true,
             attributes: true,
             media: {
               orderBy: { sortOrder: 'asc' },
@@ -163,6 +167,7 @@ export class ArticleGroupsPublicController {
       externalId: g.externalId,
       name: g.name,
       description: g.description,
+      isVisible: g.isVisible,
       media: g.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
       categories: g.categories.map(c => c.category),
       articles: g.articles.map(a => ({
@@ -170,6 +175,7 @@ export class ArticleGroupsPublicController {
         externalId: a.externalId,
         title: a.title,
         sku: a.sku,
+        isVisible: a.isVisible,
         attributes: a.attributes as Record<string, string> | null,
         media: a.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
         categories: a.categories.map(c => c.category),

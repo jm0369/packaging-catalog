@@ -9,6 +9,8 @@ import { ArticlesPublicController } from './routes/public/articles.controller';
 import { ArticleGroupsPublicController } from './routes/public/article-groups.controller';
 import { CategoriesPublicController } from './routes/public/categories.controller';
 import { MediaController } from './media/media.controller';
+import { ArticlesAdminController } from './routes/admin/articles.controller';
+import { ArticleGroupsAdminController } from './routes/admin/article-groups.controller';
 import { GroupsMediaController } from './routes/admin/groups-media.controller';
 import { ArticlesMediaController } from './routes/admin/articles-media.controller';
 import { CategoriesController } from './routes/admin/categories.controller';
@@ -37,6 +39,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     ArticlesPublicController,
     CategoriesPublicController,
     MediaController,
+    ArticlesAdminController,
+    ArticleGroupsAdminController,
     MediaAssetsController,
     GroupsMediaController,
     ArticlesMediaController,
