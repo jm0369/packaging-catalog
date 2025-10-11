@@ -13,7 +13,12 @@ type Category = {
 };
 
 async function getArticle(externalId: string) {
-  const r = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/articles/${encodeURIComponent(externalId)}`, { cache: 'no-store' });
+  const r = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/admin/articles/${encodeURIComponent(externalId)}`, { 
+    cache: 'no-store',
+    headers: {
+      'x-admin-secret': process.env.ADMIN_SHARED_SECRET!,
+    },
+  });
   if (!r.ok) return null;
   return r.json();
 }
@@ -77,6 +82,19 @@ export default async function AdminArticleDetail({ params }: Params) {
     revalidatePath(`/articles/${externalId}`);
   }
 
+  async function handleToggleVisibility(formData: FormData) {
+    'use server';
+    const isVisible = formData.get('isVisible') === 'true';
+    
+    await adminFetch(`/admin/articles/${encodeURIComponent(externalId)}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ isVisible }),
+    });
+    
+    revalidatePath(`/articles/${externalId}`);
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
@@ -84,6 +102,26 @@ export default async function AdminArticleDetail({ params }: Params) {
           {a.title} <span className="text-sm text-gray-500">({a.externalId})</span>
         </h1>
         <a className="px-3 py-2 rounded bg-black text-white" href={`/upload?article=${encodeURIComponent(externalId)}`}>Upload new image</a>
+      </div>
+
+      {/* Visibility Toggle */}
+      <div className="border rounded p-4">
+        <h2 className="text-lg font-semibold mb-3">Visibility</h2>
+        <form action={handleToggleVisibility} className="flex items-center gap-3">
+          <input type="hidden" name="isVisible" value={a.isVisible ? 'false' : 'true'} />
+          <div className="flex items-center gap-2">
+            <span className="text-sm">Status:</span>
+            <span className={`px-2 py-0.5 rounded text-xs font-medium ${a.isVisible ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
+              {a.isVisible ? 'Visible in Store' : 'Hidden from Store'}
+            </span>
+          </div>
+          <button 
+            type="submit" 
+            className={`px-3 py-1.5 rounded text-sm ${a.isVisible ? 'bg-gray-200 hover:bg-gray-300' : 'bg-green-600 hover:bg-green-700 text-white'}`}
+          >
+            {a.isVisible ? 'Hide from Store' : 'Show in Store'}
+          </button>
+        </form>
       </div>
 
       {/* Categories Section */}

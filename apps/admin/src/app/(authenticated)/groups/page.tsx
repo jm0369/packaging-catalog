@@ -7,7 +7,12 @@ async function fetchGroups(q?: string, limit = 50, offset = 0) {
   if (q) sp.set('q', q);
   sp.set('limit', String(limit));
   sp.set('offset', String(offset));
-  const r = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/article-groups?${sp.toString()}`, { cache: 'no-store' });
+  const r = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/admin/article-groups?${sp.toString()}`, { 
+    cache: 'no-store',
+    headers: {
+      'x-admin-secret': process.env.ADMIN_SHARED_SECRET!,
+    },
+  });
   if (!r.ok) throw new Error('Failed to load');
   return r.json() as Promise<{ 
     total: number; 
@@ -18,6 +23,7 @@ async function fetchGroups(q?: string, limit = 50, offset = 0) {
       externalId: string; 
       name: string; 
       description?: string | null; 
+      isVisible: boolean;
       media: string[];
       categories: Array<{ id: string; name: string; color: string }>;
     }> 
@@ -56,11 +62,12 @@ export default async function AdminGroupsPage({ searchParams }: { searchParams: 
             <th className="px-3 py-2 text-left">External ID</th>
             <th className="px-3 py-2 text-left">Name</th>
             <th className="px-3 py-2 text-left">Categories</th>
+            <th className="px-3 py-2 text-left">Visible</th>
             <th className="px-3 py-2 text-right">Actions</th>
           </tr></thead>
           <tbody>
             {data.length === 0 ? (
-              <tr><td colSpan={5} className="px-3 py-8 text-center text-gray-500">No groups found.</td></tr>
+              <tr><td colSpan={6} className="px-3 py-8 text-center text-gray-500">No groups found.</td></tr>
             ) : data.map((g) => (
               <tr key={g.id} className="border-b">
                 <td className="px-3 py-2">
@@ -89,6 +96,11 @@ export default async function AdminGroupsPage({ searchParams }: { searchParams: 
                       </span>
                     ))}
                   </div>
+                </td>
+                <td className="px-3 py-2">
+                  <span className={`px-2 py-0.5 rounded text-xs ${g.isVisible ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
+                    {g.isVisible ? 'Yes' : 'No'}
+                  </span>
                 </td>
                 <td className="px-3 py-2 text-right">
                   <a className="underline" href={`/groups/${encodeURIComponent(g.externalId)}`}>Open</a>

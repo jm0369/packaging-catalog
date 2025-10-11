@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Query, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AdminGuard } from './admin.guard';
 import { ApiOkResponse, ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
@@ -132,5 +132,26 @@ export class ArticlesAdminController {
       categories: a.categories.map(c => c.category),
       media: a.media.map(m => `${base}/${m.media.key}`).filter(Boolean),
     };
+  }
+
+  @Patch(':externalId')
+  @ApiOperation({ summary: 'Update article visibility. Body: { isVisible: boolean }' })
+  async updateVisibility(
+    @Param('externalId') externalId: string,
+    @Body() body: { isVisible: boolean }
+  ) {
+    const article = await this.prisma.articleMirror.findUnique({
+      where: { externalId },
+    });
+    
+    if (!article) {
+      return { statusCode: 404, message: 'Article not found' };
+    }
+
+    return this.prisma.articleMirror.update({
+      where: { externalId },
+      data: { isVisible: body.isVisible },
+      select: { id: true, externalId: true, isVisible: true },
+    });
   }
 }

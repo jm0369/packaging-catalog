@@ -7,6 +7,7 @@ type ArticleRow = {
   title: string; 
   ean: string | null; 
   uom: string | null; 
+  isVisible: boolean;
   media: string[]; 
   articleGroup?: { externalId: string; name?: string };
   categories: Array<{ id: string; name: string; color: string }>;
@@ -17,7 +18,12 @@ async function getArticles(q?: string, limit = 25, offset = 0) {
   if (q) sp.set('q', q);
   sp.set('limit', String(limit));
   sp.set('offset', String(offset));
-  const r = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/articles?${sp.toString()}`, { cache: 'no-store' });
+  const r = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/admin/articles?${sp.toString()}`, { 
+    cache: 'no-store',
+    headers: {
+      'x-admin-secret': process.env.ADMIN_SHARED_SECRET!,
+    },
+  });
   if (!r.ok) throw new Error('Failed to load');
   return r.json() as Promise<{ total: number; limit: number; offset: number; data: ArticleRow[] }>;
 }
@@ -57,6 +63,7 @@ export default async function AdminArticles({ searchParams }: { searchParams: Se
               <th className="px-3 py-2 text-left">Group</th>
               <th className="px-3 py-2 text-left">Categories</th>
               <th className="px-3 py-2 text-left">EAN</th>
+              <th className="px-3 py-2 text-left">Visible</th>
               <th className="px-3 py-2 text-right">Actions</th>
             </tr></thead>
             <tbody>
@@ -97,6 +104,11 @@ export default async function AdminArticles({ searchParams }: { searchParams: Se
                     </div>
                   </td>
                   <td className="px-3 py-2">{a.ean ?? '—'}</td>
+                  <td className="px-3 py-2">
+                    <span className={`px-2 py-0.5 rounded text-xs ${a.isVisible ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
+                      {a.isVisible ? 'Yes' : 'No'}
+                    </span>
+                  </td>
                   <td className="px-3 py-2 text-right">
                     <a className="underline" href={`/articles/${encodeURIComponent(a.externalId)}`}>Open</a>
                   </td>

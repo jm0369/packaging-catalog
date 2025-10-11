@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Query, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AdminGuard } from './admin.guard';
 import { ApiOkResponse, ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
@@ -181,5 +181,26 @@ export class ArticleGroupsAdminController {
         categories: a.categories.map(c => c.category),
       })),
     };
+  }
+
+  @Patch(':externalId')
+  @ApiOperation({ summary: 'Update group visibility. Body: { isVisible: boolean }' })
+  async updateVisibility(
+    @Param('externalId') externalId: string,
+    @Body() body: { isVisible: boolean }
+  ) {
+    const group = await this.prisma.articleGroupMirror.findUnique({
+      where: { externalId },
+    });
+    
+    if (!group) {
+      return { statusCode: 404, message: 'Group not found' };
+    }
+
+    return this.prisma.articleGroupMirror.update({
+      where: { externalId },
+      data: { isVisible: body.isVisible },
+      select: { id: true, externalId: true, isVisible: true },
+    });
   }
 }
