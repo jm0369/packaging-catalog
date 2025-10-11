@@ -14,6 +14,7 @@ model ArticleGroupMirror {
   description      String?
   parentExternalId String?
   sortOrder        Int?
+  isVisible        Boolean            @default(true)
 
   articles         ArticleMirror[]
 
@@ -33,6 +34,7 @@ model ArticleMirror {
   description   String?
   uom           String?
   updatedAt     DateTime
+  isVisible     Boolean  @default(true)
 
   attributes    Json?
 
